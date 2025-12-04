@@ -14,6 +14,7 @@ export class GameScene extends Phaser.Scene {
   private isEating: boolean = false;
   private isPaused: boolean = false;
   private pauseText?: Phaser.GameObjects.Text;
+  private gameOver: boolean = false;
   
   constructor() {
     super('GameScene');
@@ -22,6 +23,9 @@ export class GameScene extends Phaser.Scene {
   create() {
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
+    
+    // Reset game state
+    this.gameOver = false;
     
     // Get UI scene reference
     this.uiScene = this.scene.get('UIScene') as UIScene;
@@ -254,33 +258,44 @@ export class GameScene extends Phaser.Scene {
       
       this.isEating = false;
       
-      // Check win condition
-      if (collected >= total) {
-        this.time.delayedCall(500, () => {
-          this.scene.launch('LevelCompleteScene');
-        });
-      }
+    // Check win condition
+    if (collected >= total && !this.gameOver) {
+      this.gameOver = true;
+      this.physics.pause();
+      this.time.delayedCall(500, () => {
+        this.scene.launch('LevelCompleteScene');
+      });
+    }
     });
   }
   
   private hitBadItem(_badItem: BadItem) {
+    // Don't process if game is already over
+    if (this.gameOver) return;
+    
     // Check if dog can take damage
     if (this.dog && this.dog.takeDamage()) {
       // Take damage in UI
       const health = this.uiScene?.takeDamage() || 0;
       
       // Check lose condition
-      if (health <= 0) {
-        this.time.delayedCall(500, () => {
-          this.scene.launch('GameOverScene');
-        });
+      if (health <= 0 && !this.gameOver) {
+        this.triggerGameOver();
       }
     }
   }
+  
+  private triggerGameOver() {
+    this.gameOver = true;
+    this.physics.pause();
+    this.time.delayedCall(500, () => {
+      this.scene.launch('GameOverScene');
+    });
+  }
 
   update() {
-    // Don't update if paused
-    if (this.isPaused) return;
+    // Don't update if paused or game over
+    if (this.isPaused || this.gameOver) return;
     
     // Update player
     this.dog?.update();
@@ -288,12 +303,12 @@ export class GameScene extends Phaser.Scene {
     // Check if dog fell off the world
     if (this.dog && this.dog.getY() > this.cameras.main.height + 50) {
       // Instant game over if fell off
-      this.uiScene?.takeDamage();
-      this.uiScene?.takeDamage();
-      this.uiScene?.takeDamage();
-      this.time.delayedCall(100, () => {
-        this.scene.launch('GameOverScene');
-      });
+      if (!this.gameOver) {
+        this.uiScene?.takeDamage();
+        this.uiScene?.takeDamage();
+        this.uiScene?.takeDamage();
+        this.triggerGameOver();
+      }
     }
   }
 }
