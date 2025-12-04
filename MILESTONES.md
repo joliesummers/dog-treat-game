@@ -42,17 +42,19 @@
 
 **Status**: Dog entity created with physics-based movement, jumping, and platform collision!
 
-### Milestone 2: "Treat Collector" - Core Game Loop (Week 1-2)
+### ✅ Milestone 2: "Treat Collector" - Core Game Loop (COMPLETED)
 
 **Value**: Core "eat treat to win" mechanic works
 
-- [ ] Add treat sprite/object on the level
-- [ ] Implement collision detection between dog and treat
-- [ ] Add "eating" animation or effect (sprite disappear, sound)
-- [ ] Display treat counter on UI
-- [ ] Add simple win condition (collect X treats to finish level)
-- [ ] Show basic "Level Complete" screen
-- [ ] **Playable test**: Can collect treats and complete the level
+- ✅ Add treat sprite/object on the level
+- ✅ Implement collision detection between dog and treat
+- ✅ Add "eating" animation or effect (sprite disappear, sound)
+- ✅ Display treat counter on UI
+- ✅ Add simple win condition (collect X treats to finish level)
+- ✅ Show basic "Level Complete" screen
+- ✅ **Playable test**: Can collect treats and complete the level
+
+**Status**: 10 treats placed in level, collection mechanics working, UI tracking, level complete screen implemented!
 
 ### Milestone 3: "Dangerous Snacks" - Health System (Week 2)
 

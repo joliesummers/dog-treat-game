@@ -1,12 +1,14 @@
 import Phaser from 'phaser';
 import { Dog } from '../entities/Dog';
 import { Treat } from '../entities/Treat';
+import { BadItem } from '../entities/BadItem';
 import { UIScene } from './UIScene';
 
 export class GameScene extends Phaser.Scene {
   private dog?: Dog;
   private platforms?: Phaser.Physics.Arcade.StaticGroup;
   private treats: Treat[] = [];
+  private badItems: BadItem[] = [];
   private uiScene?: UIScene;
   
   constructor() {
@@ -37,8 +39,9 @@ export class GameScene extends Phaser.Scene {
     const platform3 = this.add.rectangle(650, height - 150, 150, 32, 0x228B22);
     this.platforms.add(platform3);
     
-    // Create treats
+    // Create treats and bad items
     this.createTreats(width, height);
+    this.createBadItems(width, height);
     
     // Create player dog
     this.dog = new Dog({
@@ -61,8 +64,19 @@ export class GameScene extends Phaser.Scene {
       );
     });
     
+    // Set up bad item collision
+    this.badItems.forEach(badItem => {
+      this.physics.add.overlap(
+        this.dog!.getSprite(),
+        badItem.getSprite(),
+        () => this.hitBadItem(badItem),
+        undefined,
+        this
+      );
+    });
+    
     // Add instructions text
-    this.add.text(16, 60, 'Arrow Keys: Move\nUp Arrow: Jump\nCollect all treats!', {
+    this.add.text(16, 98, 'Arrow Keys: Move\nUp Arrow: Jump\nCollect treats!\nAvoid bad snacks!', {
       fontSize: '14px',
       color: '#ffffff',
       backgroundColor: '#000000',
@@ -70,7 +84,7 @@ export class GameScene extends Phaser.Scene {
     });
     
     // Add title
-    this.add.text(width / 2, 30, 'Dog Treat Game - Milestone 2', {
+    this.add.text(width / 2, 30, 'Dog Treat Game - Milestone 3', {
       fontSize: '20px',
       color: '#ffffff',
       fontStyle: 'bold'
@@ -101,6 +115,22 @@ export class GameScene extends Phaser.Scene {
     });
   }
   
+  private createBadItems(_width: number, height: number) {
+    // Place bad items strategically - avoiding treat positions
+    const badItemPositions = [
+      { x: 250, y: height - 100, type: 'chocolate' as const },
+      { x: 450, y: height - 100, type: 'grapes' as const },
+      { x: 350, y: height - 200, type: 'chocolate' as const },
+      { x: 540, y: height - 300, type: 'grapes' as const },
+      { x: 720, y: height - 200, type: 'chocolate' as const },
+      { x: 550, y: height - 100, type: 'grapes' as const },
+    ];
+    
+    badItemPositions.forEach(pos => {
+      this.badItems.push(new BadItem(this, pos.x, pos.y, pos.type));
+    });
+  }
+  
   private collectTreat(treat: Treat) {
     // Remove from array
     const index = this.treats.indexOf(treat);
@@ -120,6 +150,21 @@ export class GameScene extends Phaser.Scene {
       this.time.delayedCall(500, () => {
         this.scene.launch('LevelCompleteScene');
       });
+    }
+  }
+  
+  private hitBadItem(_badItem: BadItem) {
+    // Check if dog can take damage
+    if (this.dog && this.dog.takeDamage()) {
+      // Take damage in UI
+      const health = this.uiScene?.takeDamage() || 0;
+      
+      // Check lose condition
+      if (health <= 0) {
+        this.time.delayedCall(500, () => {
+          this.scene.launch('GameOverScene');
+        });
+      }
     }
   }
 

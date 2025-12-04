@@ -2,8 +2,11 @@ import Phaser from 'phaser';
 
 export class UIScene extends Phaser.Scene {
   private treatsText?: Phaser.GameObjects.Text;
+  private healthText?: Phaser.GameObjects.Text;
   private treatsCollected: number = 0;
   private treatsTotal: number = 0;
+  private health: number = 3;
+  private maxHealth: number = 3;
   
   constructor() {
     super({ key: 'UIScene', active: true });
@@ -19,7 +22,17 @@ export class UIScene extends Phaser.Scene {
       fontStyle: 'bold'
     });
     
+    // Health display
+    this.healthText = this.add.text(16, 52, '', {
+      fontSize: '20px',
+      color: '#ffffff',
+      backgroundColor: '#000000',
+      padding: { x: 12, y: 8 },
+      fontStyle: 'bold'
+    });
+    
     this.updateTreatsDisplay();
+    this.updateHealthDisplay();
   }
   
   setTreatsTotal(total: number) {
@@ -43,12 +56,35 @@ export class UIScene extends Phaser.Scene {
   
   reset() {
     this.treatsCollected = 0;
+    this.health = this.maxHealth;
     this.updateTreatsDisplay();
+    this.updateHealthDisplay();
+  }
+  
+  takeDamage(): number {
+    this.health = Math.max(0, this.health - 1);
+    this.updateHealthDisplay();
+    
+    // Flash effect
+    this.cameras.main.flash(200, 255, 0, 0);
+    
+    return this.health;
+  }
+  
+  getHealth(): number {
+    return this.health;
   }
   
   private updateTreatsDisplay() {
     if (this.treatsText) {
       this.treatsText.setText(`🦴 Treats: ${this.treatsCollected}/${this.treatsTotal}`);
+    }
+  }
+  
+  private updateHealthDisplay() {
+    if (this.healthText) {
+      const hearts = '❤️'.repeat(this.health) + '🖤'.repeat(this.maxHealth - this.health);
+      this.healthText.setText(`Health: ${hearts}`);
     }
   }
 }

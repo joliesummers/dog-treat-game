@@ -19,6 +19,7 @@ export class Dog {
   
   // State
   private isJumping = false;
+  private isInvincible = false;
 
   constructor(config: DogConfig) {
     this.scene = config.scene;
@@ -87,6 +88,33 @@ export class Dog {
   
   getY(): number {
     return this.sprite.y;
+  }
+  
+  takeDamage() {
+    if (this.isInvincible) return false;
+    
+    // Start invincibility
+    this.isInvincible = true;
+    
+    // Visual feedback - flashing
+    this.scene.tweens.add({
+      targets: this.sprite,
+      alpha: 0.3,
+      duration: 100,
+      yoyo: true,
+      repeat: 10
+    });
+    
+    // Reset invincibility after 2 seconds
+    this.scene.time.delayedCall(2000, () => {
+      this.isInvincible = false;
+    });
+    
+    return true;
+  }
+  
+  isCurrentlyInvincible(): boolean {
+    return this.isInvincible;
   }
 }
 
