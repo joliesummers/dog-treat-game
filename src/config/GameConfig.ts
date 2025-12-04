@@ -9,7 +9,7 @@ export const GameConfig: Phaser.Types.Core.GameConfig = {
   physics: {
     default: 'arcade',
     arcade: {
-      gravity: { x: 0, y: 800 },
+      gravity: { x: 0, y: 900 },
       debug: false
     }
   },
@@ -18,4 +18,9 @@ export const GameConfig: Phaser.Types.Core.GameConfig = {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH
   }
+};
+
+export const GameConstants = {
+  LEVEL_WIDTH: 800,
+  LEVEL_HEIGHT: 600
 };

@@ -12,10 +12,10 @@ export class Dog {
   private scene: Phaser.Scene;
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
   
-  // Movement constants
-  private readonly MOVE_SPEED = 200;
-  private readonly JUMP_VELOCITY = -500;
-  private readonly DRAG = 800;
+  // Movement constants (tuned for better platforming feel)
+  private readonly MOVE_SPEED = 220;
+  private readonly JUMP_VELOCITY = -550;
+  private readonly DRAG = 900;
   
   // State
   private isJumping = false;

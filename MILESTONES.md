@@ -56,18 +56,20 @@
 
 **Status**: 10 treats placed in level, collection mechanics working, UI tracking, level complete screen implemented!
 
-### Milestone 3: "Dangerous Snacks" - Health System (Week 2)
+### ✅ Milestone 3: "Dangerous Snacks" - Health System (COMPLETED)
 
 **Value**: Risk/reward gameplay with bad items
 
-- [ ] Add "bad item" sprites (chocolate, grapes, etc.)
-- [ ] Implement health points system (start with 3 hearts)
-- [ ] Display health UI (hearts/bar)
-- [ ] Collision with bad items reduces health
-- [ ] Add lose condition (health reaches zero)
-- [ ] Show "Game Over" screen with restart option
-- [ ] Add invincibility frames after taking damage (visual feedback)
-- [ ] **Playable test**: Player must avoid bad items or lose
+- ✅ Add "bad item" sprites (chocolate, grapes, etc.)
+- ✅ Implement health points system (start with 3 hearts)
+- ✅ Display health UI (hearts/bar)
+- ✅ Collision with bad items reduces health
+- ✅ Add lose condition (health reaches zero)
+- ✅ Show "Game Over" screen with restart option
+- ✅ Add invincibility frames after taking damage (visual feedback)
+- ✅ **Playable test**: Player must avoid bad items or lose
+
+**Status**: Health system implemented with 3 hearts, bad items (chocolate/grapes), invincibility frames, flash damage feedback, and game over screen!
 
 ### Milestone 4: "Level Design" - First Complete Level (Week 3)
 
