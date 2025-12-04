@@ -71,6 +71,11 @@
 
 **Status**: Health system implemented with 3 hearts, bad items (chocolate/grapes), invincibility frames, flash damage feedback, and game over screen!
 
+**Enhancements Added:**
+- Mixed bad items: 4 static on platforms + falling items from sky every 3-5 seconds
+- Falling items have gravity enabled and bounce off platforms
+- Dynamic hazards make health system more challenging and testable!
+
 ### ✅ Milestone 4: "Level Design" - First Complete Level (COMPLETED)
 
 **Value**: Full level experience with pacing and challenge
@@ -126,6 +131,11 @@
 - ✅ **Playable test**: Both breeds offer distinct strategies
 
 **Status**: Golden Retriever added with faster speed (110%), better jump (105%), but gets distracted randomly. Breed selection shows both dogs with click-to-select UI!
+
+**Enhancements Added:**
+- When distracted: 50% movement speed and 70% jump power (impaired control)
+- Thought bubble (💭) indicator bounces above dog during distraction
+- Makes Golden Retriever high-risk, high-reward playstyle!
 
 ### Milestone 8: "Level 2 & 3" - Content Expansion (Week 5-6)
 

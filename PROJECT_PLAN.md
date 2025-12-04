@@ -162,6 +162,11 @@
 
 **Status**: Complete with interactive breed selection UI showing all stats
 
+**Gameplay Enhancements:**
+- **Enhanced Distraction**: When distracted, movement reduced to 50% and jump to 70% (impaired control vs full freeze)
+- **Falling Bad Items**: Mix of 4 static platform hazards + random falling items every 3-5 seconds
+- **Dynamic Challenge**: Must watch both platforms AND sky for incoming chocolate/grapes
+
 ---
 
 ### 🚧 Milestone 8: "Level 2 & 3" - Content Expansion (PENDING)
