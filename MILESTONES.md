@@ -28,17 +28,19 @@
 
 ---
 
-### Milestone 1: "Hello Dog" - Core Movement (Week 1)
+### ✅ Milestone 1: "Hello Dog" - Core Movement (COMPLETED)
 
 **Value**: Player can see and control a dog character on screen
 
-- [ ] Set up new Phaser + TypeScript + Vite project structure
-- [ ] Configure basic game scene with physics
-- [ ] Add placeholder dog sprite (or find free dog sprite)
-- [ ] Implement left/right keyboard movement with ground friction
-- [ ] Implement jump physics with gravity
-- [ ] Add basic ground platform
-- [ ] **Playable test**: Dog runs and jumps smoothly
+- ✅ Set up new Phaser + TypeScript + Vite project structure
+- ✅ Configure basic game scene with physics
+- ✅ Add placeholder dog sprite (or find free dog sprite)
+- ✅ Implement left/right keyboard movement with ground friction
+- ✅ Implement jump physics with gravity
+- ✅ Add basic ground platform
+- ✅ **Playable test**: Dog runs and jumps smoothly
+
+**Status**: Dog entity created with physics-based movement, jumping, and platform collision!
 
 ### Milestone 2: "Treat Collector" - Core Game Loop (Week 1-2)
 
