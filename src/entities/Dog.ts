@@ -29,6 +29,8 @@ export class Dog {
   private isInvincible = false;
   private isDistracted = false;
   private distractionIndicator?: Phaser.GameObjects.Text;
+  private chasingSquirrel = false;
+  private targetSquirrelX?: number;
 
   constructor(config: DogConfig) {
     this.scene = config.scene;
@@ -45,17 +47,53 @@ export class Dog {
     if (config.texture) {
       this.sprite = this.scene.physics.add.sprite(config.x, config.y, config.texture);
     } else {
-      // Create placeholder graphics with breed color
+      // Create cute pixel-style dog sprite with breed color
       const textureKey = `dog-${breedKey}`;
-      const graphics = this.scene.add.graphics();
-      graphics.fillStyle(this.breed.color, 1);
-      graphics.fillRect(0, 0, 48, 32);
-      // Add simple face
-      graphics.fillStyle(0x000000, 1);
-      graphics.fillCircle(36, 12, 4); // Eye
-      graphics.fillCircle(36, 20, 4); // Nose
-      graphics.generateTexture(textureKey, 48, 32);
-      graphics.destroy();
+      if (!this.scene.textures.exists(textureKey)) {
+        const graphics = this.scene.add.graphics();
+        
+        // Body (rounded rectangle)
+        graphics.fillStyle(this.breed.color, 1);
+        graphics.fillRoundedRect(8, 12, 32, 20, 6);
+        
+        // Head (circle)
+        graphics.fillCircle(40, 16, 12);
+        
+        // Ears (floppy for Pug, perky for Golden)
+        if (breedKey === 'pug') {
+          // Floppy ears
+          graphics.fillEllipse(38, 8, 6, 10);
+          graphics.fillEllipse(48, 8, 6, 10);
+        } else {
+          // Pointed ears
+          graphics.fillTriangle(35, 6, 38, 2, 41, 6);
+          graphics.fillTriangle(45, 6, 48, 2, 51, 6);
+        }
+        
+        // Tail (curly for Pug, fluffy for Golden)
+        graphics.fillCircle(6, 16, 6);
+        
+        // Legs (4 small rectangles)
+        graphics.fillRect(12, 28, 6, 8);
+        graphics.fillRect(22, 28, 6, 8);
+        graphics.fillRect(28, 28, 6, 8);
+        graphics.fillRect(34, 28, 6, 8);
+        
+        // Face details
+        graphics.fillStyle(0x000000, 1);
+        // Eyes
+        graphics.fillCircle(38, 14, 2);
+        graphics.fillCircle(46, 14, 2);
+        // Nose
+        graphics.fillCircle(42, 20, 3);
+        // Mouth smile
+        graphics.lineStyle(2, 0x000000, 1);
+        graphics.arc(42, 20, 4, 0, Math.PI, false);
+        graphics.strokePath();
+        
+        graphics.generateTexture(textureKey, 56, 36);
+        graphics.destroy();
+      }
       
       this.sprite = this.scene.physics.add.sprite(config.x, config.y, textureKey);
     }
@@ -88,15 +126,23 @@ export class Dog {
       }
     }
     
-    // Horizontal movement (slower if distracted)
-    const moveMultiplier = this.isDistracted ? 0.5 : 1.0;
-    
-    if (this.cursors.left.isDown) {
-      this.sprite.setVelocityX(-this.MOVE_SPEED * moveMultiplier);
-      this.sprite.setFlipX(true);
-    } else if (this.cursors.right.isDown) {
-      this.sprite.setVelocityX(this.MOVE_SPEED * moveMultiplier);
-      this.sprite.setFlipX(false);
+    // Horizontal movement (slower if distracted, auto-chase if chasing squirrel)
+    if (this.chasingSquirrel && this.targetSquirrelX !== undefined) {
+      // Auto-chase the squirrel
+      const direction = this.targetSquirrelX > this.sprite.x ? 1 : -1;
+      this.sprite.setVelocityX(this.MOVE_SPEED * 1.2 * direction); // Chase faster!
+      this.sprite.setFlipX(direction < 0);
+    } else {
+      // Normal player control (slower if distracted)
+      const moveMultiplier = this.isDistracted ? 0.5 : 1.0;
+      
+      if (this.cursors.left.isDown) {
+        this.sprite.setVelocityX(-this.MOVE_SPEED * moveMultiplier);
+        this.sprite.setFlipX(true);
+      } else if (this.cursors.right.isDown) {
+        this.sprite.setVelocityX(this.MOVE_SPEED * moveMultiplier);
+        this.sprite.setFlipX(false);
+      }
     }
     
     // Jump (weaker if distracted)
@@ -116,12 +162,35 @@ export class Dog {
     if (this.isDistracted) return;
     
     this.isDistracted = true;
+    this.chasingSquirrel = true;
     
-    // Show thought bubble indicator
+    // Find nearest squirrel - get from scene registry
+    const squirrels = this.scene.registry.get('squirrels') as Array<{ x: number, y: number }> || [];
+    
+    if (squirrels.length > 0) {
+      // Find closest squirrel
+      let nearestSquirrel = squirrels[0];
+      let minDistance = Infinity;
+      
+      squirrels.forEach(squirrel => {
+        const distance = Phaser.Math.Distance.Between(
+          this.sprite.x, this.sprite.y,
+          squirrel.x, squirrel.y
+        );
+        if (distance < minDistance) {
+          minDistance = distance;
+          nearestSquirrel = squirrel;
+        }
+      });
+      
+      this.targetSquirrelX = nearestSquirrel.x;
+    }
+    
+    // Show thought bubble indicator with squirrel emoji
     this.distractionIndicator = this.scene.add.text(
       this.sprite.x,
       this.sprite.y - 60,
-      '💭',
+      '🐿️!',
       { fontSize: '32px' }
     );
     
@@ -138,6 +207,8 @@ export class Dog {
     // End distraction after 1.5 seconds
     this.scene.time.delayedCall(1500, () => {
       this.isDistracted = false;
+      this.chasingSquirrel = false;
+      this.targetSquirrelX = undefined;
       if (this.distractionIndicator) {
         this.distractionIndicator.destroy();
         this.distractionIndicator = undefined;

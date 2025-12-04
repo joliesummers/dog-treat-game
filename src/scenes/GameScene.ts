@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { Dog } from '../entities/Dog';
 import { Treat } from '../entities/Treat';
 import { BadItem } from '../entities/BadItem';
+import { Squirrel } from '../entities/Squirrel';
 import { UIScene } from './UIScene';
 import type { BreedType } from '../types/DogBreeds';
 
@@ -10,6 +11,7 @@ export class GameScene extends Phaser.Scene {
   private platforms?: Phaser.Physics.Arcade.StaticGroup;
   private treats: Treat[] = [];
   private badItems: BadItem[] = [];
+  private squirrels: Squirrel[] = [];
   private uiScene?: UIScene;
   private isEating: boolean = false;
   private isPaused: boolean = false;
@@ -30,6 +32,7 @@ export class GameScene extends Phaser.Scene {
     this.isPaused = false;
     this.treats = [];
     this.badItems = [];
+    this.squirrels = [];
     
     // Get UI scene reference
     this.uiScene = this.scene.get('UIScene') as UIScene;
@@ -42,42 +45,73 @@ export class GameScene extends Phaser.Scene {
     sky.fillGradientStyle(0x87CEEB, 0x87CEEB, 0xE0F6FF, 0xE0F6FF, 1);
     sky.fillRect(0, 0, width, height);
     
+    // Create platform textures if they don't exist
+    this.createPlatformTextures();
+    
     // Create ground platform
     this.platforms = this.physics.add.staticGroup();
     
-    // Main ground (grass)
-    const ground = this.add.rectangle(width / 2, height - 32, width, 64, 0x228B22);
+    // Main ground (grass with texture)
+    const ground = this.add.rectangle(width / 2, height - 32, width, 64);
+    ground.setFillStyle(0x228B22); // Grass green
+    ground.setStrokeStyle(2, 0x1A6B1A); // Darker green outline
     this.platforms.add(ground);
     
-    // Add dirt layer below grass
-    this.add.rectangle(width / 2, height - 8, width, 16, 0x8B4513);
+    // Add grass texture details on top
+    const grassGraphics = this.add.graphics();
+    grassGraphics.fillStyle(0x32CD32, 0.6); // Lime green for grass blades
+    for (let i = 0; i < width; i += 8) {
+      const variation = Phaser.Math.Between(-4, 4);
+      grassGraphics.fillRect(i, height - 64 + variation, 4, 8);
+    }
     
-    // Add some floating platforms with varied heights for challenge
-    const platform1 = this.add.rectangle(200, height - 150, 200, 32, 0x8B7355);
+    // Add dirt layer below grass with texture
+    const dirt = this.add.rectangle(width / 2, height - 8, width, 16);
+    dirt.setFillStyle(0x8B4513); // Saddle brown
+    dirt.setStrokeStyle(1, 0x654321);
+    
+    // Add some floating platforms with wood texture
+    const platform1 = this.add.rectangle(200, height - 150, 200, 32);
+    platform1.setFillStyle(0xD2691E); // Chocolate (wood color)
+    platform1.setStrokeStyle(3, 0x8B4513); // Darker wood outline
     this.platforms.add(platform1);
     
-    const platform2 = this.add.rectangle(500, height - 280, 200, 32, 0x8B7355);
+    const platform2 = this.add.rectangle(500, height - 280, 200, 32);
+    platform2.setFillStyle(0xCD853F); // Peru (lighter wood)
+    platform2.setStrokeStyle(3, 0xA0522D);
     this.platforms.add(platform2);
     
-    const platform3 = this.add.rectangle(700, height - 180, 120, 32, 0x8B7355);
+    const platform3 = this.add.rectangle(700, height - 180, 120, 32);
+    platform3.setFillStyle(0xD2691E);
+    platform3.setStrokeStyle(3, 0x8B4513);
     this.platforms.add(platform3);
     
     // Add a higher platform for extra challenge
-    const platform4 = this.add.rectangle(350, height - 400, 150, 32, 0x8B7355);
+    const platform4 = this.add.rectangle(350, height - 400, 150, 32);
+    platform4.setFillStyle(0xCD853F);
+    platform4.setStrokeStyle(3, 0xA0522D);
     this.platforms.add(platform4);
     
-    // Create treats and bad items
+    // Create treats, bad items, and squirrels
     this.createTreats(width, height);
     this.createBadItems(width, height);
+    this.createSquirrels(width, height);
+    
+    // Calculate and set target score IMMEDIATELY (before any collisions can happen)
+    const totalScore = this.treats.reduce((sum, treat) => sum + treat.getPointValue(), 0);
+    
+    // Update UI with target score synchronously
+    this.uiScene?.reset(); // Reset FIRST (clears score to 0)
+    this.uiScene?.setTargetScore(totalScore); // THEN set target
     
     // Get selected breed from registry
     const selectedBreed = this.registry.get('selectedBreed') as BreedType || 'pug';
     
-    // Create player dog
+    // Create player dog (spawn on ground, away from treats)
     this.dog = new Dog({
       scene: this,
-      x: 100,
-      y: height - 200,
+      x: 50,
+      y: height - 100,
       breed: selectedBreed
     });
     
@@ -107,7 +141,7 @@ export class GameScene extends Phaser.Scene {
     });
     
     // Add instructions text
-    const instructions = this.add.text(16, 98, 'Arrow Keys: Move\nUp Arrow: Jump\nCollect treats!\nAvoid bad snacks!', {
+    const instructions = this.add.text(16, 98, 'Arrow Keys: Move\nUp Arrow: Jump\nCollect treats!\nAvoid poo! 💩', {
       fontSize: '14px',
       color: '#ffffff',
       backgroundColor: '#000000',
@@ -133,12 +167,6 @@ export class GameScene extends Phaser.Scene {
     
     // Camera follow player
     this.cameras.main.startFollow(this.dog!.getSprite(), false, 0.1, 0.1);
-    
-    // Update UI with total treats (delayed to ensure UIScene is ready)
-    this.time.delayedCall(100, () => {
-      this.uiScene?.setTreatsTotal(this.treats.length);
-      this.uiScene?.reset();
-    });
   }
   
   private togglePause() {
@@ -176,46 +204,56 @@ export class GameScene extends Phaser.Scene {
   }
   
   private createTreats(width: number, height: number) {
-    // Strategically place treats to guide player through the level
+    // Balanced gameplay - 50% fewer treats (~15 treats, ~25 points)
+    // Mix of sizes: small (1pt), medium (2pt), large (3pt)
     const treatPositions = [
-      // Ground level treats
-      { x: 120, y: height - 100 },
-      { x: 250, y: height - 100 },
-      { x: width - 100, y: height - 100 },
+      // Ground level treats - easy starter points (4 treats)
+      { x: 150, y: height - 100, size: 1 },
+      { x: 290, y: height - 100, size: 1 },
+      { x: 520, y: height - 100, size: 2 },
+      { x: width - 80, y: height - 100, size: 1 },
       
-      // First platform
-      { x: 150, y: height - 200 },
-      { x: 250, y: height - 200 },
+      // First platform - varied sizes (3 treats)
+      { x: 170, y: height - 200, size: 2 },
+      { x: 210, y: height - 200, size: 1 },
+      { x: 250, y: height - 200, size: 3 },
       
-      // Second platform (highest)
-      { x: 450, y: height - 330 },
-      { x: 550, y: height - 330 },
+      // Second platform (high up!) - big rewards (3 treats)
+      { x: 460, y: height - 330, size: 3 },
+      { x: 500, y: height - 330, size: 2 },
+      { x: 540, y: height - 330, size: 2 },
       
-      // High platform challenge
-      { x: 350, y: height - 450 },
+      // Highest platform - JACKPOT! (2 treats)
+      { x: 340, y: height - 450, size: 3 },
+      { x: 380, y: height - 450, size: 3 },
       
-      // Third platform
-      { x: 680, y: height - 230 },
-      { x: 720, y: height - 230 },
+      // Third platform (2 treats)
+      { x: 690, y: height - 230, size: 2 },
+      { x: 730, y: height - 230, size: 1 },
       
-      // Mid-air collection challenges
-      { x: 370, y: height - 200 },
-      { x: 600, y: height - 150 },
+      // Mid-air collection challenge (1 treat)
+      { x: 400, y: height - 200, size: 2 },
     ];
     
     treatPositions.forEach(pos => {
-      this.treats.push(new Treat(this, pos.x, pos.y));
+      const treat = new Treat(this, pos.x, pos.y, pos.size);
+      this.treats.push(treat);
     });
   }
   
   private createBadItems(width: number, height: number) {
-    // Static bad items on platforms
+    // Bad items positioned away from squirrels (8 total)
     const staticBadItemPositions = [
-      // Platform hazards
-      { x: 200, y: height - 200, type: 'grapes' as const },
-      { x: 500, y: height - 330, type: 'chocolate' as const },
-      { x: 400, y: height - 450, type: 'grapes' as const },
-      { x: 700, y: height - 230, type: 'chocolate' as const },
+      // Platform hazards - spread out more
+      { x: 230, y: height - 200, type: 'poo' as const },  // Platform 1 right side
+      { x: 420, y: height - 330, type: 'poo' as const },  // Platform 2 left side
+      { x: 380, y: height - 450, type: 'poo' as const },  // Highest platform right
+      { x: 750, y: height - 230, type: 'poo' as const },  // Platform 3 far right
+      // Ground hazards
+      { x: 200, y: height - 100, type: 'poo' as const },
+      { x: 400, y: height - 100, type: 'poo' as const },
+      { x: 600, y: height - 100, type: 'poo' as const },
+      { x: width - 100, y: height - 100, type: 'poo' as const },
     ];
     
     staticBadItemPositions.forEach(pos => {
@@ -231,6 +269,23 @@ export class GameScene extends Phaser.Scene {
     this.startFallingBadItems(width);
   }
   
+  private createSquirrels(_width: number, height: number) {
+    // Squirrels positioned away from bad items
+    const squirrelPositions = [
+      { x: 140, y: height - 180 },  // Platform 1 left side (away from poo at 230)
+      { x: 560, y: height - 310 },  // Platform 2 right side (away from poo at 420)
+      { x: 300, y: height - 430 },  // Highest platform left (away from poo at 380)
+      { x: 660, y: height - 210 },  // Platform 3 left side (away from poo at 750)
+    ];
+    
+    squirrelPositions.forEach(pos => {
+      this.squirrels.push(new Squirrel(this, pos.x, pos.y));
+    });
+    
+    // Store squirrel positions in registry for Dog to access
+    this.registry.set('squirrels', squirrelPositions);
+  }
+  
   private startFallingBadItems(width: number) {
     // Spawn falling bad items every 3-5 seconds
     this.time.addEvent({
@@ -240,10 +295,9 @@ export class GameScene extends Phaser.Scene {
         
         // Random x position
         const x = Phaser.Math.Between(100, width - 100);
-        const type = Math.random() > 0.5 ? 'chocolate' : 'grapes';
         
-        // Spawn at top of screen
-        const fallingItem = new BadItem(this, x, -30, type);
+        // Spawn at top of screen (always poo now)
+        const fallingItem = new BadItem(this, x, -30, 'poo');
         this.badItems.push(fallingItem);
         
         // Enable gravity for falling
@@ -280,6 +334,11 @@ export class GameScene extends Phaser.Scene {
   }
   
   private collectTreat(treat: Treat) {
+    // Check if this treat was already collected
+    if (!this.treats.includes(treat)) {
+      return;
+    }
+    
     if (this.isEating) return; // Prevent double-collection during eat delay
     
     // Get eat speed from dog breed
@@ -297,6 +356,9 @@ export class GameScene extends Phaser.Scene {
     
     // Delay based on breed eat speed
     this.time.delayedCall(eatSpeed, () => {
+      // Get point value before removing treat
+      const points = treat.getPointValue();
+      
       // Remove from array
       const index = this.treats.indexOf(treat);
       if (index > -1) {
@@ -306,14 +368,14 @@ export class GameScene extends Phaser.Scene {
       // Play collection animation
       treat.collect();
       
-      // Update UI
-      const collected = this.uiScene?.incrementTreats() || 0;
-      const total = this.uiScene?.getTreatsTotal() || 0;
+      // Update UI with points
+      const currentScore = this.uiScene?.addPoints(points) || 0;
+      const targetScore = this.uiScene?.getTargetScore() || 0;
       
       this.isEating = false;
       
-    // Check win condition
-    if (collected >= total && !this.gameOver) {
+    // Check win condition (reached target score)
+    if (currentScore >= targetScore && !this.gameOver) {
       this.gameOver = true;
       this.physics.pause();
       this.time.delayedCall(500, () => {
@@ -345,6 +407,22 @@ export class GameScene extends Phaser.Scene {
     this.time.delayedCall(500, () => {
       this.scene.launch('GameOverScene');
     });
+  }
+
+  private createPlatformTextures() {
+    // Create wood grain texture pattern (simple horizontal lines)
+    if (!this.textures.exists('wood-texture')) {
+      const graphics = this.add.graphics();
+      graphics.fillStyle(0xD2691E, 1);
+      graphics.fillRect(0, 0, 32, 32);
+      // Add wood grain lines
+      graphics.lineStyle(1, 0x8B4513, 0.5);
+      for (let i = 0; i < 32; i += 4) {
+        graphics.lineBetween(0, i, 32, i);
+      }
+      graphics.generateTexture('wood-texture', 32, 32);
+      graphics.destroy();
+    }
   }
 
   update() {

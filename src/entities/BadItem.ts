@@ -1,36 +1,64 @@
 import Phaser from 'phaser';
 
-export type BadItemType = 'chocolate' | 'grapes';
+export type BadItemType = 'poo';
 
 export class BadItem {
   public sprite: Phaser.Physics.Arcade.Sprite;
   private itemType: BadItemType;
   
-  constructor(scene: Phaser.Scene, x: number, y: number, type: BadItemType = 'chocolate') {
+  constructor(scene: Phaser.Scene, x: number, y: number, type: BadItemType = 'poo') {
     this.itemType = type;
     
-    // Create placeholder bad item graphic
-    const graphics = scene.add.graphics();
+    // Create cute poo emoji graphic
+    const textureKey = 'bad-poo';
     
-    if (type === 'chocolate') {
-      // Brown square for chocolate
-      graphics.fillStyle(0x4B2C20, 1);
-      graphics.fillRect(0, 0, 24, 24);
-      graphics.lineStyle(2, 0x2F1810, 1);
-      graphics.strokeRect(0, 0, 24, 24);
-      graphics.generateTexture('bad-chocolate', 24, 24);
-    } else {
-      // Purple circles for grapes
-      graphics.fillStyle(0x6B4C9A, 1);
-      graphics.fillCircle(8, 12, 8);
-      graphics.fillCircle(16, 12, 8);
-      graphics.fillCircle(12, 8, 8);
-      graphics.generateTexture('bad-grapes', 24, 24);
+    if (!scene.textures.exists(textureKey)) {
+      const graphics = scene.add.graphics();
+      
+      // Cute poo emoji shape (swirl of poop)
+      const brown = 0x8B4513; // Saddle brown
+      const darkBrown = 0x654321; // Dark brown outline
+      
+      graphics.fillStyle(brown, 1);
+      graphics.lineStyle(2, darkBrown, 1);
+      
+      // Bottom coil (largest)
+      graphics.fillEllipse(16, 24, 20, 10);
+      graphics.strokeEllipse(16, 24, 20, 10);
+      
+      // Middle coil
+      graphics.fillEllipse(16, 18, 16, 9);
+      graphics.strokeEllipse(16, 18, 16, 9);
+      
+      // Top coil (smallest)
+      graphics.fillEllipse(16, 12, 12, 8);
+      graphics.strokeEllipse(16, 12, 12, 8);
+      
+      // Swirl top point
+      graphics.fillCircle(16, 8, 4);
+      graphics.strokeCircle(16, 8, 4);
+      
+      // Cute face
+      graphics.fillStyle(0x000000, 1);
+      // Eyes (happy expression)
+      graphics.fillCircle(12, 16, 2);
+      graphics.fillCircle(20, 16, 2);
+      
+      // Smile
+      graphics.lineStyle(2, 0x000000, 1);
+      graphics.arc(16, 18, 4, 0, Math.PI, false);
+      graphics.strokePath();
+      
+      // White shine on eyes
+      graphics.fillStyle(0xFFFFFF, 1);
+      graphics.fillCircle(11, 15, 1);
+      graphics.fillCircle(19, 15, 1);
+      
+      graphics.generateTexture('bad-poo', 32, 28);
+      graphics.destroy();
     }
-    graphics.destroy();
     
-    // Create sprite
-    const textureKey = type === 'chocolate' ? 'bad-chocolate' : 'bad-grapes';
+    // Create sprite (textureKey already defined above)
     this.sprite = scene.physics.add.sprite(x, y, textureKey);
     this.sprite.setCollideWorldBounds(true);
     

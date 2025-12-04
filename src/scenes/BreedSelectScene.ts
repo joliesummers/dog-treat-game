@@ -67,8 +67,9 @@ export class BreedSelectScene extends Phaser.Scene {
       this.input.keyboard?.removeAllListeners();
       clickZone.removeAllListeners();
       this.scene.stop('BreedSelectScene');
-      this.scene.start('GameScene');
+      // Launch UIScene FIRST, then start GameScene
       this.scene.launch('UIScene');
+      this.scene.start('GameScene');
     };
     
     // Add keyboard input (remove any existing listeners first)

@@ -1,10 +1,10 @@
 import Phaser from 'phaser';
 
 export class UIScene extends Phaser.Scene {
-  private treatsText?: Phaser.GameObjects.Text;
+  private scoreText?: Phaser.GameObjects.Text;
   private healthText?: Phaser.GameObjects.Text;
-  private treatsCollected: number = 0;
-  private treatsTotal: number = 0;
+  private score: number = 0;
+  private targetScore: number = 0;
   private health: number = 3;
   private maxHealth: number = 3;
   
@@ -13,8 +13,8 @@ export class UIScene extends Phaser.Scene {
   }
   
   create() {
-    // Treats counter
-    this.treatsText = this.add.text(16, 16, '', {
+    // Score counter
+    this.scoreText = this.add.text(16, 16, '', {
       fontSize: '20px',
       color: '#ffffff',
       backgroundColor: '#000000',
@@ -31,33 +31,33 @@ export class UIScene extends Phaser.Scene {
       fontStyle: 'bold'
     });
     
-    this.updateTreatsDisplay();
+    this.updateScoreDisplay();
     this.updateHealthDisplay();
   }
   
-  setTreatsTotal(total: number) {
-    this.treatsTotal = total;
-    this.updateTreatsDisplay();
+  setTargetScore(target: number) {
+    this.targetScore = target;
+    this.updateScoreDisplay();
   }
   
-  incrementTreats() {
-    this.treatsCollected++;
-    this.updateTreatsDisplay();
-    return this.treatsCollected;
+  addPoints(points: number) {
+    this.score += points;
+    this.updateScoreDisplay();
+    return this.score;
   }
   
-  getTreatsCollected(): number {
-    return this.treatsCollected;
+  getScore(): number {
+    return this.score;
   }
   
-  getTreatsTotal(): number {
-    return this.treatsTotal;
+  getTargetScore(): number {
+    return this.targetScore;
   }
   
   reset() {
-    this.treatsCollected = 0;
+    this.score = 0;
     this.health = this.maxHealth;
-    this.updateTreatsDisplay();
+    this.updateScoreDisplay();
     this.updateHealthDisplay();
   }
   
@@ -75,13 +75,13 @@ export class UIScene extends Phaser.Scene {
     return this.health;
   }
   
-  private updateTreatsDisplay() {
+  private updateScoreDisplay() {
     // Extra safety check - only update if text object exists and scene is active
-    if (this.treatsText && this.scene.isActive()) {
+    if (this.scoreText && this.scene.isActive()) {
       try {
-        this.treatsText.setText(`🦴 Treats: ${this.treatsCollected}/${this.treatsTotal}`);
+        this.scoreText.setText(`🦴 Score: ${this.score}/${this.targetScore}`);
       } catch (e) {
-        console.warn('Failed to update treats display', e);
+        console.warn('Failed to update score display', e);
       }
     }
   }
