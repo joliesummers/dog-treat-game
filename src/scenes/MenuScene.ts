@@ -81,7 +81,7 @@ export class MenuScene extends Phaser.Scene {
     });
     
     // Keyboard control
-    const startText = this.add.text(width / 2, height / 2 + 150, 'Press SPACE to Start', {
+    const startText = this.add.text(width / 2, height / 2 + 150, 'Press SPACE or Click PLAY to Start', {
       fontSize: '18px',
       color: '#ffffff'
     }).setOrigin(0.5);
@@ -94,9 +94,17 @@ export class MenuScene extends Phaser.Scene {
       repeat: -1
     });
     
-    this.input.keyboard?.once('keydown-SPACE', () => {
+    // Start game function
+    const startGame = () => {
       this.scene.start('BreedSelectScene');
-    });
+    };
+    
+    // Add keyboard handlers (using 'on' not 'once' so it works every time)
+    const spaceKey = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    spaceKey?.on('down', startGame);
+    
+    // Also listen for ANY key as backup
+    this.input.keyboard?.on('keydown', startGame);
     
     // Controls info
     this.add.text(width / 2, height - 50, 'Arrow Keys: Move  |  Up: Jump  |  P: Pause', {
