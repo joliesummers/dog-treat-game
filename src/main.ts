@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { GameConfig } from './config/GameConfig';
 import { PreloadScene } from './scenes/PreloadScene';
+import { BreedSelectScene } from './scenes/BreedSelectScene';
 import { GameScene } from './scenes/GameScene';
 import { UIScene } from './scenes/UIScene';
 import { LevelCompleteScene } from './scenes/LevelCompleteScene';
@@ -9,7 +10,7 @@ import { GameOverScene } from './scenes/GameOverScene';
 // Add scenes to game config
 const config: Phaser.Types.Core.GameConfig = {
   ...GameConfig,
-  scene: [PreloadScene, GameScene, UIScene, LevelCompleteScene, GameOverScene]
+  scene: [PreloadScene, BreedSelectScene, GameScene, UIScene, LevelCompleteScene, GameOverScene]
 };
 
 // Initialize game when DOM is loaded

@@ -44,8 +44,7 @@ export class GameOverScene extends Phaser.Scene {
     this.input.keyboard?.once('keydown-SPACE', () => {
       this.scene.stop('GameOverScene');
       this.scene.stop('UIScene');
-      this.scene.start('GameScene');
-      this.scene.launch('UIScene');
+      this.scene.start('BreedSelectScene');
     });
   }
 }

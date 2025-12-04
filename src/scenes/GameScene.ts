@@ -3,6 +3,7 @@ import { Dog } from '../entities/Dog';
 import { Treat } from '../entities/Treat';
 import { BadItem } from '../entities/BadItem';
 import { UIScene } from './UIScene';
+import type { BreedType } from '../types/DogBreeds';
 
 export class GameScene extends Phaser.Scene {
   private dog?: Dog;
@@ -10,6 +11,7 @@ export class GameScene extends Phaser.Scene {
   private treats: Treat[] = [];
   private badItems: BadItem[] = [];
   private uiScene?: UIScene;
+  private isEating: boolean = false;
   
   constructor() {
     super('GameScene');
@@ -58,11 +60,15 @@ export class GameScene extends Phaser.Scene {
     this.createTreats(width, height);
     this.createBadItems(width, height);
     
+    // Get selected breed from registry
+    const selectedBreed = this.registry.get('selectedBreed') as BreedType || 'pug';
+    
     // Create player dog
     this.dog = new Dog({
       scene: this,
       x: 100,
-      y: height - 200
+      y: height - 200,
+      breed: selectedBreed
     });
     
     // Set up collision between dog and platforms
@@ -99,8 +105,9 @@ export class GameScene extends Phaser.Scene {
     });
     instructions.setDepth(100);
     
-    // Add title with shadow for better visibility
-    const title = this.add.text(width / 2, 30, 'Dog Treat Adventure - Level 1', {
+    // Add title with breed name
+    const breedName = this.dog.getBreed().name;
+    const title = this.add.text(width / 2, 30, `${breedName} - Level 1`, {
       fontSize: '20px',
       color: '#ffffff',
       fontStyle: 'bold',
@@ -171,25 +178,45 @@ export class GameScene extends Phaser.Scene {
   }
   
   private collectTreat(treat: Treat) {
-    // Remove from array
-    const index = this.treats.indexOf(treat);
-    if (index > -1) {
-      this.treats.splice(index, 1);
+    if (this.isEating) return; // Prevent double-collection during eat delay
+    
+    // Get eat speed from dog breed
+    const eatSpeed = this.dog?.getEatSpeed() || 0;
+    
+    if (eatSpeed > 0) {
+      this.isEating = true;
+      // Pause dog briefly while eating
+      const dogSprite = this.dog?.getSprite();
+      if (dogSprite) {
+        const originalVelocity = dogSprite.body?.velocity.x || 0;
+        dogSprite.setVelocityX(originalVelocity * 0.3); // Slow down
+      }
     }
     
-    // Play collection animation
-    treat.collect();
-    
-    // Update UI
-    const collected = this.uiScene?.incrementTreats() || 0;
-    const total = this.uiScene?.getTreatsTotal() || 0;
-    
-    // Check win condition
-    if (collected >= total) {
-      this.time.delayedCall(500, () => {
-        this.scene.launch('LevelCompleteScene');
-      });
-    }
+    // Delay based on breed eat speed
+    this.time.delayedCall(eatSpeed, () => {
+      // Remove from array
+      const index = this.treats.indexOf(treat);
+      if (index > -1) {
+        this.treats.splice(index, 1);
+      }
+      
+      // Play collection animation
+      treat.collect();
+      
+      // Update UI
+      const collected = this.uiScene?.incrementTreats() || 0;
+      const total = this.uiScene?.getTreatsTotal() || 0;
+      
+      this.isEating = false;
+      
+      // Check win condition
+      if (collected >= total) {
+        this.time.delayedCall(500, () => {
+          this.scene.launch('LevelCompleteScene');
+        });
+      }
+    });
   }
   
   private hitBadItem(_badItem: BadItem) {

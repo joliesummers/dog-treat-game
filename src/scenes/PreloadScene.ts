@@ -42,8 +42,7 @@ export class PreloadScene extends Phaser.Scene {
   }
 
   create() {
-    this.scene.start('GameScene');
-    this.scene.launch('UIScene');
+    this.scene.start('BreedSelectScene');
   }
 }
 

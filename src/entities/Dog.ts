@@ -1,21 +1,28 @@
 import Phaser from 'phaser';
+import type { DogBreedStats, BreedType } from '../types/DogBreeds';
+import { DOG_BREEDS } from '../types/DogBreeds';
 
 export interface DogConfig {
   scene: Phaser.Scene;
   x: number;
   y: number;
   texture?: string;
+  breed?: BreedType;
 }
 
 export class Dog {
   public sprite: Phaser.Physics.Arcade.Sprite;
   private scene: Phaser.Scene;
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
+  private breed: DogBreedStats;
   
-  // Movement constants (tuned for better platforming feel)
-  private readonly MOVE_SPEED = 220;
-  private readonly JUMP_VELOCITY = -550;
+  // Base movement constants (modified by breed stats)
+  private readonly BASE_MOVE_SPEED = 220;
+  private readonly BASE_JUMP_VELOCITY = -550;
   private readonly DRAG = 900;
+  
+  private MOVE_SPEED: number;
+  private JUMP_VELOCITY: number;
   
   // State
   private isJumping = false;
@@ -24,18 +31,31 @@ export class Dog {
   constructor(config: DogConfig) {
     this.scene = config.scene;
     
+    // Set breed
+    const breedKey = config.breed || 'pug';
+    this.breed = DOG_BREEDS[breedKey];
+    
+    // Apply breed stats to movement
+    this.MOVE_SPEED = this.BASE_MOVE_SPEED * this.breed.speed;
+    this.JUMP_VELOCITY = this.BASE_JUMP_VELOCITY * this.breed.jumpPower;
+    
     // Create sprite - using placeholder rectangle for now
     if (config.texture) {
       this.sprite = this.scene.physics.add.sprite(config.x, config.y, config.texture);
     } else {
-      // Create placeholder graphics
+      // Create placeholder graphics with breed color
+      const textureKey = `dog-${breedKey}`;
       const graphics = this.scene.add.graphics();
-      graphics.fillStyle(0x8B4513, 1); // Brown color for dog
+      graphics.fillStyle(this.breed.color, 1);
       graphics.fillRect(0, 0, 48, 32);
-      graphics.generateTexture('dog-placeholder', 48, 32);
+      // Add simple face
+      graphics.fillStyle(0x000000, 1);
+      graphics.fillCircle(36, 12, 4); // Eye
+      graphics.fillCircle(36, 20, 4); // Nose
+      graphics.generateTexture(textureKey, 48, 32);
       graphics.destroy();
       
-      this.sprite = this.scene.physics.add.sprite(config.x, config.y, 'dog-placeholder');
+      this.sprite = this.scene.physics.add.sprite(config.x, config.y, textureKey);
     }
     
     // Set up physics
@@ -115,6 +135,14 @@ export class Dog {
   
   isCurrentlyInvincible(): boolean {
     return this.isInvincible;
+  }
+  
+  getBreed(): DogBreedStats {
+    return this.breed;
+  }
+  
+  getEatSpeed(): number {
+    return this.breed.eatSpeed;
   }
 }
 
