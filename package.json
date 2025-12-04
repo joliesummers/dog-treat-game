@@ -11,7 +11,6 @@
     "lint:fix": "eslint src --ext .ts --fix"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.1",
     "@typescript-eslint/eslint-plugin": "^8.48.1",
     "@typescript-eslint/parser": "^8.48.1",
     "eslint": "^9.39.1",

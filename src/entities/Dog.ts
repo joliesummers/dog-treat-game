@@ -27,6 +27,8 @@ export class Dog {
   // State
   private isJumping = false;
   private isInvincible = false;
+  private isDistracted = false;
+  private distractionIndicator?: Phaser.GameObjects.Text;
 
   constructor(config: DogConfig) {
     this.scene = config.scene;
@@ -77,6 +79,21 @@ export class Dog {
     // Check if on ground
     const onGround = body.touching.down;
     
+    // Random distraction check (only if breed has distraction chance)
+    if (!this.isDistracted && this.breed.distractionChance > 0) {
+      // Check once per second (roughly 1/60 each frame)
+      const distractionRoll = Math.random();
+      if (distractionRoll < (this.breed.distractionChance / 60)) {
+        this.getDistracted();
+      }
+    }
+    
+    // If distracted, ignore input
+    if (this.isDistracted) {
+      this.sprite.setVelocityX(0);
+      return;
+    }
+    
     // Horizontal movement
     if (this.cursors.left.isDown) {
       this.sprite.setVelocityX(-this.MOVE_SPEED);
@@ -96,6 +113,39 @@ export class Dog {
     if (onGround && this.isJumping) {
       this.isJumping = false;
     }
+  }
+  
+  private getDistracted() {
+    if (this.isDistracted) return;
+    
+    this.isDistracted = true;
+    
+    // Show thought bubble indicator
+    this.distractionIndicator = this.scene.add.text(
+      this.sprite.x,
+      this.sprite.y - 60,
+      '💭',
+      { fontSize: '32px' }
+    );
+    
+    // Animate the thought bubble
+    this.scene.tweens.add({
+      targets: this.distractionIndicator,
+      y: this.sprite.y - 70,
+      alpha: 0.7,
+      duration: 300,
+      yoyo: true,
+      repeat: 5
+    });
+    
+    // End distraction after 1.5 seconds
+    this.scene.time.delayedCall(1500, () => {
+      this.isDistracted = false;
+      if (this.distractionIndicator) {
+        this.distractionIndicator.destroy();
+        this.distractionIndicator = undefined;
+      }
+    });
   }
   
   getSprite(): Phaser.Physics.Arcade.Sprite {
