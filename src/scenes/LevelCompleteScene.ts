@@ -45,6 +45,7 @@ export class LevelCompleteScene extends Phaser.Scene {
     // Restart function
     const restart = () => {
       this.scene.stop('LevelCompleteScene');
+      this.scene.stop('GameScene');
       this.scene.stop('UIScene');
       this.scene.start('BreedSelectScene');
     };

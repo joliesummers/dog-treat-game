@@ -24,8 +24,12 @@ export class GameScene extends Phaser.Scene {
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
     
-    // Reset game state
+    // Reset game state completely
     this.gameOver = false;
+    this.isEating = false;
+    this.isPaused = false;
+    this.treats = [];
+    this.badItems = [];
     
     // Get UI scene reference
     this.uiScene = this.scene.get('UIScene') as UIScene;

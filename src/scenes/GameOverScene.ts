@@ -45,6 +45,7 @@ export class GameOverScene extends Phaser.Scene {
     // Restart function
     const restart = () => {
       this.scene.stop('GameOverScene');
+      this.scene.stop('GameScene');
       this.scene.stop('UIScene');
       this.scene.start('BreedSelectScene');
     };
