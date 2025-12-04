@@ -209,25 +209,73 @@ export class GameScene extends Phaser.Scene {
   }
   
   private createBadItems(width: number, height: number) {
-    // Place bad items as obstacles between treats
-    const badItemPositions = [
-      // Ground level hazards
-      { x: 180, y: height - 100, type: 'chocolate' as const },
-      { x: 400, y: height - 100, type: 'grapes' as const },
-      { x: width - 200, y: height - 100, type: 'chocolate' as const },
-      
+    // Static bad items on platforms
+    const staticBadItemPositions = [
       // Platform hazards
       { x: 200, y: height - 200, type: 'grapes' as const },
       { x: 500, y: height - 330, type: 'chocolate' as const },
       { x: 400, y: height - 450, type: 'grapes' as const },
       { x: 700, y: height - 230, type: 'chocolate' as const },
-      
-      // Challenging placement
-      { x: 300, y: height - 150, type: 'grapes' as const },
     ];
     
-    badItemPositions.forEach(pos => {
-      this.badItems.push(new BadItem(this, pos.x, pos.y, pos.type));
+    staticBadItemPositions.forEach(pos => {
+      const badItem = new BadItem(this, pos.x, pos.y, pos.type);
+      this.badItems.push(badItem);
+      // Make static items collide with platforms
+      if (this.platforms) {
+        this.physics.add.collider(badItem.getSprite(), this.platforms);
+      }
+    });
+    
+    // Start falling bad items spawner
+    this.startFallingBadItems(width);
+  }
+  
+  private startFallingBadItems(width: number) {
+    // Spawn falling bad items every 3-5 seconds
+    this.time.addEvent({
+      delay: Phaser.Math.Between(3000, 5000),
+      callback: () => {
+        if (this.gameOver) return;
+        
+        // Random x position
+        const x = Phaser.Math.Between(100, width - 100);
+        const type = Math.random() > 0.5 ? 'chocolate' : 'grapes';
+        
+        // Spawn at top of screen
+        const fallingItem = new BadItem(this, x, -30, type);
+        this.badItems.push(fallingItem);
+        
+        // Enable gravity for falling
+        const body = fallingItem.getSprite().body as Phaser.Physics.Arcade.Body;
+        body.setAllowGravity(true);
+        
+        // Set up collision with platforms (will bounce/stop)
+        if (this.platforms) {
+          this.physics.add.collider(fallingItem.getSprite(), this.platforms);
+        }
+        
+        // Set up collision with player
+        this.physics.add.overlap(
+          this.dog!.getSprite(),
+          fallingItem.getSprite(),
+          () => this.hitBadItem(fallingItem),
+          undefined,
+          this
+        );
+        
+        // Destroy if falls off screen
+        this.time.delayedCall(10000, () => {
+          if (fallingItem.getSprite().active) {
+            const index = this.badItems.indexOf(fallingItem);
+            if (index > -1) {
+              this.badItems.splice(index, 1);
+            }
+            fallingItem.getSprite().destroy();
+          }
+        });
+      },
+      loop: true
     });
   }
   

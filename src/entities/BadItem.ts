@@ -34,6 +34,10 @@ export class BadItem {
     this.sprite = scene.physics.add.sprite(x, y, textureKey);
     this.sprite.setCollideWorldBounds(true);
     
+    // Start with gravity disabled (will be enabled for falling items)
+    const body = this.sprite.body as Phaser.Physics.Arcade.Body;
+    body.setAllowGravity(false);
+    
     // Add warning pulse animation
     scene.tweens.add({
       targets: this.sprite,

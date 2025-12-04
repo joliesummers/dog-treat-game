@@ -88,24 +88,21 @@ export class Dog {
       }
     }
     
-    // If distracted, ignore input
-    if (this.isDistracted) {
-      this.sprite.setVelocityX(0);
-      return;
-    }
+    // Horizontal movement (slower if distracted)
+    const moveMultiplier = this.isDistracted ? 0.5 : 1.0;
     
-    // Horizontal movement
     if (this.cursors.left.isDown) {
-      this.sprite.setVelocityX(-this.MOVE_SPEED);
+      this.sprite.setVelocityX(-this.MOVE_SPEED * moveMultiplier);
       this.sprite.setFlipX(true);
     } else if (this.cursors.right.isDown) {
-      this.sprite.setVelocityX(this.MOVE_SPEED);
+      this.sprite.setVelocityX(this.MOVE_SPEED * moveMultiplier);
       this.sprite.setFlipX(false);
     }
     
-    // Jump
+    // Jump (weaker if distracted)
     if (Phaser.Input.Keyboard.JustDown(this.cursors.up) && onGround) {
-      this.sprite.setVelocityY(this.JUMP_VELOCITY);
+      const jumpMultiplier = this.isDistracted ? 0.7 : 1.0;
+      this.sprite.setVelocityY(this.JUMP_VELOCITY * jumpMultiplier);
       this.isJumping = true;
     }
     
