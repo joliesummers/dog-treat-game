@@ -32,20 +32,47 @@ export class BreedSelectScene extends Phaser.Scene {
     this.createBreedOption('pug', width / 2, pugY);
     
     // Instructions
-    this.add.text(width / 2, height - 60, 'Press SPACE to Start', {
+    const instructionText = this.add.text(width / 2, height - 60, 'Press SPACE or Click to Start', {
       fontSize: '20px',
       color: '#ffffff',
       fontStyle: 'bold'
     }).setOrigin(0.5);
     
-    // Input
-    this.input.keyboard?.on('keydown-SPACE', () => {
+    // Make text blink
+    this.tweens.add({
+      targets: instructionText,
+      alpha: 0.5,
+      duration: 800,
+      yoyo: true,
+      repeat: -1
+    });
+    
+    // Make the whole scene clickable
+    const clickZone = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0)
+      .setOrigin(0.5)
+      .setInteractive();
+    
+    // Start game function
+    const startGame = () => {
       // Store selected breed in registry
       this.registry.set('selectedBreed', this.selectedBreed);
+      // Remove all event listeners to prevent duplicates
+      this.input.keyboard?.removeAllListeners();
+      clickZone.removeAllListeners();
       this.scene.stop('BreedSelectScene');
       this.scene.start('GameScene');
       this.scene.launch('UIScene');
-    });
+    };
+    
+    // Add keyboard input (remove any existing listeners first)
+    this.input.keyboard?.removeAllListeners('keydown-SPACE');
+    this.input.keyboard?.once('keydown-SPACE', startGame);
+    
+    // Also add click handler
+    clickZone.once('pointerdown', startGame);
+    
+    // Any key as backup
+    this.input.keyboard?.once('keydown', startGame);
   }
   
   private createBreedOption(breed: BreedType, x: number, y: number) {
