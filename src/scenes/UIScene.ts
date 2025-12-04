@@ -76,15 +76,25 @@ export class UIScene extends Phaser.Scene {
   }
   
   private updateTreatsDisplay() {
-    if (this.treatsText) {
-      this.treatsText.setText(`🦴 Treats: ${this.treatsCollected}/${this.treatsTotal}`);
+    // Extra safety check - only update if text object exists and scene is active
+    if (this.treatsText && this.scene.isActive()) {
+      try {
+        this.treatsText.setText(`🦴 Treats: ${this.treatsCollected}/${this.treatsTotal}`);
+      } catch (e) {
+        console.warn('Failed to update treats display', e);
+      }
     }
   }
   
   private updateHealthDisplay() {
-    if (this.healthText) {
-      const hearts = '❤️'.repeat(this.health) + '🖤'.repeat(this.maxHealth - this.health);
-      this.healthText.setText(`Health: ${hearts}`);
+    // Extra safety check - only update if text object exists and scene is active
+    if (this.healthText && this.scene.isActive()) {
+      try {
+        const hearts = '❤️'.repeat(this.health) + '🖤'.repeat(this.maxHealth - this.health);
+        this.healthText.setText(`Health: ${hearts}`);
+      } catch (e) {
+        console.warn('Failed to update health display', e);
+      }
     }
   }
 }

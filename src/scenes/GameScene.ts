@@ -126,10 +126,6 @@ export class GameScene extends Phaser.Scene {
     }).setOrigin(0.5);
     title.setDepth(100);
     
-    // Update UI with total treats
-    this.uiScene?.setTreatsTotal(this.treats.length);
-    this.uiScene?.reset();
-    
     // Set up pause functionality
     this.input.keyboard?.on('keydown-P', () => {
       this.togglePause();
@@ -137,6 +133,12 @@ export class GameScene extends Phaser.Scene {
     
     // Camera follow player
     this.cameras.main.startFollow(this.dog!.getSprite(), false, 0.1, 0.1);
+    
+    // Update UI with total treats (delayed to ensure UIScene is ready)
+    this.time.delayedCall(100, () => {
+      this.uiScene?.setTreatsTotal(this.treats.length);
+      this.uiScene?.reset();
+    });
   }
   
   private togglePause() {
