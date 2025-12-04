@@ -137,21 +137,30 @@
 
 ---
 
-### 🚧 Milestone 7: "More Breeds" - Golden Retriever (PENDING)
+### ✅ Milestone 7: "More Breeds" - Golden Retriever (COMPLETED)
 
 **Value**: Replayability with different playstyles
 
-**Planned Features:**
-- Add Golden Retriever sprite (golden color placeholder)
-- Implement distraction mechanic (random chance to pause briefly)
-- Add visual indicator for distraction (thought bubble or animation pause)
-- Update breed selection screen with 2 choices
-- Balance traits so both breeds are viable
-- **Playable test**: Both breeds offer distinct strategies
+**Implemented Features:**
+- ✅ Add Golden Retriever sprite (golden color #F4C542)
+- ✅ Implement distraction mechanic (15% chance/second, 1.5s freeze)
+- ✅ Add visual indicator (💭 thought bubble with bounce animation)
+- ✅ Update breed selection screen (side-by-side with stats)
+- ✅ Balance traits for distinct playstyles
+- ✅ **Playable test**: Both breeds offer distinct strategies
 
-**Testing**: Before starting, add Phase 2 tests from [TESTING_ROADMAP.md](./TESTING_ROADMAP.md)
+**Breed Comparison:**
 
-**Status**: Not started - Ready for implementation after user testing
+| Trait | Pug | Golden Retriever |
+|-------|-----|------------------|
+| Speed | 100% | 110% (Faster!) |
+| Jump | 95% | 105% (Higher!) |
+| Eating | Instant | 200ms delay |
+| Distraction | Never | 15% chance/sec |
+
+**Strategy**: Pug = consistent and reliable. Golden = faster but risky!
+
+**Status**: Complete with interactive breed selection UI showing all stats
 
 ---
 

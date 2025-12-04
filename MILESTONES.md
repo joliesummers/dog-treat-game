@@ -114,16 +114,18 @@
 
 **Status**: Main menu with animations, pause overlay, particle effects for collecting/damage, camera follows player smoothly!
 
-### Milestone 7: "More Breeds" - Golden Retriever (Week 5)
+### ✅ Milestone 7: "More Breeds" - Golden Retriever (COMPLETED)
 
 **Value**: Replayability with different playstyles
 
-- [ ] Add Golden Retriever sprite
-- [ ] Implement distraction mechanic (random chance to pause briefly)
-- [ ] Add visual indicator for distraction (thought bubble, animation)
-- [ ] Update breed selection screen with 2 choices
-- [ ] Balance traits so both breeds are viable
-- [ ] **Playable test**: Both breeds offer distinct strategies
+- ✅ Add Golden Retriever sprite (golden color placeholder)
+- ✅ Implement distraction mechanic (15% chance per second, 1.5s pause)
+- ✅ Add visual indicator for distraction (💭 thought bubble with animation)
+- ✅ Update breed selection screen with 2 choices (side-by-side)
+- ✅ Balance traits so both breeds are viable
+- ✅ **Playable test**: Both breeds offer distinct strategies
+
+**Status**: Golden Retriever added with faster speed (110%), better jump (105%), but gets distracted randomly. Breed selection shows both dogs with click-to-select UI!
 
 ### Milestone 8: "Level 2 & 3" - Content Expansion (Week 5-6)
 
