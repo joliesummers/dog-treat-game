@@ -99,18 +99,20 @@
 
 **Status**: Breed system implemented! Pug has instant eating, breed selection screen shows stats, different breeds have different movement/jump multipliers!
 
-### Milestone 6: "Polish & Juice" - Game Feel (Week 4)
+### ✅ Milestone 6: "Polish & Juice" - Game Feel (COMPLETED)
 
 **Value**: Game feels satisfying to play
 
-- [ ] Add sound effects (jump, eat, damage, win/lose)
-- [ ] Add particle effects (treat sparkle, damage flash)
-- [ ] Implement camera follow/smooth tracking
-- [ ] Add start menu with "Play" button
-- [ ] Add pause functionality (P key)
-- [ ] Improve UI styling (retro pixel font)
-- [ ] Add background music (looping 8-bit track)
-- [ ] **Playable test**: Game feels responsive and rewarding
+- ⏭️ Add sound effects (jump, eat, damage, win/lose) - Deferred
+- ✅ Add particle effects (treat sparkle, damage flash)
+- ✅ Implement camera follow/smooth tracking
+- ✅ Add start menu with "Play" button
+- ✅ Add pause functionality (P key)
+- ✅ Improve UI styling (retro pixel font)
+- ⏭️ Add background music (looping 8-bit track) - Deferred
+- ✅ **Playable test**: Game feels responsive and rewarding
+
+**Status**: Main menu with animations, pause overlay, particle effects for collecting/damage, camera follows player smoothly!
 
 ### Milestone 7: "More Breeds" - Golden Retriever (Week 5)
 

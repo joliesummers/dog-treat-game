@@ -1,15 +1,36 @@
 # 🐕 Dog Treat Side Scroller
 
-A fun 8-bit style side-scrolling game where different dog breeds collect treats while avoiding harmful foods!
+A fun 8-bit style side-scrolling platformer game where different dog breeds collect treats while avoiding harmful foods!
 
-## 🎮 Game Concept
+## 🎮 Play Now
 
-Control various dog breeds as they run through levels collecting treats. Each breed has unique traits:
-- **Pugs**: Fast eaters, can gobble up treats quickly
-- **Golden Retrievers**: Easily distracted (coming soon!)
-- More breeds to come!
+**[Play the game here!](https://joliesummers.github.io/dog-treat-game/)**
 
-Collect treats to pass levels, but watch out for dangerous foods like chocolate and grapes that will damage your health!
+## 🎯 Game Features
+
+- **Platformer Mechanics**: Run, jump, and navigate through challenging levels
+- **Dog Breeds**: Each breed has unique abilities (Currently: Pug with instant eating!)
+- **Health System**: Avoid chocolate and grapes or lose health
+- **Collectibles**: Gather all treats to complete the level
+- **Smooth Controls**: Arrow keys for movement, Up to jump
+- **Pause Feature**: Press P to pause/resume
+- **Particle Effects**: Visual feedback for collecting and taking damage
+
+## 🕹️ Controls
+
+- **Arrow Keys**: Move left/right
+- **Up Arrow**: Jump
+- **P**: Pause/Resume
+- **Space**: Select menu options
+
+## 🐶 Dog Breeds
+
+### Pug
+- Speed: 100%
+- Jump: 95%
+- Eating: Instant! (Perfect for fast-paced gameplay)
+
+More breeds coming soon!
 
 ## 🚀 Getting Started
 
@@ -59,18 +80,18 @@ dog-treat-game/
 └── package.json
 ```
 
-## 🎯 Milestones
+## 🎯 Development Milestones
 
 - [x] Milestone 0: Dev Environment Setup
-- [ ] Milestone 1: Core Movement
-- [ ] Milestone 2: Treat Collector
-- [ ] Milestone 3: Health System
-- [ ] Milestone 4: Level Design
-- [ ] Milestone 5: Dog Breed Traits
-- [ ] Milestone 6: Polish & Juice
-- [ ] Milestone 7: More Breeds
-- [ ] Milestone 8: Content Expansion
-- [ ] Milestone 9: Production Ready
+- [x] Milestone 1: Core Movement - Player controls and physics
+- [x] Milestone 2: Treat Collector - Collection mechanics and win condition
+- [x] Milestone 3: Health System - Damage, invincibility, game over
+- [x] Milestone 4: Level Design - Balanced platforming level
+- [x] Milestone 5: Dog Breed Traits - Breed system with unique stats
+- [x] Milestone 6: Polish & Juice - Menu, particles, camera, pause
+- [ ] Milestone 7: More Breeds - Golden Retriever (Coming soon!)
+- [ ] Milestone 8: Content Expansion - Additional levels (Coming soon!)
+- [x] Milestone 9: Production Ready - Deployed to GitHub Pages
 
 ## 🎨 Assets
 
