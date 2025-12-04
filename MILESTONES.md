@@ -86,16 +86,18 @@
 
 **Status**: Level 1 complete with 4 platforms, varied heights, strategic item placement, fall detection, and tuned physics!
 
-### Milestone 5: "Pug Power" - Dog Breed Traits (Week 3-4)
+### ✅ Milestone 5: "Pug Power" - Dog Breed Traits (COMPLETED)
 
 **Value**: Unique character with special abilities
 
-- [ ] Create dog stats system (speed, eat_speed, distraction_chance)
-- [ ] Implement Pug traits: fast eating, high treat capacity
-- [ ] Add eating animation/delay based on breed
-- [ ] Show breed name and stats on start screen
-- [ ] Add breed selection screen (even if only 1 breed initially)
-- [ ] **Playable test**: Pug feels different from baseline (faster eating)
+- ✅ Create dog stats system (speed, eat_speed, distraction_chance)
+- ✅ Implement Pug traits: fast eating, instant collection
+- ✅ Add eating animation/delay based on breed
+- ✅ Show breed name and stats on start screen
+- ✅ Add breed selection screen (even if only 1 breed initially)
+- ✅ **Playable test**: Pug feels different from baseline (faster eating)
+
+**Status**: Breed system implemented! Pug has instant eating, breed selection screen shows stats, different breeds have different movement/jump multipliers!
 
 ### Milestone 6: "Polish & Juice" - Game Feel (Week 4)
 

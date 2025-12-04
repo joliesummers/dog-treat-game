@@ -42,7 +42,7 @@ export class PreloadScene extends Phaser.Scene {
   }
 
   create() {
-    this.scene.start('BreedSelectScene');
+    this.scene.start('MenuScene');
   }
 }
 

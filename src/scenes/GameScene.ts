@@ -12,6 +12,8 @@ export class GameScene extends Phaser.Scene {
   private badItems: BadItem[] = [];
   private uiScene?: UIScene;
   private isEating: boolean = false;
+  private isPaused: boolean = false;
+  private pauseText?: Phaser.GameObjects.Text;
   
   constructor() {
     super('GameScene');
@@ -119,6 +121,48 @@ export class GameScene extends Phaser.Scene {
     // Update UI with total treats
     this.uiScene?.setTreatsTotal(this.treats.length);
     this.uiScene?.reset();
+    
+    // Set up pause functionality
+    this.input.keyboard?.on('keydown-P', () => {
+      this.togglePause();
+    });
+    
+    // Camera follow player
+    this.cameras.main.startFollow(this.dog!.getSprite(), false, 0.1, 0.1);
+  }
+  
+  private togglePause() {
+    this.isPaused = !this.isPaused;
+    
+    if (this.isPaused) {
+      this.physics.pause();
+      
+      // Show pause overlay
+      const width = this.cameras.main.width;
+      const height = this.cameras.main.height;
+      
+      if (!this.pauseText) {
+        const pauseOverlay = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.7);
+        pauseOverlay.setScrollFactor(0);
+        pauseOverlay.setDepth(1000);
+        
+        this.pauseText = this.add.text(width / 2, height / 2, 'PAUSED\n\nPress P to Resume', {
+          fontSize: '40px',
+          color: '#ffffff',
+          fontStyle: 'bold',
+          align: 'center'
+        }).setOrigin(0.5);
+        this.pauseText.setScrollFactor(0);
+        this.pauseText.setDepth(1001);
+      } else {
+        this.pauseText.setVisible(true);
+      }
+    } else {
+      this.physics.resume();
+      if (this.pauseText) {
+        this.pauseText.setVisible(false);
+      }
+    }
   }
   
   private createTreats(width: number, height: number) {
@@ -235,6 +279,9 @@ export class GameScene extends Phaser.Scene {
   }
 
   update() {
+    // Don't update if paused
+    if (this.isPaused) return;
+    
     // Update player
     this.dog?.update();
     

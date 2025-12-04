@@ -42,6 +42,18 @@ export class Treat {
   }
   
   collect() {
+    // Create particle burst effect
+    const particles = this.scene.add.particles(this.sprite.x, this.sprite.y, 'treat-placeholder', {
+      speed: { min: 50, max: 150 },
+      scale: { start: 0.8, end: 0 },
+      alpha: { start: 1, end: 0 },
+      lifespan: 400,
+      quantity: 8,
+      blendMode: 'ADD'
+    });
+    
+    particles.explode();
+    
     // Play collection animation
     this.scene.tweens.add({
       targets: this.sprite,
@@ -50,6 +62,7 @@ export class Treat {
       duration: 200,
       onComplete: () => {
         this.sprite.destroy();
+        particles.destroy();
       }
     });
   }

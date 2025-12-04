@@ -116,6 +116,23 @@ export class Dog {
     // Start invincibility
     this.isInvincible = true;
     
+    // Create damage particle effect
+    const particles = this.scene.add.particles(this.sprite.x, this.sprite.y, 'dog-placeholder', {
+      speed: { min: 20, max: 80 },
+      scale: { start: 0.5, end: 0 },
+      alpha: { start: 0.8, end: 0 },
+      tint: 0xFF0000,
+      lifespan: 600,
+      quantity: 5,
+      blendMode: 'ADD'
+    });
+    
+    particles.explode();
+    
+    this.scene.time.delayedCall(600, () => {
+      particles.destroy();
+    });
+    
     // Visual feedback - flashing
     this.scene.tweens.add({
       targets: this.sprite,
