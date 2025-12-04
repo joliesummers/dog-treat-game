@@ -9,8 +9,10 @@ export class GameOverScene extends Phaser.Scene {
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
     
-    // Semi-transparent background
-    this.add.rectangle(0, 0, width, height, 0x000000, 0.8).setOrigin(0);
+    // Semi-transparent background (make it interactive for clicks)
+    const background = this.add.rectangle(0, 0, width, height, 0x000000, 0.8)
+      .setOrigin(0)
+      .setInteractive();
     
     // Game Over text
     this.add.text(width / 2, height / 2 - 80, 'Game Over', {
@@ -26,7 +28,7 @@ export class GameOverScene extends Phaser.Scene {
     }).setOrigin(0.5);
     
     // Instructions
-    const restartText = this.add.text(width / 2, height / 2 + 60, 'Press SPACE to try again', {
+    const restartText = this.add.text(width / 2, height / 2 + 60, 'Press SPACE or Click to try again', {
       fontSize: '18px',
       color: '#cccccc'
     }).setOrigin(0.5);
@@ -40,12 +42,21 @@ export class GameOverScene extends Phaser.Scene {
       repeat: -1
     });
     
-    // Add input handler
-    this.input.keyboard?.once('keydown-SPACE', () => {
+    // Restart function
+    const restart = () => {
       this.scene.stop('GameOverScene');
       this.scene.stop('UIScene');
       this.scene.start('BreedSelectScene');
-    });
+    };
+    
+    // Add keyboard input handler
+    this.input.keyboard?.once('keydown-SPACE', restart);
+    
+    // Also add click/touch handler as backup
+    background.once('pointerdown', restart);
+    
+    // Alternative: listen for ANY key press
+    this.input.keyboard?.once('keydown', restart);
   }
 }
 
