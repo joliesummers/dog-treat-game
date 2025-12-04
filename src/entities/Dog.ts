@@ -47,53 +47,124 @@ export class Dog {
     if (config.texture) {
       this.sprite = this.scene.physics.add.sprite(config.x, config.y, config.texture);
     } else {
-      // Create cute pixel-style dog sprite with breed color
+      // Create breed-specific dog sprite
       const textureKey = `dog-${breedKey}`;
-      if (!this.scene.textures.exists(textureKey)) {
-        const graphics = this.scene.add.graphics();
-        
-        // Body (rounded rectangle)
-        graphics.fillStyle(this.breed.color, 1);
-        graphics.fillRoundedRect(8, 12, 32, 20, 6);
-        
-        // Head (circle)
-        graphics.fillCircle(40, 16, 12);
-        
-        // Ears (floppy for Pug, perky for Golden)
-        if (breedKey === 'pug') {
-          // Floppy ears
-          graphics.fillEllipse(38, 8, 6, 10);
-          graphics.fillEllipse(48, 8, 6, 10);
-        } else {
-          // Pointed ears
-          graphics.fillTriangle(35, 6, 38, 2, 41, 6);
-          graphics.fillTriangle(45, 6, 48, 2, 51, 6);
-        }
-        
-        // Tail (curly for Pug, fluffy for Golden)
-        graphics.fillCircle(6, 16, 6);
-        
-        // Legs (4 small rectangles)
-        graphics.fillRect(12, 28, 6, 8);
-        graphics.fillRect(22, 28, 6, 8);
-        graphics.fillRect(28, 28, 6, 8);
-        graphics.fillRect(34, 28, 6, 8);
-        
-        // Face details
-        graphics.fillStyle(0x000000, 1);
-        // Eyes
-        graphics.fillCircle(38, 14, 2);
-        graphics.fillCircle(46, 14, 2);
-        // Nose
-        graphics.fillCircle(42, 20, 3);
-        // Mouth smile
-        graphics.lineStyle(2, 0x000000, 1);
-        graphics.arc(42, 20, 4, 0, Math.PI, false);
-        graphics.strokePath();
-        
-        graphics.generateTexture(textureKey, 56, 36);
-        graphics.destroy();
+      
+      // Remove old texture if it exists (force regeneration with new design)
+      if (this.scene.textures.exists(textureKey)) {
+        this.scene.textures.remove(textureKey);
       }
+      
+      const graphics = this.scene.add.graphics();
+      
+      if (breedKey === 'pug') {
+          // PUG - Stocky, flat face, curly tail, compact
+          graphics.fillStyle(this.breed.color, 1);
+          
+          // Body (shorter, stockier)
+          graphics.fillRoundedRect(10, 14, 28, 18, 8);
+          
+          // Head (round, large relative to body)
+          graphics.fillCircle(42, 18, 14);
+          
+          // Flat face characteristic - add a lighter muzzle area
+          graphics.fillStyle(0xE6D4B5, 1); // Lighter tan for muzzle
+          graphics.fillCircle(48, 20, 8);
+          
+          // Small floppy ears (close to head)
+          graphics.fillStyle(this.breed.color, 1);
+          graphics.fillEllipse(36, 12, 8, 10);
+          graphics.fillEllipse(48, 12, 8, 10);
+          
+          // Curly tail (signature pug curl!)
+          graphics.fillCircle(8, 18, 7);
+          graphics.fillCircle(6, 14, 5);
+          
+          // Short legs
+          graphics.fillRect(14, 28, 7, 8);
+          graphics.fillRect(24, 28, 7, 8);
+          graphics.fillRect(30, 28, 7, 8);
+          
+          // Face details - BIG expressive eyes
+          graphics.fillStyle(0x000000, 1);
+          graphics.fillCircle(40, 16, 3); // Bigger eyes
+          graphics.fillCircle(50, 16, 3);
+          
+          // White shine in eyes (pug expression)
+          graphics.fillStyle(0xFFFFFF, 1);
+          graphics.fillCircle(41, 15, 1);
+          graphics.fillCircle(51, 15, 1);
+          
+          // Black nose
+          graphics.fillStyle(0x000000, 1);
+          graphics.fillCircle(48, 22, 3);
+          
+          // Mouth (happy pug smile)
+          graphics.lineStyle(2, 0x000000, 1);
+          graphics.arc(48, 23, 5, 0, Math.PI, false);
+          graphics.strokePath();
+          
+          // Wrinkles on forehead (pug characteristic)
+          graphics.lineStyle(1, 0x654321, 0.5);
+          graphics.lineBetween(38, 10, 40, 12);
+          graphics.lineBetween(46, 10, 48, 12);
+          
+      } else {
+        // GOLDEN RETRIEVER - Athletic, longer snout, fluffy tail
+        graphics.fillStyle(this.breed.color, 1); // Golden color
+          
+          // Body (longer, athletic)
+          graphics.fillRoundedRect(8, 14, 36, 18, 6);
+          
+          // Head (oval, elegant)
+          graphics.fillEllipse(46, 18, 14, 12);
+          
+          // Longer snout (golden characteristic)
+          graphics.fillStyle(0xE5C392, 1); // Lighter golden for snout
+          graphics.fillEllipse(52, 20, 10, 8);
+          
+          // Pointed upright ears
+          graphics.fillStyle(this.breed.color, 1);
+          graphics.fillTriangle(38, 10, 42, 4, 46, 10);
+          graphics.fillTriangle(46, 10, 50, 4, 54, 10);
+          
+          // Fluffy tail (signature golden tail!)
+          graphics.fillEllipse(6, 18, 12, 10);
+          graphics.fillEllipse(2, 16, 8, 8);
+          
+          // Longer legs (athletic build)
+          graphics.fillRect(12, 28, 6, 10);
+          graphics.fillRect(20, 28, 6, 10);
+          graphics.fillRect(30, 28, 6, 10);
+          graphics.fillRect(38, 28, 6, 10);
+          
+          // Face details - Friendly golden eyes
+          graphics.fillStyle(0x000000, 1);
+          graphics.fillCircle(44, 16, 2);
+          graphics.fillCircle(52, 16, 2);
+          
+          // White shine
+          graphics.fillStyle(0xFFFFFF, 1);
+          graphics.fillCircle(44, 15, 1);
+          graphics.fillCircle(52, 15, 1);
+          
+          // Black nose
+          graphics.fillStyle(0x000000, 1);
+          graphics.fillCircle(54, 21, 3);
+          
+          // Happy smile
+          graphics.lineStyle(2, 0x000000, 1);
+          graphics.arc(54, 22, 4, 0, Math.PI, false);
+          graphics.strokePath();
+          
+          // Fluffy chest fur
+          graphics.fillStyle(0xFFE4B5, 0.6); // Light fluffy color
+          graphics.fillCircle(20, 24, 6);
+          graphics.fillCircle(28, 24, 6);
+      }
+      
+      graphics.generateTexture(textureKey, 60, 40);
+      graphics.destroy();
       
       this.sprite = this.scene.physics.add.sprite(config.x, config.y, textureKey);
     }

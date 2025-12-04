@@ -25,6 +25,7 @@ export class GameScene extends Phaser.Scene {
   create() {
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
+    const levelWidth = width * 5; // 5x wider level for scrolling!
     
     // Reset game state completely
     this.gameOver = false;
@@ -37,13 +38,14 @@ export class GameScene extends Phaser.Scene {
     // Get UI scene reference
     this.uiScene = this.scene.get('UIScene') as UIScene;
     
-    // Set world bounds
-    this.physics.world.setBounds(0, 0, width, height);
+    // Set world bounds to extended level size
+    this.physics.world.setBounds(0, 0, levelWidth, height);
     
-    // Add sky gradient background
+    // Add sky gradient background (extended for full level)
     const sky = this.add.graphics();
     sky.fillGradientStyle(0x87CEEB, 0x87CEEB, 0xE0F6FF, 0xE0F6FF, 1);
-    sky.fillRect(0, 0, width, height);
+    sky.fillRect(0, 0, levelWidth, height);
+    sky.setScrollFactor(0.5); // Parallax effect for sky
     
     // Create platform textures if they don't exist
     this.createPlatformTextures();
@@ -51,8 +53,8 @@ export class GameScene extends Phaser.Scene {
     // Create ground platform
     this.platforms = this.physics.add.staticGroup();
     
-    // Main ground (grass with texture)
-    const ground = this.add.rectangle(width / 2, height - 32, width, 64);
+    // Main ground (grass with texture) - extended for full level
+    const ground = this.add.rectangle(levelWidth / 2, height - 32, levelWidth, 64);
     ground.setFillStyle(0x228B22); // Grass green
     ground.setStrokeStyle(2, 0x1A6B1A); // Darker green outline
     this.platforms.add(ground);
@@ -60,42 +62,61 @@ export class GameScene extends Phaser.Scene {
     // Add grass texture details on top
     const grassGraphics = this.add.graphics();
     grassGraphics.fillStyle(0x32CD32, 0.6); // Lime green for grass blades
-    for (let i = 0; i < width; i += 8) {
+    for (let i = 0; i < levelWidth; i += 8) {
       const variation = Phaser.Math.Between(-4, 4);
       grassGraphics.fillRect(i, height - 64 + variation, 4, 8);
     }
     
     // Add dirt layer below grass with texture
-    const dirt = this.add.rectangle(width / 2, height - 8, width, 16);
+    const dirt = this.add.rectangle(levelWidth / 2, height - 8, levelWidth, 16);
     dirt.setFillStyle(0x8B4513); // Saddle brown
     dirt.setStrokeStyle(1, 0x654321);
     
-    // Add some floating platforms with wood texture
-    const platform1 = this.add.rectangle(200, height - 150, 200, 32);
-    platform1.setFillStyle(0xD2691E); // Chocolate (wood color)
-    platform1.setStrokeStyle(3, 0x8B4513); // Darker wood outline
-    this.platforms.add(platform1);
+    // Add MANY floating platforms across the extended level
+    const platformData = [
+      // Section 1 (0-800)
+      { x: 200, y: height - 150, w: 200, h: 32, color: 0xD2691E },
+      { x: 500, y: height - 280, w: 200, h: 32, color: 0xCD853F },
+      { x: 700, y: height - 180, w: 120, h: 32, color: 0xD2691E },
+      { x: 350, y: height - 400, w: 150, h: 32, color: 0xCD853F },
+      
+      // Section 2 (800-1600)
+      { x: 900, y: height - 200, w: 180, h: 32, color: 0xD2691E },
+      { x: 1100, y: height - 350, w: 200, h: 32, color: 0xCD853F },
+      { x: 1350, y: height - 250, w: 150, h: 32, color: 0xD2691E },
+      { x: 1550, y: height - 180, w: 140, h: 32, color: 0xCD853F },
+      
+      // Section 3 (1600-2400)
+      { x: 1750, y: height - 320, w: 160, h: 32, color: 0xD2691E },
+      { x: 1950, y: height - 420, w: 180, h: 32, color: 0xCD853F },
+      { x: 2200, y: height - 220, w: 200, h: 32, color: 0xD2691E },
+      { x: 2450, y: height - 150, w: 120, h: 32, color: 0xCD853F },
+      
+      // Section 4 (2400-3200)
+      { x: 2600, y: height - 280, w: 180, h: 32, color: 0xD2691E },
+      { x: 2850, y: height - 380, w: 160, h: 32, color: 0xCD853F },
+      { x: 3050, y: height - 200, w: 200, h: 32, color: 0xD2691E },
+      { x: 3300, y: height - 320, w: 150, h: 32, color: 0xCD853F },
+      
+      // Section 5 (3200-4000) - Final stretch!
+      { x: 3500, y: height - 250, w: 180, h: 32, color: 0xD2691E },
+      { x: 3750, y: height - 180, w: 200, h: 32, color: 0xCD853F },
+      { x: 3950, y: height - 300, w: 160, h: 32, color: 0xD2691E },
+    ];
     
-    const platform2 = this.add.rectangle(500, height - 280, 200, 32);
-    platform2.setFillStyle(0xCD853F); // Peru (lighter wood)
-    platform2.setStrokeStyle(3, 0xA0522D);
-    this.platforms.add(platform2);
+    platformData.forEach(p => {
+      const platform = this.add.rectangle(p.x, p.y, p.w, p.h);
+      platform.setFillStyle(p.color);
+      platform.setStrokeStyle(3, p.color === 0xD2691E ? 0x8B4513 : 0xA0522D);
+      if (this.platforms) {
+        this.platforms.add(platform);
+      }
+    });
     
-    const platform3 = this.add.rectangle(700, height - 180, 120, 32);
-    platform3.setFillStyle(0xD2691E);
-    platform3.setStrokeStyle(3, 0x8B4513);
-    this.platforms.add(platform3);
-    
-    // Add a higher platform for extra challenge
-    const platform4 = this.add.rectangle(350, height - 400, 150, 32);
-    platform4.setFillStyle(0xCD853F);
-    platform4.setStrokeStyle(3, 0xA0522D);
-    this.platforms.add(platform4);
-    
-    // Create treats, bad items, and squirrels
-    this.createTreats(width, height);
-    this.createBadItems(width, height);
-    this.createSquirrels(width, height);
+    // Create treats, bad items, and squirrels across extended level
+    this.createTreats(levelWidth, height);
+    this.createBadItems(levelWidth, height);
+    this.createSquirrels(levelWidth, height);
     
     // Calculate and set target score IMMEDIATELY (before any collisions can happen)
     const totalScore = this.treats.reduce((sum, treat) => sum + treat.getPointValue(), 0);
@@ -165,7 +186,8 @@ export class GameScene extends Phaser.Scene {
       this.togglePause();
     });
     
-    // Camera follow player
+    // Camera follow player with bounds for extended level
+    this.cameras.main.setBounds(0, 0, levelWidth, height);
     this.cameras.main.startFollow(this.dog!.getSprite(), false, 0.1, 0.1);
   }
   
@@ -203,36 +225,63 @@ export class GameScene extends Phaser.Scene {
     }
   }
   
-  private createTreats(width: number, height: number) {
-    // Balanced gameplay - 50% fewer treats (~15 treats, ~25 points)
+  private createTreats(levelWidth: number, height: number) {
+    // Extended level with MANY more treats! (~60 treats for longer gameplay)
     // Mix of sizes: small (1pt), medium (2pt), large (3pt)
     const treatPositions = [
-      // Ground level treats - easy starter points (4 treats)
-      { x: 150, y: height - 100, size: 1 },
-      { x: 290, y: height - 100, size: 1 },
-      { x: 520, y: height - 100, size: 2 },
-      { x: width - 80, y: height - 100, size: 1 },
-      
-      // First platform - varied sizes (3 treats)
-      { x: 170, y: height - 200, size: 2 },
-      { x: 210, y: height - 200, size: 1 },
-      { x: 250, y: height - 200, size: 3 },
-      
-      // Second platform (high up!) - big rewards (3 treats)
-      { x: 460, y: height - 330, size: 3 },
+      // Section 1: Starting area (0-800)
+      { x: 100, y: height - 100, size: 1 },
+      { x: 200, y: height - 200, size: 2 },
+      { x: 280, y: height - 200, size: 1 },
+      { x: 380, y: height - 450, size: 3 }, // High platform reward!
       { x: 500, y: height - 330, size: 2 },
-      { x: 540, y: height - 330, size: 2 },
+      { x: 580, y: height - 330, size: 2 },
+      { x: 650, y: height - 100, size: 1 },
+      { x: 700, y: height - 230, size: 2 },
+      { x: 780, y: height - 100, size: 1 },
       
-      // Highest platform - JACKPOT! (2 treats)
-      { x: 340, y: height - 450, size: 3 },
-      { x: 380, y: height - 450, size: 3 },
+      // Section 2: Mid-level (800-1600)
+      { x: 850, y: height - 100, size: 1 },
+      { x: 920, y: height - 250, size: 2 },
+      { x: 1000, y: height - 250, size: 1 },
+      { x: 1120, y: height - 400, size: 3 }, // High platform
+      { x: 1200, y: height - 400, size: 2 },
+      { x: 1300, y: height - 100, size: 1 },
+      { x: 1380, y: height - 300, size: 2 },
+      { x: 1450, y: height - 300, size: 1 },
+      { x: 1550, y: height - 230, size: 2 },
       
-      // Third platform (2 treats)
-      { x: 690, y: height - 230, size: 2 },
-      { x: 730, y: height - 230, size: 1 },
+      // Section 3: Long stretch (1600-2400)
+      { x: 1700, y: height - 100, size: 1 },
+      { x: 1770, y: height - 370, size: 3 },
+      { x: 1850, y: height - 370, size: 2 },
+      { x: 1970, y: height - 470, size: 3 }, // Very high!
+      { x: 2050, y: height - 470, size: 3 },
+      { x: 2150, y: height - 100, size: 1 },
+      { x: 2220, y: height - 270, size: 2 },
+      { x: 2300, y: height - 270, size: 1 },
+      { x: 2420, y: height - 100, size: 1 },
       
-      // Mid-air collection challenge (1 treat)
-      { x: 400, y: height - 200, size: 2 },
+      // Section 4: Challenge zone (2400-3200)
+      { x: 2550, y: height - 100, size: 1 },
+      { x: 2620, y: height - 330, size: 2 },
+      { x: 2700, y: height - 330, size: 1 },
+      { x: 2870, y: height - 430, size: 3 },
+      { x: 2950, y: height - 430, size: 2 },
+      { x: 3000, y: height - 100, size: 1 },
+      { x: 3070, y: height - 250, size: 2 },
+      { x: 3150, y: height - 250, size: 1 },
+      { x: 3280, y: height - 370, size: 3 },
+      
+      // Section 5: Final stretch! (3200-4000)
+      { x: 3400, y: height - 100, size: 1 },
+      { x: 3520, y: height - 300, size: 2 },
+      { x: 3600, y: height - 300, size: 2 },
+      { x: 3680, y: height - 100, size: 1 },
+      { x: 3770, y: height - 230, size: 3 },
+      { x: 3850, y: height - 230, size: 2 },
+      { x: 3920, y: height - 100, size: 1 },
+      { x: levelWidth - 80, y: height - 350, size: 3 }, // Victory treat!
     ];
     
     treatPositions.forEach(pos => {
@@ -241,19 +290,44 @@ export class GameScene extends Phaser.Scene {
     });
   }
   
-  private createBadItems(width: number, height: number) {
-    // Bad items positioned away from squirrels (8 total)
+  private createBadItems(levelWidth: number, height: number) {
+    // Poo hazards across extended level (~28 hazards, reduced by 20%)
     const staticBadItemPositions = [
-      // Platform hazards - spread out more
-      { x: 230, y: height - 200, type: 'poo' as const },  // Platform 1 right side
-      { x: 420, y: height - 330, type: 'poo' as const },  // Platform 2 left side
-      { x: 380, y: height - 450, type: 'poo' as const },  // Highest platform right
-      { x: 750, y: height - 230, type: 'poo' as const },  // Platform 3 far right
-      // Ground hazards
-      { x: 200, y: height - 100, type: 'poo' as const },
+      // Section 1 (0-800)
+      { x: 230, y: height - 200, type: 'poo' as const },
       { x: 400, y: height - 100, type: 'poo' as const },
-      { x: 600, y: height - 100, type: 'poo' as const },
-      { x: width - 100, y: height - 100, type: 'poo' as const },
+      { x: 460, y: height - 330, type: 'poo' as const },
+      { x: 750, y: height - 230, type: 'poo' as const },
+      
+      // Section 2 (800-1600)
+      { x: 900, y: height - 100, type: 'poo' as const },
+      { x: 1150, y: height - 400, type: 'poo' as const },
+      { x: 1250, y: height - 100, type: 'poo' as const },
+      { x: 1400, y: height - 300, type: 'poo' as const },
+      { x: 1600, y: height - 230, type: 'poo' as const },
+      
+      // Section 3 (1600-2400)
+      { x: 1650, y: height - 100, type: 'poo' as const },
+      { x: 1800, y: height - 370, type: 'poo' as const },
+      { x: 2000, y: height - 470, type: 'poo' as const },
+      { x: 2100, y: height - 100, type: 'poo' as const },
+      { x: 2250, y: height - 270, type: 'poo' as const },
+      
+      // Section 4 (2400-3200)
+      { x: 2500, y: height - 100, type: 'poo' as const },
+      { x: 2660, y: height - 330, type: 'poo' as const },
+      { x: 2900, y: height - 430, type: 'poo' as const },
+      { x: 3020, y: height - 100, type: 'poo' as const },
+      { x: 3100, y: height - 250, type: 'poo' as const },
+      { x: 3320, y: height - 370, type: 'poo' as const },
+      
+      // Section 5 (3200-4000) - Final gauntlet!
+      { x: 3480, y: height - 100, type: 'poo' as const },
+      { x: 3560, y: height - 300, type: 'poo' as const },
+      { x: 3650, y: height - 100, type: 'poo' as const },
+      { x: 3800, y: height - 230, type: 'poo' as const },
+      { x: 3900, y: height - 100, type: 'poo' as const },
+      { x: levelWidth - 150, y: height - 100, type: 'poo' as const },
     ];
     
     staticBadItemPositions.forEach(pos => {
@@ -266,16 +340,36 @@ export class GameScene extends Phaser.Scene {
     });
     
     // Start falling bad items spawner
-    this.startFallingBadItems(width);
+    this.startFallingBadItems(levelWidth);
   }
   
-  private createSquirrels(_width: number, height: number) {
-    // Squirrels positioned away from bad items
+  private createSquirrels(_levelWidth: number, height: number) {
+    // MORE squirrels across extended level for distractions! (~15 squirrels)
     const squirrelPositions = [
-      { x: 140, y: height - 180 },  // Platform 1 left side (away from poo at 230)
-      { x: 560, y: height - 310 },  // Platform 2 right side (away from poo at 420)
-      { x: 300, y: height - 430 },  // Highest platform left (away from poo at 380)
-      { x: 660, y: height - 210 },  // Platform 3 left side (away from poo at 750)
+      // Section 1 (0-800)
+      { x: 140, y: height - 180 },
+      { x: 320, y: height - 430 },
+      { x: 560, y: height - 310 },
+      { x: 680, y: height - 210 },
+      
+      // Section 2 (800-1600)
+      { x: 950, y: height - 230 },
+      { x: 1180, y: height - 380 },
+      { x: 1420, y: height - 280 },
+      
+      // Section 3 (1600-2400)
+      { x: 1800, y: height - 350 },
+      { x: 2020, y: height - 450 },
+      { x: 2280, y: height - 250 },
+      
+      // Section 4 (2400-3200)
+      { x: 2700, y: height - 310 },
+      { x: 2920, y: height - 410 },
+      { x: 3120, y: height - 230 },
+      
+      // Section 5 (3200-4000)
+      { x: 3580, y: height - 280 },
+      { x: 3880, y: height - 210 },
     ];
     
     squirrelPositions.forEach(pos => {

@@ -28,7 +28,12 @@ export class BreedSelectScene extends Phaser.Scene {
       strokeThickness: 6
     }).setOrigin(0.5);
     
-    // Pug option (left side)
+    // Make the whole scene clickable (create this FIRST, so breed boxes go on top)
+    const clickZone = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0)
+      .setOrigin(0.5)
+      .setInteractive();
+    
+    // Pug option (left side) - created AFTER clickZone so it's on top
     const pugX = width / 2 - 180;
     const pugY = height / 2;
     this.createBreedOption('pug', pugX, pugY);
@@ -53,11 +58,6 @@ export class BreedSelectScene extends Phaser.Scene {
       yoyo: true,
       repeat: -1
     });
-    
-    // Make the whole scene clickable
-    const clickZone = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0)
-      .setOrigin(0.5)
-      .setInteractive();
     
     // Start game function
     const startGame = () => {
