@@ -50,11 +50,23 @@ export class Squirrel {
     
     this.sprite = scene.add.image(x, y, textureKey);
     
-    // Add idle animation - slight bounce
+    // Add EXAGGERATED South Park-style bounce animation!
     scene.tweens.add({
       targets: this.sprite,
-      y: y - 5,
-      duration: 800,
+      y: y - 15, // Much higher bounce (was 5px)
+      scaleY: 1.15, // Stretch vertically
+      scaleX: 0.95, // Compress horizontally
+      duration: 600, // Faster (was 800ms)
+      yoyo: true,
+      repeat: -1,
+      ease: 'Back.easeInOut' // Overshoot for cartoony effect!
+    });
+    
+    // Add secondary squash/stretch cycle (offset timing for more life)
+    scene.tweens.add({
+      targets: this.sprite,
+      scaleX: 1.1, // Wobble side to side
+      duration: 400,
       yoyo: true,
       repeat: -1,
       ease: 'Sine.easeInOut'
