@@ -5,6 +5,7 @@ import { BadItem } from '../entities/BadItem';
 import { Squirrel } from '../entities/Squirrel';
 import { UIScene } from './UIScene';
 import type { BreedType } from '../types/DogBreeds';
+import { getCurrentLevelConfig, type LevelConfig } from '../types/LevelConfig';
 
 export class GameScene extends Phaser.Scene {
   private dog?: Dog;
@@ -18,8 +19,13 @@ export class GameScene extends Phaser.Scene {
   private pauseText?: Phaser.GameObjects.Text;
   private gameOver: boolean = false;
   
+  // Level configuration
+  private levelConfig: LevelConfig;
+  private currentLevel: number = 1; // Start with Level 1
+  
   constructor() {
     super('GameScene');
+    this.levelConfig = getCurrentLevelConfig(1);
   }
 
   create() {
@@ -35,8 +41,12 @@ export class GameScene extends Phaser.Scene {
     this.badItems = [];
     this.squirrels = [];
     
-    // Get UI scene reference
+    // Get UI scene reference and initialize health system
     this.uiScene = this.scene.get('UIScene') as UIScene;
+    
+    // Initialize health system based on current level config
+    this.levelConfig = getCurrentLevelConfig(this.currentLevel);
+    this.uiScene.initializeHealthSystem(this.levelConfig);
     
     // Set world bounds to extended level size
     this.physics.world.setBounds(0, 0, levelWidth, height);
