@@ -21,7 +21,14 @@ export class GameScene extends Phaser.Scene {
   
   // Level configuration
   private levelConfig: LevelConfig;
-  private currentLevel: number = 1; // Start with Level 1
+  private currentLevel: number = 1; // Start with Level 1 (tutorial)
+  
+  // Auto-scroll system
+  private scrollSpeed: number = 0; // pixels per second
+  private dangerZoneGraphics?: Phaser.GameObjects.Graphics;
+  private dangerZoneX: number = 0; // Left edge of danger zone
+  private dangerZoneDamageTimer: number = 0; // Track damage timing
+  private readonly DANGER_ZONE_DAMAGE_INTERVAL = 1000; // Damage every 1 second
   
   constructor() {
     super('GameScene');
@@ -228,6 +235,14 @@ export class GameScene extends Phaser.Scene {
     // Camera follow player with bounds for extended level
     this.cameras.main.setBounds(0, 0, levelWidth, height);
     this.cameras.main.startFollow(this.dog!.getSprite(), false, 0.1, 0.1);
+    
+    // Initialize auto-scroll system based on level config
+    this.scrollSpeed = this.levelConfig.scrollSpeed;
+    
+    // Create danger zone visual if enabled
+    if (this.levelConfig.dangerZoneEnabled) {
+      this.createDangerZone();
+    }
   }
   
   private togglePause() {
@@ -557,10 +572,99 @@ export class GameScene extends Phaser.Scene {
       graphics.destroy();
     }
   }
+  
+  private createDangerZone() {
+    // Create danger zone visual (red gradient on left edge)
+    this.dangerZoneGraphics = this.add.graphics();
+    this.dangerZoneGraphics.setDepth(1000); // Always on top
+    this.dangerZoneGraphics.setScrollFactor(0); // Fixed to camera
+    this.updateDangerZoneVisual();
+  }
+  
+  private updateDangerZoneVisual() {
+    if (!this.dangerZoneGraphics) return;
+    
+    this.dangerZoneGraphics.clear();
+    
+    const dangerWidth = 80; // Width of danger zone gradient
+    const height = this.cameras.main.height;
+    
+    // Draw red gradient from left edge
+    // Start with opaque red, fade to transparent
+    for (let i = 0; i < dangerWidth; i++) {
+      const alpha = 1 - (i / dangerWidth); // Fade from 1 to 0
+      this.dangerZoneGraphics.fillStyle(0xFF0000, alpha * 0.5);
+      this.dangerZoneGraphics.fillRect(i, 0, 1, height);
+    }
+    
+    // Add warning text
+    this.dangerZoneGraphics.fillStyle(0xFFFFFF, 1);
+    const warningText = this.add.text(20, height / 2, '⚠️ DANGER ZONE ⚠️', {
+      fontSize: '16px',
+      color: '#ffffff',
+      fontStyle: 'bold',
+      stroke: '#000000',
+      strokeThickness: 4
+    });
+    warningText.setScrollFactor(0);
+    warningText.setDepth(1001);
+    warningText.setRotation(-Math.PI / 2); // Vertical text
+  }
+  
+  private updateAutoScroll(delta: number) {
+    // Move camera right at scroll speed
+    const scrollAmount = (this.scrollSpeed * delta) / 1000;
+    this.dangerZoneX += scrollAmount;
+    
+    // Update camera scroll position
+    const currentScrollX = this.cameras.main.scrollX;
+    this.cameras.main.scrollX = Math.min(
+      currentScrollX + scrollAmount,
+      this.cameras.main.worldView.width
+    );
+  }
+  
+  private checkDangerZoneCollision(time: number) {
+    if (!this.dog) return;
+    
+    const dogX = this.dog.getSprite().x;
+    const cameraLeftEdge = this.cameras.main.scrollX;
+    const dangerZoneRight = cameraLeftEdge + 80; // Danger zone width
+    
+    // Check if dog is in danger zone
+    if (dogX < dangerZoneRight) {
+      // Apply damage at intervals
+      if (time - this.dangerZoneDamageTimer >= this.DANGER_ZONE_DAMAGE_INTERVAL) {
+        this.dangerZoneDamageTimer = time;
+        
+        // Take danger zone damage
+        const damageAmount = this.levelConfig.dangerZoneDamagePerSecond;
+        const health = this.uiScene?.takeDamage(damageAmount) || 0;
+        
+        // Visual feedback
+        this.cameras.main.shake(100, 0.005);
+        
+        // Check lose condition
+        if (health <= 0 && !this.gameOver) {
+          this.triggerGameOver();
+        }
+      }
+    }
+  }
 
-  update() {
+  update(time: number, delta: number) {
     // Don't update if paused or game over
     if (this.isPaused || this.gameOver) return;
+    
+    // Auto-scroll camera if enabled
+    if (this.scrollSpeed > 0) {
+      this.updateAutoScroll(delta);
+    }
+    
+    // Check danger zone collision if enabled
+    if (this.levelConfig.dangerZoneEnabled && this.dog) {
+      this.checkDangerZoneCollision(time);
+    }
     
     // Update player
     this.dog?.update();
