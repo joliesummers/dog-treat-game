@@ -9,13 +9,17 @@ export class LevelSelectScene extends Phaser.Scene {
   }
   
   init() {
+    // TEMP: Unlock all levels for testing
+    this.unlockedLevels = 3;
+    localStorage.setItem('unlockedLevels', '3');
+    
     // Load unlocked levels from localStorage
-    const saved = localStorage.getItem('unlockedLevels');
-    if (saved) {
-      this.unlockedLevels = parseInt(saved, 10);
-    } else {
-      this.unlockedLevels = 1; // Default: only Level 1 unlocked
-    }
+    // const saved = localStorage.getItem('unlockedLevels');
+    // if (saved) {
+    //   this.unlockedLevels = parseInt(saved, 10);
+    // } else {
+    //   this.unlockedLevels = 1; // Default: only Level 1 unlocked
+    // }
   }
   
   create() {

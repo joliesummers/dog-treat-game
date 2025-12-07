@@ -705,12 +705,27 @@ export class GameScene extends Phaser.Scene {
     const dangerWidth = 80; // Width of danger zone gradient
     const height = this.cameras.main.height;
     
-    // Draw red gradient from left edge
+    // Draw red gradient from left edge (MORE INTENSE)
     // Start with opaque red, fade to transparent
     for (let i = 0; i < dangerWidth; i++) {
       const alpha = 1 - (i / dangerWidth); // Fade from 1 to 0
-      this.dangerZoneGraphics.fillStyle(0xFF0000, alpha * 0.5);
+      this.dangerZoneGraphics.fillStyle(0xFF0000, alpha * 0.7); // Increased from 0.5 to 0.7
       this.dangerZoneGraphics.fillRect(i, 0, 1, height);
+    }
+    
+    // Add animated RIGHT arrows to show movement direction
+    const time = this.time.now / 200; // Animate over time
+    const arrowOffset = (time % 40) - 20; // -20 to 20 loop
+    
+    this.dangerZoneGraphics.fillStyle(0xFFFFFF, 0.8);
+    for (let y = 100; y < height - 100; y += 80) {
+      const arrowY = y + arrowOffset;
+      // Draw simple right arrow (triangle)
+      this.dangerZoneGraphics.fillTriangle(
+        50, arrowY,           // Left point
+        60, arrowY - 8,       // Top right
+        60, arrowY + 8        // Bottom right
+      );
     }
     
     // Add warning text

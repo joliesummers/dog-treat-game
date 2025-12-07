@@ -61,7 +61,7 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
     maxHealth: 10,
     
     autoScroll: true,
-    scrollSpeed: 30, // Gentle introduction
+    scrollSpeed: 60, // Noticeable pressure - doubled!
     
     dangerZoneEnabled: true,
     dangerZoneDamagePerSecond: 1,
@@ -83,7 +83,7 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
     maxHealth: 10,
     
     autoScroll: true,
-    scrollSpeed: 50, // Faster!
+    scrollSpeed: 100, // FAST! Doubled from 50!
     
     dangerZoneEnabled: true,
     dangerZoneDamagePerSecond: 2, // More dangerous
