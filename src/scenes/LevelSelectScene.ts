@@ -200,10 +200,12 @@ export class LevelSelectScene extends Phaser.Scene {
     
     // Store selected level in registry for GameScene to read
     this.registry.set('selectedLevel', levelNumber);
+    console.log('🎯 LevelSelectScene: Set selectedLevel to', levelNumber);
     
     // Transition to breed select
     this.cameras.main.fadeOut(300);
     this.cameras.main.once('camerafadeoutcomplete', () => {
+      console.log('🔄 Transitioning to BreedSelectScene (level', levelNumber, 'saved in registry)');
       this.scene.start('BreedSelectScene');
     });
   }

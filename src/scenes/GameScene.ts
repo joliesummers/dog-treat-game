@@ -49,8 +49,12 @@ export class GameScene extends Phaser.Scene {
     
     // Get selected level from registry (set by LevelSelectScene)
     const selectedLevel = this.registry.get('selectedLevel') as number;
-    if (selectedLevel) {
+    console.log('📋 Registry selectedLevel:', selectedLevel);
+    if (selectedLevel && selectedLevel > 0) {
       this.currentLevel = selectedLevel;
+      console.log('✅ Set currentLevel to:', this.currentLevel);
+    } else {
+      console.log('⚠️ No selectedLevel in registry, defaulting to Level 1');
     }
     
     console.log('🎮 GameScene loading Level ' + this.currentLevel);
@@ -203,9 +207,9 @@ export class GameScene extends Phaser.Scene {
     });
     instructions.setDepth(100);
     
-    // Add title with breed name
+    // Add title with breed name and level number
     const breedName = this.dog.getBreed().name;
-    const title = this.add.text(width / 2, 30, `${breedName} - Level 1`, {
+    const title = this.add.text(width / 2, 30, `${breedName} - Level ${this.currentLevel}`, {
       fontSize: '20px',
       color: '#ffffff',
       fontStyle: 'bold',
