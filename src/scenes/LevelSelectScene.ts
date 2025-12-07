@@ -74,7 +74,7 @@ export class LevelSelectScene extends Phaser.Scene {
     this.input.keyboard?.on('keydown-FIVE', () => this.startLevel(5));
     
     // DEBUG MODE: Press L to unlock all levels for testing
-    this.input.keyboard?.on('keydown-KEY_L', () => {
+    this.input.keyboard?.on('keydown-L', () => {
       this.unlockedLevels = 5;
       window.localStorage.setItem('unlockedLevels', '5');
       this.scene.restart(); // Refresh the scene to show unlocked levels

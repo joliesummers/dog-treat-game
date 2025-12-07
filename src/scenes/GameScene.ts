@@ -41,7 +41,7 @@ export class GameScene extends Phaser.Scene {
       if (this.sound.get(key)) {
         this.sound.play(key, { volume });
       }
-    } catch (error) {
+    } catch {
       // Silently fail if sound can't play
     }
   }
