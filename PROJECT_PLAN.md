@@ -314,7 +314,7 @@
 
 ---
 
-### 🚧 Milestone 10: "South Park Polish" - Visual Style Overhaul (IN PROGRESS)
+### ✅ Milestone 10: "South Park Polish" - Visual Style Overhaul (COMPLETED)
 
 **Value**: Game has cohesive "South Park construction paper" aesthetic with flat shapes and gross humor
 
@@ -336,30 +336,30 @@
 - ✅ BreedSelectScene: Sunny yellow gradient `0xFFE082 → 0xFFCD56` ✨
 - ✅ HTML Background: Soft cyan `#B2EBF2 → #80DEEA` (complements game) ✨
 - ✅ Grass: Vibrant green `0x8BC34A`, `0x689F38` ✨
-- 🔲 Platforms: Warm wood tones with visible grain
-- 🔲 UI elements: Bold yellows, oranges, reds for buttons/text
+- ✅ Platforms: Warm wood tones (0xD2691E, 0xCD853F) with visible grain ✨
+- 🔲 UI elements: Bold yellows, oranges, reds for buttons/text (deferred - current style works)
 
 **Sprite Enhancements:**
 - ✅ Dog: South Park flat construction paper style - NO external outlines, flat filled shapes, thin internal details (eyes/nose/mouth = 1-2px), squash on landing, stretch on jump ✨
 - ✅ Treats: Redesigned as cute dog bones with smooth integrated shape, tan fill throughout, THIN 1.5px black outline on exterior (South Park style), four rounded bulbs connected by filled waist section, elastic bounce animations ✨
 - ✅ Poo: South Park-style stink lines (thin 1.5px wavy lines rising, swaying, fading) ✨
-- 🔲 Squirrel: Convert to South Park flat style, more exaggerated bounce
-- 🔲 Platforms: Warm wood texture (optional)
+- ✅ Squirrel: South Park flat style + exaggerated bounce (3x higher, faster, Back.easeInOut, squash/stretch, wobble) ✨
+- ✅ Platforms: Warm wood texture with visible grain (horizontal streaks, shadow/highlight edges) ✨
 
 **Animation Improvements:**
 - ✅ Replaced MenuScene animations with `Elastic.easeInOut` and `Back.easeInOut` ✨
 - ✅ MenuScene title: Exaggerated bounce with `Back.easeInOut` (1.1 scale, 1200ms) ✨
 - ✅ Treat animations: Elastic floating and scale pulse ✨
-- 🔲 Add anticipation: Dog crouches before jumping
-- 🔲 Add follow-through: Treats lean toward dog before collection
-- 🔲 Dust clouds when dog lands
-- 🔲 Speed lines for fast movement
+- ✅ Dust clouds when dog lands (3-5 random puffs, expand/fade, float up) ✨
+- 🔲 Add anticipation: Dog crouches before jumping (deferred - optional)
+- 🔲 Add follow-through: Treats lean toward dog before collection (deferred - optional)
+- 🔲 Speed lines for fast movement (deferred - optional)
 
 **Particle Effects:**
 - ✅ Puke: South Park-style gross vomit - construction paper green (0x8FBC8F), streamy elongated shapes (16x6px), shoots from dog's mouth based on facing direction, heavy arc gravity, NO rotation, green-dominant color balance ✨
 - ✅ Puking Face: Dog shows sick expression overlay during vomit (X_X eyes, wide open mouth, green tint) ✨
-- 🔲 Collect: Replace bone particles with stars ⭐ and sparkles ✨
-- 🔲 Landing: Dust cloud puffs (optional)
+- ✅ Collect: Replaced bone particles with gold stars ⭐ (5-pointed, rotating) + white sparkles ✨ (spinning bone exit animation) ✨
+- ✅ Landing: Dust cloud puffs (3-5 light gray fluffy clouds, expand/fade, spray sideways/up) ✨
 
 **Files to Update:**
 1. `src/entities/Dog.ts` - Sprite outline, squash/stretch, dust on landing, enhanced puke
@@ -371,14 +371,14 @@
 7. `src/scenes/BreedSelectScene.ts` - Background gradient, selection animations
 
 **Testing Checklist:**
-- [ ] All sprites have visible outlines
-- [ ] Animations feel bouncy and exaggerated
-- [ ] Color palette is cohesive and saturated
-- [ ] No blue/purple gradients remain
-- [ ] Particle effects use themed graphics (stars, not circles)
-- [ ] Game feels more "alive" and cartoony
+- [x] All sprites have South Park flat style (no external outlines on dog/squirrel)
+- [x] Animations feel bouncy and exaggerated (squash/stretch, elastic easing)
+- [x] Color palette is cohesive and saturated (bright cyan, warm tones)
+- [x] No blue/purple gradients remain (all replaced with vibrant colors)
+- [x] Particle effects use themed graphics (stars ⭐, dust clouds 💨, puke 🤢)
+- [x] Game feels more "alive" and cartoony (gross humor, bouncy physics)
 
-**Status**: 85% Complete - Puke effect ✅, All scene gradients ✅, Bones ✅, Dog South Park style ✅, Stink lines ✅, Puking face ✅. Remaining: Squirrel conversion, optional star particles, optional platforms.
+**Status**: ✅ **COMPLETE** - All core features implemented! Puke effect ✅, Scene gradients ✅, Bone redesign ✅, Dog South Park style ✅, Stink lines ✅, Puking face ✅, Squirrel bounce ✅, Star particles ⭐ ✅, Dust clouds 💨 ✅, Wood platforms ✅
 
 ---
 
@@ -470,8 +470,8 @@ All fixes committed in separate commits for traceability.
 
 ## Development Status Summary
 
-**Completed**: 7 out of 10 milestones ✅  
-**In Progress**: Milestone 10 - Angry Birds Polish 🎨  
+**Completed**: 8 out of 10 milestones ✅  
+**In Progress**: None - Ready for Milestone 8! 🎯  
 **MVP Status**: Complete and deployed! 🎉  
 
 **Current Focus**: 
