@@ -434,13 +434,61 @@ export class Dog {
       particleEmitters.forEach(emitter => emitter.destroy());
     });
     
-    // Visual feedback - flashing
+    // 🤮 PUKING FACE OVERLAY - Change dog's expression to sick/puking! 🤮
+    const pukeGraphics = this.scene.add.graphics();
+    pukeGraphics.setDepth(1000); // On top of everything
+    
+    // Position relative to dog sprite (centered on face area)
+    const faceX = this.sprite.x;
+    const faceY = this.sprite.y - 2;
+    
+    // Green tint overlay on face (dog feels sick!)
+    pukeGraphics.fillStyle(0x9ACD32, 0.3); // Yellow-green tint
+    pukeGraphics.fillCircle(faceX + (this.sprite.flipX ? -12 : 12), faceY, 14);
+    
+    // Squinted/sick eyes (X_X style)
+    pukeGraphics.lineStyle(2, 0x000000, 1);
+    // Left eye - squinted X
+    const leftEyeX = faceX + (this.sprite.flipX ? -18 : 8);
+    const eyeY = faceY - 2;
+    pukeGraphics.lineBetween(leftEyeX - 2, eyeY - 2, leftEyeX + 2, eyeY + 2);
+    pukeGraphics.lineBetween(leftEyeX - 2, eyeY + 2, leftEyeX + 2, eyeY - 2);
+    
+    // Right eye - squinted X
+    const rightEyeX = faceX + (this.sprite.flipX ? -6 : 20);
+    pukeGraphics.lineBetween(rightEyeX - 2, eyeY - 2, rightEyeX + 2, eyeY + 2);
+    pukeGraphics.lineBetween(rightEyeX - 2, eyeY + 2, rightEyeX + 2, eyeY - 2);
+    
+    // Wide open mouth (puking!)
+    pukeGraphics.lineStyle(2, 0x000000, 1);
+    pukeGraphics.fillStyle(0x000000, 0.8);
+    const mouthCenterX = faceX + (this.sprite.flipX ? -8 : 18);
+    pukeGraphics.fillEllipse(mouthCenterX, faceY + 6, 6, 8); // Wide open oval mouth
+    
+    // Animate the puke face overlay
+    this.scene.tweens.add({
+      targets: pukeGraphics,
+      alpha: { from: 1, to: 0 },
+      scaleX: { from: 1, to: 1.1 },
+      scaleY: { from: 1, to: 1.1 },
+      duration: 800,
+      ease: 'Quad.easeOut',
+      onComplete: () => {
+        pukeGraphics.destroy();
+      }
+    });
+    
+    // Visual feedback - flashing (green tint for sick feeling)
     this.scene.tweens.add({
       targets: this.sprite,
       alpha: 0.3,
+      tint: 0x9ACD32, // Green sick tint
       duration: 100,
       yoyo: true,
-      repeat: 10
+      repeat: 10,
+      onComplete: () => {
+        this.sprite.clearTint(); // Remove tint after flashing
+      }
     });
     
     // Reset invincibility after 2 seconds
