@@ -86,7 +86,7 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
     scrollSpeed: 100, // FAST! Doubled from 50!
     
     dangerZoneEnabled: true,
-    dangerZoneDamagePerSecond: 2, // More dangerous
+    dangerZoneDamagePerSecond: 1, // More dangerous
     
     levelWidth: 8000,
     platformCount: 35,
@@ -95,6 +95,50 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
     
     theme: 'Park Sprint',
     description: 'Full speed chase! Can you outrun your owner?'
+  },
+  
+  4: {
+    levelNumber: 4,
+    name: 'Advanced: Owner Running!',
+    
+    healthDisplay: 'bar',
+    maxHealth: 10,
+    
+    autoScroll: true,
+    scrollSpeed: 140, // Very fast! (2.33 px/frame)
+    
+    dangerZoneEnabled: true,
+    dangerZoneDamagePerSecond: 2, // DOUBLED damage!
+    
+    levelWidth: 10000,
+    platformCount: 42,
+    treatCount: 30,
+    badItemCount: 20, // Poo clusters!
+    
+    theme: 'Backyard Sprint',
+    description: 'Poo clusters ahead! Navigate carefully at high speed!'
+  },
+  
+  5: {
+    levelNumber: 5,
+    name: 'Expert: Escape the Backyard!',
+    
+    healthDisplay: 'bar',
+    maxHealth: 12, // Extra 2 hearts for compensation!
+    
+    autoScroll: true,
+    scrollSpeed: 180, // EXTREME! (3 px/frame)
+    
+    dangerZoneEnabled: true,
+    dangerZoneDamagePerSecond: 3, // TRIPLE damage!
+    
+    levelWidth: 12000,
+    platformCount: 50,
+    treatCount: 36,
+    badItemCount: 24, // Multi-hazard platforms!
+    
+    theme: 'Backyard Finale',
+    description: 'World 1 finale! Prove your mastery!'
   }
 };
 

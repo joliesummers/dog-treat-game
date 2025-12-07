@@ -37,11 +37,12 @@ export class LevelSelectScene extends Phaser.Scene {
       strokeThickness: 6
     }).setOrigin(0.5);
     
-    // Create level cards
-    const cardSpacing = 280;
-    const startX = (width - (cardSpacing * 2)) / 2;
+    // Create level cards (5 levels in World 1)
+    const cardSpacing = 160;
+    const cardsPerRow = 5;
+    const startX = (width - (cardSpacing * (cardsPerRow - 1))) / 2;
     
-    for (let i = 1; i <= 3; i++) {
+    for (let i = 1; i <= 5; i++) {
       const levelConfig = LEVEL_CONFIGS[i];
       const cardX = startX + (i - 1) * cardSpacing;
       const cardY = height / 2 + 20;
@@ -50,7 +51,7 @@ export class LevelSelectScene extends Phaser.Scene {
     }
     
     // Instructions
-    const instructionText = this.add.text(width / 2, height - 60, 'Click a level or press 1/2/3', {
+    const instructionText = this.add.text(width / 2, height - 60, 'Click a level or press 1/2/3/4/5', {
       fontSize: '20px',
       color: '#ffffff',
       fontStyle: 'bold'
@@ -69,11 +70,13 @@ export class LevelSelectScene extends Phaser.Scene {
     this.input.keyboard?.on('keydown-ONE', () => this.startLevel(1));
     this.input.keyboard?.on('keydown-TWO', () => this.startLevel(2));
     this.input.keyboard?.on('keydown-THREE', () => this.startLevel(3));
+    this.input.keyboard?.on('keydown-FOUR', () => this.startLevel(4));
+    this.input.keyboard?.on('keydown-FIVE', () => this.startLevel(5));
     
     // DEBUG MODE: Press L to unlock all levels for testing
     this.input.keyboard?.on('keydown-L', () => {
-      this.unlockedLevels = 3;
-      window.localStorage.setItem('unlockedLevels', '3');
+      this.unlockedLevels = 5;
+      window.localStorage.setItem('unlockedLevels', '5');
       this.scene.restart(); // Refresh the scene to show unlocked levels
       
       // Visual feedback
@@ -96,8 +99,8 @@ export class LevelSelectScene extends Phaser.Scene {
   }
   
   private createLevelCard(levelNumber: number, name: string, description: string, x: number, y: number, unlocked: boolean) {
-    const cardWidth = 240;
-    const cardHeight = 280;
+    const cardWidth = 140;
+    const cardHeight = 240;
     
     // Card background
     const card = this.add.rectangle(x, y, cardWidth, cardHeight, unlocked ? 0xFFFFFF : 0x666666, 0.9);

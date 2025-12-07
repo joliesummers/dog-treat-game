@@ -265,158 +265,117 @@ export class GameScene extends Phaser.Scene {
     }
   }
   
-  private createTreats(_level: number, levelWidth: number, height: number) {
-    // TODO: Use level parameter for level-specific treat placement
-    // Extended level with MANY more treats! (~60 treats for longer gameplay)
-    // Mix of sizes: small (1pt), medium (2pt), large (3pt)
-    const treatPositions = [
-      // Section 1: Starting area (0-800)
-      { x: 100, y: height - 100, size: 1 },
-      { x: 200, y: height - 200, size: 2 },
-      { x: 280, y: height - 200, size: 1 },
-      { x: 380, y: height - 450, size: 3 }, // High platform reward!
-      { x: 500, y: height - 330, size: 2 },
-      { x: 580, y: height - 330, size: 2 },
-      { x: 650, y: height - 100, size: 1 },
-      { x: 700, y: height - 230, size: 2 },
-      { x: 780, y: height - 100, size: 1 },
-      
-      // Section 2: Mid-level (800-1600)
-      { x: 850, y: height - 100, size: 1 },
-      { x: 920, y: height - 250, size: 2 },
-      { x: 1000, y: height - 250, size: 1 },
-      { x: 1120, y: height - 400, size: 3 }, // High platform
-      { x: 1200, y: height - 400, size: 2 },
-      { x: 1300, y: height - 100, size: 1 },
-      { x: 1380, y: height - 300, size: 2 },
-      { x: 1450, y: height - 300, size: 1 },
-      { x: 1550, y: height - 230, size: 2 },
-      
-      // Section 3: Long stretch (1600-2400)
-      { x: 1700, y: height - 100, size: 1 },
-      { x: 1770, y: height - 370, size: 3 },
-      { x: 1850, y: height - 370, size: 2 },
-      { x: 1970, y: height - 470, size: 3 }, // Very high!
-      { x: 2050, y: height - 470, size: 3 },
-      { x: 2150, y: height - 100, size: 1 },
-      { x: 2220, y: height - 270, size: 2 },
-      { x: 2300, y: height - 270, size: 1 },
-      { x: 2420, y: height - 100, size: 1 },
-      
-      // Section 4: Challenge zone (2400-3200)
-      { x: 2550, y: height - 100, size: 1 },
-      { x: 2620, y: height - 330, size: 2 },
-      { x: 2700, y: height - 330, size: 1 },
-      { x: 2870, y: height - 430, size: 3 },
-      { x: 2950, y: height - 430, size: 2 },
-      { x: 3000, y: height - 100, size: 1 },
-      { x: 3070, y: height - 250, size: 2 },
-      { x: 3150, y: height - 250, size: 1 },
-      { x: 3280, y: height - 370, size: 3 },
-      
-      // Section 5: Final stretch! (3200-4000)
-      { x: 3400, y: height - 100, size: 1 },
-      { x: 3520, y: height - 300, size: 2 },
-      { x: 3600, y: height - 300, size: 2 },
-      { x: 3680, y: height - 100, size: 1 },
-      { x: 3770, y: height - 230, size: 3 },
-      { x: 3850, y: height - 230, size: 2 },
-      { x: 3920, y: height - 100, size: 1 },
-      { x: levelWidth - 80, y: height - 350, size: 3 }, // Victory treat!
-    ];
+  private createTreats(level: number, levelWidth: number, height: number) {
+    const config = getCurrentLevelConfig(level);
+    const treatCount = config.treatCount;
+    const spacing = levelWidth / (treatCount + 1);
     
-    treatPositions.forEach(pos => {
-      const treat = new Treat(this, pos.x, pos.y, pos.size);
-      this.treats.push(treat);
-    });
-  }
-  
-  private createBadItems(_level: number, levelWidth: number, height: number) {
-    // TODO: Use level parameter for level-specific bad item placement
-    // Poo hazards across extended level (~28 hazards, reduced by 20%)
-    const staticBadItemPositions = [
-      // Section 1 (0-800)
-      { x: 230, y: height - 200, type: 'poo' as const },
-      { x: 400, y: height - 100, type: 'poo' as const },
-      { x: 460, y: height - 330, type: 'poo' as const },
-      { x: 750, y: height - 230, type: 'poo' as const },
+    // Procedurally place treats across the level
+    for (let i = 0; i < treatCount; i++) {
+      const baseX = spacing * (i + 1);
+      const x = baseX + Phaser.Math.Between(-50, 50); // Random variation
       
-      // Section 2 (800-1600)
-      { x: 900, y: height - 100, type: 'poo' as const },
-      { x: 1150, y: height - 400, type: 'poo' as const },
-      { x: 1250, y: height - 100, type: 'poo' as const },
-      { x: 1400, y: height - 300, type: 'poo' as const },
-      { x: 1600, y: height - 230, type: 'poo' as const },
-      
-      // Section 3 (1600-2400)
-      { x: 1650, y: height - 100, type: 'poo' as const },
-      { x: 1800, y: height - 370, type: 'poo' as const },
-      { x: 2000, y: height - 470, type: 'poo' as const },
-      { x: 2100, y: height - 100, type: 'poo' as const },
-      { x: 2250, y: height - 270, type: 'poo' as const },
-      
-      // Section 4 (2400-3200)
-      { x: 2500, y: height - 100, type: 'poo' as const },
-      { x: 2660, y: height - 330, type: 'poo' as const },
-      { x: 2900, y: height - 430, type: 'poo' as const },
-      { x: 3020, y: height - 100, type: 'poo' as const },
-      { x: 3100, y: height - 250, type: 'poo' as const },
-      { x: 3320, y: height - 370, type: 'poo' as const },
-      
-      // Section 5 (3200-4000) - Final gauntlet!
-      { x: 3480, y: height - 100, type: 'poo' as const },
-      { x: 3560, y: height - 300, type: 'poo' as const },
-      { x: 3650, y: height - 100, type: 'poo' as const },
-      { x: 3800, y: height - 230, type: 'poo' as const },
-      { x: 3900, y: height - 100, type: 'poo' as const },
-      { x: levelWidth - 150, y: height - 100, type: 'poo' as const },
-    ];
-    
-    staticBadItemPositions.forEach(pos => {
-      const badItem = new BadItem(this, pos.x, pos.y, pos.type);
-      this.badItems.push(badItem);
-      // Make static items collide with platforms
-      if (this.platforms) {
-        this.physics.add.collider(badItem.getSprite(), this.platforms);
+      // Vary height: some low, some medium, some high
+      const heightVariation = Phaser.Math.Between(0, 2);
+      let y: number;
+      if (heightVariation === 0) {
+        y = height - Phaser.Math.Between(100, 150); // Low
+      } else if (heightVariation === 1) {
+        y = height - Phaser.Math.Between(250, 320); // Medium
+      } else {
+        y = height - Phaser.Math.Between(380, 460); // High (risky!)
       }
-    });
-    
-    // Start falling bad items spawner
-    this.startFallingBadItems(levelWidth);
+      
+      // Size distribution: 60% small, 30% medium, 10% large
+      const sizeRoll = Math.random();
+      const size = sizeRoll < 0.6 ? 1 : sizeRoll < 0.9 ? 2 : 3;
+      
+      const treat = new Treat(this, x, y, size);
+      this.treats.push(treat);
+    }
   }
   
-  private createSquirrels(_level: number, _levelWidth: number, height: number) {
-    // MORE squirrels across extended level for distractions! (~15 squirrels)
-    const squirrelPositions = [
-      // Section 1 (0-800)
-      { x: 140, y: height - 180 },
-      { x: 320, y: height - 430 },
-      { x: 560, y: height - 310 },
-      { x: 680, y: height - 210 },
-      
-      // Section 2 (800-1600)
-      { x: 950, y: height - 230 },
-      { x: 1180, y: height - 380 },
-      { x: 1420, y: height - 280 },
-      
-      // Section 3 (1600-2400)
-      { x: 1800, y: height - 350 },
-      { x: 2020, y: height - 450 },
-      { x: 2280, y: height - 250 },
-      
-      // Section 4 (2400-3200)
-      { x: 2700, y: height - 310 },
-      { x: 2920, y: height - 410 },
-      { x: 3120, y: height - 230 },
-      
-      // Section 5 (3200-4000)
-      { x: 3580, y: height - 280 },
-      { x: 3880, y: height - 210 },
-    ];
+  private createBadItems(level: number, levelWidth: number, height: number) {
+    const config = getCurrentLevelConfig(level);
+    const pooCount = config.badItemCount;
     
-    squirrelPositions.forEach(pos => {
-      this.squirrels.push(new Squirrel(this, pos.x, pos.y));
-    });
+    // Level 4+: Create poo clusters (2-3 poo close together)
+    const useClusters = level >= 4;
+    let pooPlaced = 0;
+    
+    while (pooPlaced < pooCount) {
+      const baseX = Phaser.Math.Between(200, levelWidth - 200);
+      const y = Phaser.Math.Between(height - 450, height - 100);
+      
+      if (useClusters && Math.random() < 0.4 && pooPlaced + 2 <= pooCount) {
+        // Create a cluster of 2-3 poo
+        const clusterSize = Math.min(Phaser.Math.Between(2, 3), pooCount - pooPlaced);
+        for (let i = 0; i < clusterSize; i++) {
+          const xOffset = i * 40; // Space them 40px apart
+          const badItem = new BadItem(this, baseX + xOffset, y, 'poo');
+          this.badItems.push(badItem);
+          if (this.platforms) {
+            this.physics.add.collider(badItem.getSprite(), this.platforms);
+          }
+          pooPlaced++;
+        }
+      } else {
+        // Single poo
+        const badItem = new BadItem(this, baseX, y, 'poo');
+        this.badItems.push(badItem);
+        if (this.platforms) {
+          this.physics.add.collider(badItem.getSprite(), this.platforms);
+        }
+        pooPlaced++;
+      }
+    }
+    
+    // Don't spawn falling bad items on auto-scroll levels (too chaotic)
+    if (!config.autoScroll) {
+      this.startFallingBadItems(levelWidth);
+    }
+  }
+  
+  private createSquirrels(level: number, levelWidth: number, height: number) {
+    // Squirrel count increases with level difficulty
+    const squirrelCounts: Record<number, number> = {
+      1: 5,
+      2: 8,
+      3: 10,
+      4: 12,
+      5: 15
+    };
+    
+    const squirrelCount = squirrelCounts[level] || 5;
+    const spacing = levelWidth / (squirrelCount + 1);
+    const squirrelPositions: Array<{x: number, y: number}> = [];
+    
+    // Level 5: Place some squirrels near existing poo (multi-hazard platforms)
+    const useMultiHazards = level >= 5;
+    const multiHazardCount = useMultiHazards ? Math.floor(squirrelCount * 0.4) : 0; // 40% near poo
+    
+    // Place squirrels near existing poo for multi-hazard challenge
+    for (let i = 0; i < multiHazardCount && i < this.badItems.length; i++) {
+      const poo = this.badItems[i];
+      const pooPos = poo.getSprite();
+      // Place squirrel 50-80px away from poo (on same platform)
+      const offset = Phaser.Math.Between(50, 80) * (Math.random() < 0.5 ? 1 : -1);
+      const x = pooPos.x + offset;
+      const y = pooPos.y;
+      
+      squirrelPositions.push({ x, y });
+      this.squirrels.push(new Squirrel(this, x, y));
+    }
+    
+    // Place remaining squirrels normally
+    for (let i = multiHazardCount; i < squirrelCount; i++) {
+      const baseX = spacing * (i - multiHazardCount + 1);
+      const x = baseX + Phaser.Math.Between(-50, 50);
+      const y = height - Phaser.Math.Between(180, 450);
+      
+      squirrelPositions.push({ x, y });
+      this.squirrels.push(new Squirrel(this, x, y));
+    }
     
     // Store squirrel positions in registry for Dog to access
     this.registry.set('squirrels', squirrelPositions);
@@ -674,6 +633,168 @@ export class GameScene extends Phaser.Scene {
         { x: 7540, y: height - 260, w: 120, h: 32, color: 0xD2691E },
         { x: 7750, y: height - 420, w: 100, h: 32, color: 0xCD853F },
         { x: 7950, y: height - 300, w: 130, h: 32, color: 0xD2691E }, // Wider final platform!
+      ],
+      
+      // LEVEL 4: Advanced - Very fast scroll, tiny platforms, poo clusters!
+      4: [
+        // Section 1 (0-1250) - Immediate intensity
+        { x: 180, y: height - 230, w: 100, h: 32, color: 0xD2691E },
+        { x: 380, y: height - 390, w: 90, h: 32, color: 0xCD853F },
+        { x: 570, y: height - 260, w: 95, h: 32, color: 0xD2691E },
+        { x: 760, y: height - 440, w: 90, h: 32, color: 0xCD853F },
+        { x: 950, y: height - 310, w: 100, h: 32, color: 0xD2691E },
+        { x: 1150, y: height - 230, w: 95, h: 32, color: 0xCD853F },
+        
+        // Section 2 (1250-2500) - Precision platforming
+        { x: 1330, y: height - 400, w: 90, h: 32, color: 0xD2691E },
+        { x: 1510, y: height - 270, w: 95, h: 32, color: 0xCD853F },
+        { x: 1690, y: height - 450, w: 90, h: 32, color: 0xD2691E },
+        { x: 1870, y: height - 320, w: 100, h: 32, color: 0xCD853F },
+        { x: 2060, y: height - 240, w: 95, h: 32, color: 0xD2691E },
+        { x: 2250, y: height - 410, w: 90, h: 32, color: 0xCD853F },
+        { x: 2440, y: height - 290, w: 100, h: 32, color: 0xD2691E },
+        
+        // Section 3 (2500-3750) - Hazard clusters incoming
+        { x: 2620, y: height - 450, w: 90, h: 32, color: 0xCD853F },
+        { x: 2800, y: height - 310, w: 95, h: 32, color: 0xD2691E },
+        { x: 2980, y: height - 240, w: 100, h: 32, color: 0xCD853F },
+        { x: 3170, y: height - 420, w: 90, h: 32, color: 0xD2691E },
+        { x: 3360, y: height - 280, w: 95, h: 32, color: 0xCD853F },
+        { x: 3550, y: height - 460, w: 90, h: 32, color: 0xD2691E },
+        { x: 3740, y: height - 330, w: 100, h: 32, color: 0xCD853F },
+        
+        // Section 4 (3750-5000) - Relentless pressure
+        { x: 3920, y: height - 250, w: 95, h: 32, color: 0xD2691E },
+        { x: 4100, y: height - 410, w: 90, h: 32, color: 0xCD853F },
+        { x: 4280, y: height - 290, w: 100, h: 32, color: 0xD2691E },
+        { x: 4470, y: height - 450, w: 90, h: 32, color: 0xCD853F },
+        { x: 4660, y: height - 320, w: 95, h: 32, color: 0xD2691E },
+        { x: 4850, y: height - 240, w: 100, h: 32, color: 0xCD853F },
+        { x: 5040, y: height - 400, w: 90, h: 32, color: 0xD2691E },
+        
+        // Section 5 (5000-6250) - Expert territory
+        { x: 5220, y: height - 270, w: 95, h: 32, color: 0xCD853F },
+        { x: 5400, y: height - 440, w: 90, h: 32, color: 0xD2691E },
+        { x: 5590, y: height - 310, w: 100, h: 32, color: 0xCD853F },
+        { x: 5780, y: height - 250, w: 95, h: 32, color: 0xD2691E },
+        { x: 5970, y: height - 420, w: 90, h: 32, color: 0xCD853F },
+        { x: 6160, y: height - 290, w: 100, h: 32, color: 0xD2691E },
+        { x: 6350, y: height - 460, w: 90, h: 32, color: 0xCD853F },
+        
+        // Section 6 (6250-7500) - Peak difficulty
+        { x: 6530, y: height - 330, w: 95, h: 32, color: 0xD2691E },
+        { x: 6710, y: height - 240, w: 100, h: 32, color: 0xCD853F },
+        { x: 6900, y: height - 400, w: 90, h: 32, color: 0xD2691E },
+        { x: 7090, y: height - 280, w: 95, h: 32, color: 0xCD853F },
+        { x: 7280, y: height - 450, w: 90, h: 32, color: 0xD2691E },
+        { x: 7470, y: height - 310, w: 100, h: 32, color: 0xCD853F },
+        
+        // Section 7 (7500-8750) - Almost there!
+        { x: 7650, y: height - 250, w: 95, h: 32, color: 0xD2691E },
+        { x: 7840, y: height - 420, w: 90, h: 32, color: 0xCD853F },
+        { x: 8030, y: height - 290, w: 100, h: 32, color: 0xD2691E },
+        { x: 8220, y: height - 460, w: 90, h: 32, color: 0xCD853F },
+        { x: 8410, y: height - 330, w: 95, h: 32, color: 0xD2691E },
+        { x: 8600, y: height - 240, w: 100, h: 32, color: 0xCD853F },
+        
+        // Section 8 (8750-10000) - Final sprint!
+        { x: 8780, y: height - 400, w: 90, h: 32, color: 0xD2691E },
+        { x: 8970, y: height - 270, w: 95, h: 32, color: 0xCD853F },
+        { x: 9160, y: height - 440, w: 90, h: 32, color: 0xD2691E },
+        { x: 9350, y: height - 310, w: 100, h: 32, color: 0xCD853F },
+        { x: 9540, y: height - 250, w: 95, h: 32, color: 0xD2691E },
+        { x: 9730, y: height - 380, w: 90, h: 32, color: 0xCD853F },
+        { x: 9920, y: height - 290, w: 110, h: 32, color: 0xD2691E }, // Slightly wider finish!
+      ],
+      
+      // LEVEL 5: Expert - EXTREME scroll, minimal platforms, multi-hazards! WORLD 1 FINALE!
+      5: [
+        // Section 1 (0-1500) - Brutal from the start
+        { x: 160, y: height - 240, w: 90, h: 32, color: 0xD2691E },
+        { x: 330, y: height - 400, w: 80, h: 32, color: 0xCD853F },
+        { x: 500, y: height - 270, w: 85, h: 32, color: 0xD2691E },
+        { x: 670, y: height - 450, w: 80, h: 32, color: 0xCD853F },
+        { x: 840, y: height - 320, w: 90, h: 32, color: 0xD2691E },
+        { x: 1010, y: height - 250, w: 85, h: 32, color: 0xCD853F },
+        { x: 1180, y: height - 410, w: 80, h: 32, color: 0xD2691E },
+        { x: 1350, y: height - 290, w: 90, h: 32, color: 0xCD853F },
+        { x: 1520, y: height - 460, w: 80, h: 32, color: 0xD2691E },
+        
+        // Section 2 (1500-3000) - Pixel-perfect jumps
+        { x: 1680, y: height - 330, w: 85, h: 32, color: 0xCD853F },
+        { x: 1850, y: height - 250, w: 90, h: 32, color: 0xD2691E },
+        { x: 2020, y: height - 420, w: 80, h: 32, color: 0xCD853F },
+        { x: 2190, y: height - 300, w: 85, h: 32, color: 0xD2691E },
+        { x: 2360, y: height - 240, w: 90, h: 32, color: 0xCD853F },
+        { x: 2530, y: height - 450, w: 80, h: 32, color: 0xD2691E },
+        { x: 2700, y: height - 310, w: 85, h: 32, color: 0xCD853F },
+        { x: 2870, y: height - 270, w: 90, h: 32, color: 0xD2691E },
+        
+        // Section 3 (3000-4500) - Multi-hazard gauntlet
+        { x: 3030, y: height - 430, w: 80, h: 32, color: 0xCD853F },
+        { x: 3200, y: height - 290, w: 85, h: 32, color: 0xD2691E },
+        { x: 3370, y: height - 460, w: 80, h: 32, color: 0xCD853F },
+        { x: 3540, y: height - 320, w: 90, h: 32, color: 0xD2691E },
+        { x: 3710, y: height - 250, w: 85, h: 32, color: 0xCD853F },
+        { x: 3880, y: height - 410, w: 80, h: 32, color: 0xD2691E },
+        { x: 4050, y: height - 280, w: 90, h: 32, color: 0xCD853F },
+        { x: 4220, y: height - 440, w: 80, h: 32, color: 0xD2691E },
+        { x: 4390, y: height - 300, w: 85, h: 32, color: 0xCD853F },
+        
+        // Section 4 (4500-6000) - Relentless assault
+        { x: 4550, y: height - 260, w: 90, h: 32, color: 0xD2691E },
+        { x: 4720, y: height - 420, w: 80, h: 32, color: 0xCD853F },
+        { x: 4890, y: height - 310, w: 85, h: 32, color: 0xD2691E },
+        { x: 5060, y: height - 250, w: 90, h: 32, color: 0xCD853F },
+        { x: 5230, y: height - 450, w: 80, h: 32, color: 0xD2691E },
+        { x: 5400, y: height - 320, w: 85, h: 32, color: 0xCD853F },
+        { x: 5570, y: height - 270, w: 90, h: 32, color: 0xD2691E },
+        { x: 5740, y: height - 430, w: 80, h: 32, color: 0xCD853F },
+        { x: 5910, y: height - 290, w: 85, h: 32, color: 0xD2691E },
+        
+        // Section 5 (6000-7500) - Expert endurance
+        { x: 6070, y: height - 460, w: 80, h: 32, color: 0xCD853F },
+        { x: 6240, y: height - 330, w: 90, h: 32, color: 0xD2691E },
+        { x: 6410, y: height - 250, w: 85, h: 32, color: 0xCD853F },
+        { x: 6580, y: height - 410, w: 80, h: 32, color: 0xD2691E },
+        { x: 6750, y: height - 280, w: 90, h: 32, color: 0xCD853F },
+        { x: 6920, y: height - 440, w: 80, h: 32, color: 0xD2691E },
+        { x: 7090, y: height - 300, w: 85, h: 32, color: 0xCD853F },
+        { x: 7260, y: height - 260, w: 90, h: 32, color: 0xD2691E },
+        { x: 7430, y: height - 420, w: 80, h: 32, color: 0xCD853F },
+        
+        // Section 6 (7500-9000) - Maximum difficulty
+        { x: 7590, y: height - 310, w: 85, h: 32, color: 0xD2691E },
+        { x: 7760, y: height - 250, w: 90, h: 32, color: 0xCD853F },
+        { x: 7930, y: height - 450, w: 80, h: 32, color: 0xD2691E },
+        { x: 8100, y: height - 320, w: 85, h: 32, color: 0xCD853F },
+        { x: 8270, y: height - 270, w: 90, h: 32, color: 0xD2691E },
+        { x: 8440, y: height - 430, w: 80, h: 32, color: 0xCD853F },
+        { x: 8610, y: height - 290, w: 85, h: 32, color: 0xD2691E },
+        { x: 8780, y: height - 460, w: 80, h: 32, color: 0xCD853F },
+        { x: 8950, y: height - 330, w: 90, h: 32, color: 0xD2691E },
+        
+        // Section 7 (9000-10500) - Almost escaped!
+        { x: 9110, y: height - 250, w: 85, h: 32, color: 0xCD853F },
+        { x: 9280, y: height - 410, w: 80, h: 32, color: 0xD2691E },
+        { x: 9450, y: height - 280, w: 90, h: 32, color: 0xCD853F },
+        { x: 9620, y: height - 440, w: 80, h: 32, color: 0xD2691E },
+        { x: 9790, y: height - 300, w: 85, h: 32, color: 0xCD853F },
+        { x: 9960, y: height - 260, w: 90, h: 32, color: 0xD2691E },
+        { x: 10130, y: height - 420, w: 80, h: 32, color: 0xCD853F },
+        { x: 10300, y: height - 310, w: 85, h: 32, color: 0xD2691E },
+        
+        // Section 8 (10500-12000) - World 1 FINALE!
+        { x: 10460, y: height - 250, w: 90, h: 32, color: 0xCD853F },
+        { x: 10630, y: height - 450, w: 80, h: 32, color: 0xD2691E },
+        { x: 10800, y: height - 320, w: 85, h: 32, color: 0xCD853F },
+        { x: 10970, y: height - 270, w: 90, h: 32, color: 0xD2691E },
+        { x: 11140, y: height - 430, w: 80, h: 32, color: 0xCD853F },
+        { x: 11310, y: height - 290, w: 85, h: 32, color: 0xD2691E },
+        { x: 11480, y: height - 460, w: 80, h: 32, color: 0xCD853F },
+        { x: 11650, y: height - 330, w: 90, h: 32, color: 0xD2691E },
+        { x: 11820, y: height - 260, w: 100, h: 32, color: 0xCD853F }, // Victory platform!
+        { x: 11970, y: height - 350, w: 120, h: 32, color: 0xD2691E }, // Wide finish line!
       ]
     };
     
