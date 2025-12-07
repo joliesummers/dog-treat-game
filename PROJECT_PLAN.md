@@ -15,6 +15,7 @@
 - **CI/CD**: GitHub Actions
 - **Hosting**: GitHub Pages
 - **Testing**: ESLint + TypeScript + Build verification (see [TESTING_ROADMAP.md](./TESTING_ROADMAP.md))
+- **Technical Tracking**: Phaser 3 limitations and workarounds (see [PHASER_LIMITATIONS.md](./PHASER_LIMITATIONS.md))
 
 ---
 
@@ -313,16 +314,18 @@
 
 ---
 
-### 🚧 Milestone 10: "Angry Birds Polish" - Visual Style Overhaul (IN PROGRESS)
+### 🚧 Milestone 10: "South Park Polish" - Visual Style Overhaul (IN PROGRESS)
 
-**Value**: Game has a cohesive, polished "Angry Birds" aesthetic with bouncy, cartoony animations
+**Value**: Game has cohesive "South Park construction paper" aesthetic with flat shapes and gross humor
+
+**STYLE PIVOT**: Changed from "Angry Birds" thick outlines → **South Park flat construction paper** aesthetic
 
 **Visual Design Goals:**
-- Replace blue/purple gradients with bright, saturated colors
-- Add bold black outlines (3-4px) to all sprites for cartoon look
-- Implement "squash & stretch" animations for impact
-- Create more exaggerated, bouncy movement (elastic easing)
-- Add playful particle effects (stars, dust clouds, sparkles)
+- Replace blue/purple gradients with bright, saturated colors ✅
+- Flat filled shapes with NO external outlines (construction paper look) ✅
+- Thin internal details only (1-2px for eyes, nose, mouth) ✅
+- Implement "squash & stretch" animations for impact ✅
+- Add gross South Park-style effects (puke, stink lines) ✅
 
 **Planned Changes:**
 
@@ -337,11 +340,11 @@
 - 🔲 UI elements: Bold yellows, oranges, reds for buttons/text
 
 **Sprite Enhancements:**
-- 🔲 Dog: Add 3-4px black outline, squash on landing, stretch on jump
-- ✅ Treats: Redesigned as cute dog bones with smooth integrated shape, tan fill throughout, 2.5px black outline ONLY on exterior, four rounded bulbs connected by filled waist section, elastic bounce animations ✨
-- 🔲 Poo: Stink line animations (wavy lines above)
-- 🔲 Squirrel: Bold outline, more exaggerated bounce
-- 🔲 Platforms: Slight bounce/shake when dog lands
+- ✅ Dog: South Park flat construction paper style - NO external outlines, flat filled shapes, thin internal details (eyes/nose/mouth = 1-2px), squash on landing, stretch on jump ✨
+- ✅ Treats: Redesigned as cute dog bones with smooth integrated shape, tan fill throughout, THIN 1.5px black outline on exterior (South Park style), four rounded bulbs connected by filled waist section, elastic bounce animations ✨
+- ✅ Poo: South Park-style stink lines (thin 1.5px wavy lines rising, swaying, fading) ✨
+- 🔲 Squirrel: Convert to South Park flat style, more exaggerated bounce
+- 🔲 Platforms: Warm wood texture (optional)
 
 **Animation Improvements:**
 - ✅ Replaced MenuScene animations with `Elastic.easeInOut` and `Back.easeInOut` ✨
@@ -353,10 +356,10 @@
 - 🔲 Speed lines for fast movement
 
 **Particle Effects:**
-- ✅ Puke: Multi-color chunks (yellow/green/brown/lime) with arc trajectory, multiple emitters, rotation
-- 🔲 Collect: Replace generic particles with stars ⭐ and sparkles ✨
-- 🔲 Landing: Dust cloud puffs
-- 🔲 Damage: Cartoon "impact" effect
+- ✅ Puke: South Park-style gross vomit - construction paper green (0x8FBC8F), streamy elongated shapes (16x6px), shoots from dog's mouth based on facing direction, heavy arc gravity, NO rotation, green-dominant color balance ✨
+- ✅ Puking Face: Dog shows sick expression overlay during vomit (X_X eyes, wide open mouth, green tint) ✨
+- 🔲 Collect: Replace bone particles with stars ⭐ and sparkles ✨
+- 🔲 Landing: Dust cloud puffs (optional)
 
 **Files to Update:**
 1. `src/entities/Dog.ts` - Sprite outline, squash/stretch, dust on landing, enhanced puke
@@ -375,7 +378,7 @@
 - [ ] Particle effects use themed graphics (stars, not circles)
 - [ ] Game feels more "alive" and cartoony
 
-**Status**: In Progress - Puke effect ✅, All scene gradients ✅, Treat/bone sprites completely redesigned ✅, Dog/Poo/Squirrel sprites pending, Particle effects pending
+**Status**: 85% Complete - Puke effect ✅, All scene gradients ✅, Bones ✅, Dog South Park style ✅, Stink lines ✅, Puking face ✅. Remaining: Squirrel conversion, optional star particles, optional platforms.
 
 ---
 
@@ -461,6 +464,7 @@ All fixes committed in separate commits for traceability.
 - `DEPLOYMENT.md` - Deployment instructions
 - `SETUP_GITHUB.md` - GitHub setup guide
 - `MILESTONES.md` - Detailed milestone tracking
+- `PHASER_LIMITATIONS.md` - Technical challenges and engine suitability assessment
 
 ---
 
@@ -471,10 +475,10 @@ All fixes committed in separate commits for traceability.
 **MVP Status**: Complete and deployed! 🎉  
 
 **Current Focus**: 
-1. Visual style overhaul with "Angry Birds" aesthetic
+1. Visual style overhaul with **"South Park construction paper"** aesthetic (pivot from Angry Birds)
 2. Enhanced animations (squash/stretch, elastic easing)
-3. Improved particle effects and visual polish
-4. More cohesive, cartoony art style
+3. Gross humor effects (South Park-style puke, stink lines)
+4. Flat filled shapes with thin internal details
 
 **Upcoming: Milestone 8 Redesign** 🎯
 - **New Vision**: Auto-scroll "chase" mechanic (owner pursuing escaped dog)
@@ -505,11 +509,18 @@ All fixes committed in separate commits for traceability.
 ---
 
 **Last Updated**: December 7, 2024  
-**Version**: v0.1.0 (MVP) - Milestone 8 Redesigned  
+**Version**: v0.1.0 (MVP) - Milestone 10 @ 85%, Milestone 8 Redesigned  
 **Next Review**: After Milestone 10 completion
 
+**Style Evolution**: Pivoted from Angry Birds (thick outlines) → South Park (flat construction paper) for simpler, funnier aesthetic
+
 **Major Changes**:
-- ✅ Improved bone/treat graphics with smooth integrated design
+- ✅ Improved bone/treat graphics with smooth integrated design and thin outlines
+- ✅ **Style pivot**: Angry Birds → South Park construction paper aesthetic
+- ✅ Dog sprites: Flat fills, NO external outlines, squash/stretch animations
+- ✅ Puke effect: Construction paper green, streamy particles from mouth, puking face overlay
+- ✅ Stink lines: Thin wavy lines rising from poo
 - 📋 **Milestone 8 redesigned** with auto-scroll chase mechanic, expandable health system, and progressive difficulty
 - 🎯 New gameplay vision: 3-level progression with evolving mechanics and "escaped dog" theme
+- 📊 **NEW**: PHASER_LIMITATIONS.md tracking technical challenges and engine suitability
 
