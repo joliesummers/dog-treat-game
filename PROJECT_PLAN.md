@@ -404,6 +404,8 @@
 
 **Value**: Game has cohesive "South Park construction paper" aesthetic with flat shapes and gross humor
 
+**Status**: ✅ **COMPLETE** - All visual polish implemented!
+
 **STYLE PIVOT**: Changed from "Angry Birds" thick outlines → **South Park flat construction paper** aesthetic
 
 **Visual Design Goals:**
@@ -663,12 +665,47 @@ All fixes committed in separate commits for traceability.
 
 ---
 
+### 🔊 Milestone 10.5: "Sound & Music" - Audio Enhancement (IN PROGRESS)
+
+**Value**: Game feels alive with retro 8-bit sound effects and music
+
+**Status**: 🔧 Sound system implemented, placeholder sounds needed
+
+**Implemented:**
+- ✅ Sound system infrastructure (PreloadScene, GameScene, Dog.ts)
+- ✅ 7 sound events wired up (jump, land, eat, damage, distract, victory, gameover)
+- ✅ Safe playback (won't crash if sounds missing)
+- ✅ Volume-balanced (0.2-0.6 range)
+- ✅ Sound callbacks in Dog entity
+- ✅ SOUND_EFFECTS.md complete guide
+
+**⚠️ PLACEHOLDER SOUNDS NEEDED:**
+- 🔲 Generate temporary .wav files (see `GENERATE_PLACEHOLDER_SOUNDS.md`)
+- 🔲 Add files to `public/assets/audio/`
+- 🔲 Test all 7 sounds in-game
+- 📋 **FUTURE**: Replace placeholders with proper 8-bit sounds
+
+**Optional (Future):**
+- 📋 Background music - Menu theme
+- 📋 Background music - Gameplay theme (speeds up per level?)
+- 📋 Music volume control
+- 📋 Sound effects toggle
+
+**Files:**
+- `SOUND_EFFECTS.md` - Professional sound generation guide
+- `GENERATE_PLACEHOLDER_SOUNDS.md` - Quick placeholder setup
+- `src/scenes/PreloadScene.ts` - Loads audio files
+- `src/scenes/GameScene.ts` - Plays sound effects
+- `src/entities/Dog.ts` - Sound callbacks
+
+---
+
 ## Post-MVP Ideas (Backlog)
 
 ### High Priority
 - **More dog breeds** - Chihuahua (jumps high), Corgi (fast runner), Husky (strong/tanky)
-- **Sound effects** - Jump, eat, damage, win/lose
-- **Background music** - Looping 8-bit chiptune track
+- ✅ ~~**Sound effects**~~ - System implemented, needs placeholder files
+- **Background music** - Looping 8-bit chiptune track (planned)
 
 ### Medium Priority
 - **Power-ups** - Speed boost, invincibility star, magnet for treats

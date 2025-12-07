@@ -2,6 +2,9 @@
 
 **How to Generate & Add Retro 8-bit Sounds**
 
+**⚠️ NOTE**: For quick testing, see `GENERATE_PLACEHOLDER_SOUNDS.md` for temporary sounds.  
+This guide is for creating **professional, polished** 8-bit sounds for final release.
+
 ---
 
 ## 🎵 Sound Effect List
