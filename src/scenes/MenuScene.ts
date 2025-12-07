@@ -81,7 +81,7 @@ export class MenuScene extends Phaser.Scene {
     });
     
     playButton.on('pointerdown', () => {
-      this.scene.start('BreedSelectScene');
+      this.scene.start('LevelSelectScene');
     });
     
     // Keyboard control
@@ -100,7 +100,7 @@ export class MenuScene extends Phaser.Scene {
     
     // Start game function
     const startGame = () => {
-      this.scene.start('BreedSelectScene');
+      this.scene.start('LevelSelectScene');
     };
     
     // Add keyboard handlers (using 'on' not 'once' so it works every time)

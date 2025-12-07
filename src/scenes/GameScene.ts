@@ -38,7 +38,6 @@ export class GameScene extends Phaser.Scene {
   create() {
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
-    const levelWidth = width * 5; // 5x wider level for scrolling!
     
     // Reset game state completely
     this.gameOver = false;
@@ -48,12 +47,21 @@ export class GameScene extends Phaser.Scene {
     this.badItems = [];
     this.squirrels = [];
     
+    // Get selected level from registry (set by LevelSelectScene)
+    const selectedLevel = this.registry.get('selectedLevel') as number;
+    if (selectedLevel) {
+      this.currentLevel = selectedLevel;
+    }
+    
     // Get UI scene reference and initialize health system
     this.uiScene = this.scene.get('UIScene') as UIScene;
     
     // Initialize health system based on current level config
     this.levelConfig = getCurrentLevelConfig(this.currentLevel);
     this.uiScene.initializeHealthSystem(this.levelConfig);
+    
+    // Set level width based on config
+    const levelWidth = this.levelConfig.levelWidth;
     
     // Set world bounds to extended level size
     this.physics.world.setBounds(0, 0, levelWidth, height);

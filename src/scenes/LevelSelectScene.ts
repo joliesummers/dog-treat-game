@@ -2,10 +2,20 @@ import Phaser from 'phaser';
 import { LEVEL_CONFIGS } from '../types/LevelConfig';
 
 export class LevelSelectScene extends Phaser.Scene {
-  private unlockedLevels: number = 3; // TODO: Load from localStorage later
+  private unlockedLevels: number = 1; // Start with only Level 1 unlocked
   
   constructor() {
     super('LevelSelectScene');
+  }
+  
+  init() {
+    // Load unlocked levels from localStorage
+    const saved = localStorage.getItem('unlockedLevels');
+    if (saved) {
+      this.unlockedLevels = parseInt(saved, 10);
+    } else {
+      this.unlockedLevels = 1; // Default: only Level 1 unlocked
+    }
   }
   
   create() {
@@ -59,6 +69,30 @@ export class LevelSelectScene extends Phaser.Scene {
     this.input.keyboard?.on('keydown-ONE', () => this.startLevel(1));
     this.input.keyboard?.on('keydown-TWO', () => this.startLevel(2));
     this.input.keyboard?.on('keydown-THREE', () => this.startLevel(3));
+    
+    // DEBUG MODE: Press L to unlock all levels for testing
+    this.input.keyboard?.on('keydown-L', () => {
+      this.unlockedLevels = 3;
+      localStorage.setItem('unlockedLevels', '3');
+      this.scene.restart(); // Refresh the scene to show unlocked levels
+      
+      // Visual feedback
+      const debugText = this.add.text(width / 2, height - 100, '🔓 ALL LEVELS UNLOCKED (Debug Mode)', {
+        fontSize: '20px',
+        color: '#FFD700',
+        fontStyle: 'bold',
+        stroke: '#000000',
+        strokeThickness: 4
+      }).setOrigin(0.5);
+      
+      this.tweens.add({
+        targets: debugText,
+        alpha: 0,
+        duration: 2000,
+        delay: 1000,
+        onComplete: () => debugText.destroy()
+      });
+    });
   }
   
   private createLevelCard(levelNumber: number, name: string, description: string, x: number, y: number, unlocked: boolean) {
