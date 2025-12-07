@@ -59,31 +59,73 @@ export class Dog {
       
       if (breedKey === 'pug') {
           // PUG - Stocky, flat face, curly tail, compact
-          graphics.fillStyle(this.breed.color, 1);
+          const outlineWidth = 3;
+          const outlineColor = 0x000000;
           
           // Body (shorter, stockier)
+          graphics.fillStyle(this.breed.color, 1);
           graphics.fillRoundedRect(10, 14, 28, 18, 8);
+          graphics.lineStyle(outlineWidth, outlineColor, 1);
+          graphics.strokeRoundedRect(10, 14, 28, 18, 8);
           
           // Head (round, large relative to body)
+          graphics.lineStyle(0, 0x000000, 0);
+          graphics.fillStyle(this.breed.color, 1);
           graphics.fillCircle(42, 18, 14);
+          graphics.lineStyle(outlineWidth, outlineColor, 1);
+          graphics.strokeCircle(42, 18, 14);
           
           // Flat face characteristic - add a lighter muzzle area
+          graphics.lineStyle(0, 0x000000, 0);
           graphics.fillStyle(0xE6D4B5, 1); // Lighter tan for muzzle
           graphics.fillCircle(48, 20, 8);
+          graphics.lineStyle(outlineWidth, outlineColor, 1);
+          graphics.strokeCircle(48, 20, 8);
           
           // Small floppy ears (close to head)
+          graphics.lineStyle(0, 0x000000, 0);
           graphics.fillStyle(this.breed.color, 1);
           graphics.fillEllipse(36, 12, 8, 10);
+          graphics.lineStyle(outlineWidth, outlineColor, 1);
+          graphics.strokeEllipse(36, 12, 8, 10);
+          
+          graphics.lineStyle(0, 0x000000, 0);
+          graphics.fillStyle(this.breed.color, 1);
           graphics.fillEllipse(48, 12, 8, 10);
+          graphics.lineStyle(outlineWidth, outlineColor, 1);
+          graphics.strokeEllipse(48, 12, 8, 10);
           
           // Curly tail (signature pug curl!)
+          graphics.lineStyle(0, 0x000000, 0);
+          graphics.fillStyle(this.breed.color, 1);
           graphics.fillCircle(8, 18, 7);
+          graphics.lineStyle(outlineWidth, outlineColor, 1);
+          graphics.strokeCircle(8, 18, 7);
+          
+          graphics.lineStyle(0, 0x000000, 0);
+          graphics.fillStyle(this.breed.color, 1);
           graphics.fillCircle(6, 14, 5);
+          graphics.lineStyle(outlineWidth, outlineColor, 1);
+          graphics.strokeCircle(6, 14, 5);
           
           // Short legs
+          graphics.lineStyle(0, 0x000000, 0);
+          graphics.fillStyle(this.breed.color, 1);
           graphics.fillRect(14, 28, 7, 8);
+          graphics.lineStyle(outlineWidth, outlineColor, 1);
+          graphics.strokeRect(14, 28, 7, 8);
+          
+          graphics.lineStyle(0, 0x000000, 0);
+          graphics.fillStyle(this.breed.color, 1);
           graphics.fillRect(24, 28, 7, 8);
+          graphics.lineStyle(outlineWidth, outlineColor, 1);
+          graphics.strokeRect(24, 28, 7, 8);
+          
+          graphics.lineStyle(0, 0x000000, 0);
+          graphics.fillStyle(this.breed.color, 1);
           graphics.fillRect(30, 28, 7, 8);
+          graphics.lineStyle(outlineWidth, outlineColor, 1);
+          graphics.strokeRect(30, 28, 7, 8);
           
           // Face details - BIG expressive eyes
           graphics.fillStyle(0x000000, 1);
@@ -111,32 +153,79 @@ export class Dog {
           
       } else {
         // GOLDEN RETRIEVER - Athletic, longer snout, fluffy tail
-        graphics.fillStyle(this.breed.color, 1); // Golden color
+        const outlineWidth = 3;
+        const outlineColor = 0x000000;
           
           // Body (longer, athletic)
+          graphics.fillStyle(this.breed.color, 1);
           graphics.fillRoundedRect(8, 14, 36, 18, 6);
+          graphics.lineStyle(outlineWidth, outlineColor, 1);
+          graphics.strokeRoundedRect(8, 14, 36, 18, 6);
           
           // Head (oval, elegant)
+          graphics.lineStyle(0, 0x000000, 0);
+          graphics.fillStyle(this.breed.color, 1);
           graphics.fillEllipse(46, 18, 14, 12);
+          graphics.lineStyle(outlineWidth, outlineColor, 1);
+          graphics.strokeEllipse(46, 18, 14, 12);
           
           // Longer snout (golden characteristic)
+          graphics.lineStyle(0, 0x000000, 0);
           graphics.fillStyle(0xE5C392, 1); // Lighter golden for snout
           graphics.fillEllipse(52, 20, 10, 8);
+          graphics.lineStyle(outlineWidth, outlineColor, 1);
+          graphics.strokeEllipse(52, 20, 10, 8);
           
           // Pointed upright ears
+          graphics.lineStyle(0, 0x000000, 0);
           graphics.fillStyle(this.breed.color, 1);
           graphics.fillTriangle(38, 10, 42, 4, 46, 10);
+          graphics.lineStyle(outlineWidth, outlineColor, 1);
+          graphics.strokeTriangle(38, 10, 42, 4, 46, 10);
+          
+          graphics.lineStyle(0, 0x000000, 0);
+          graphics.fillStyle(this.breed.color, 1);
           graphics.fillTriangle(46, 10, 50, 4, 54, 10);
+          graphics.lineStyle(outlineWidth, outlineColor, 1);
+          graphics.strokeTriangle(46, 10, 50, 4, 54, 10);
           
           // Fluffy tail (signature golden tail!)
+          graphics.lineStyle(0, 0x000000, 0);
+          graphics.fillStyle(this.breed.color, 1);
           graphics.fillEllipse(6, 18, 12, 10);
+          graphics.lineStyle(outlineWidth, outlineColor, 1);
+          graphics.strokeEllipse(6, 18, 12, 10);
+          
+          graphics.lineStyle(0, 0x000000, 0);
+          graphics.fillStyle(this.breed.color, 1);
           graphics.fillEllipse(2, 16, 8, 8);
+          graphics.lineStyle(outlineWidth, outlineColor, 1);
+          graphics.strokeEllipse(2, 16, 8, 8);
           
           // Longer legs (athletic build)
+          graphics.lineStyle(0, 0x000000, 0);
+          graphics.fillStyle(this.breed.color, 1);
           graphics.fillRect(12, 28, 6, 10);
+          graphics.lineStyle(outlineWidth, outlineColor, 1);
+          graphics.strokeRect(12, 28, 6, 10);
+          
+          graphics.lineStyle(0, 0x000000, 0);
+          graphics.fillStyle(this.breed.color, 1);
           graphics.fillRect(20, 28, 6, 10);
+          graphics.lineStyle(outlineWidth, outlineColor, 1);
+          graphics.strokeRect(20, 28, 6, 10);
+          
+          graphics.lineStyle(0, 0x000000, 0);
+          graphics.fillStyle(this.breed.color, 1);
           graphics.fillRect(30, 28, 6, 10);
+          graphics.lineStyle(outlineWidth, outlineColor, 1);
+          graphics.strokeRect(30, 28, 6, 10);
+          
+          graphics.lineStyle(0, 0x000000, 0);
+          graphics.fillStyle(this.breed.color, 1);
           graphics.fillRect(38, 28, 6, 10);
+          graphics.lineStyle(outlineWidth, outlineColor, 1);
+          graphics.strokeRect(38, 28, 6, 10);
           
           // Face details - Friendly golden eyes
           graphics.fillStyle(0x000000, 1);
@@ -221,11 +310,31 @@ export class Dog {
       const jumpMultiplier = this.isDistracted ? 0.7 : 1.0;
       this.sprite.setVelocityY(this.JUMP_VELOCITY * jumpMultiplier);
       this.isJumping = true;
+      
+      // STRETCH animation on jump (extend vertically, compress horizontally)
+      this.scene.tweens.add({
+        targets: this.sprite,
+        scaleY: 1.2,
+        scaleX: 0.9,
+        duration: 100,
+        yoyo: true,
+        ease: 'Quad.easeOut'
+      });
     }
     
-    // Update jump state
+    // Update jump state and add SQUASH animation on landing
     if (onGround && this.isJumping) {
       this.isJumping = false;
+      
+      // SQUASH animation on landing (compress vertically, expand horizontally)
+      this.scene.tweens.add({
+        targets: this.sprite,
+        scaleY: 0.8,
+        scaleX: 1.1,
+        duration: 150,
+        yoyo: true,
+        ease: 'Back.easeOut'
+      });
     }
   }
   
