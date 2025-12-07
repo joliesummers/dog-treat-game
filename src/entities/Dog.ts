@@ -429,13 +429,13 @@ export class Dog {
     
     // Pure particle puke effect - no emojis, just chunks from mouth!
     
-    // Create multi-colored puke particle textures
+    // Create GROSS South Park-style puke textures (murky, chunky, disgusting)
     const pukeColors = [
-      { name: 'puke-green', color: 0x7FFF00, size: 6 },      // Chartreuse green
-      { name: 'puke-yellow', color: 0xFFFF00, size: 5 },     // Bright yellow
-      { name: 'puke-brown', color: 0x8B4513, size: 4 },      // Saddle brown
-      { name: 'puke-tan', color: 0xD2B48C, size: 3 },        // Tan chunks
-      { name: 'puke-lime', color: 0x9ACD32, size: 7 }        // Yellow-green
+      { name: 'puke-green', color: 0x4A5D23, size: 10 },     // Dark murky green
+      { name: 'puke-yellow', color: 0xB8860B, size: 8 },     // Dark goldenrod (gross yellow)
+      { name: 'puke-brown', color: 0x654321, size: 12 },     // Dark brown chunks
+      { name: 'puke-tan', color: 0x8B7355, size: 6 },        // Murky tan
+      { name: 'puke-lime', color: 0x556B2F, size: 9 }        // Dark olive green
     ];
     
     // Generate textures for each color if they don't exist
@@ -450,59 +450,63 @@ export class Dog {
       }
     });
     
-    // Create multiple particle emitters for variety
+    // GROSS South Park-style stream of vomit - heavy, chunky, arcing forward!
     const particleEmitters: Phaser.GameObjects.Particles.ParticleEmitter[] = [];
     
-    // Main spray particles (green/yellow mix) - FROM MOUTH!
-    const mainSpray = this.scene.add.particles(mouthX, mouthY, 'puke-green', {
-      speed: { min: 80, max: 180 },
-      angle: { min: -30, max: 30 },
-      scale: { start: 1.2, end: 0 },
-      alpha: { start: 0.9, end: 0 },
-      lifespan: 800,
-      quantity: 12,
-      gravityY: 250,
-      rotate: { min: 0, max: 360 }
-    });
-    particleEmitters.push(mainSpray);
+    // Calculate direction based on which way dog is facing
+    const sprayDirection = facingDirection > 0 ? 0 : 180; // 0 = right, 180 = left
     
-    // Yellow chunks (bigger, slower) - FROM MOUTH!
-    const yellowChunks = this.scene.add.particles(mouthX, mouthY, 'puke-yellow', {
-      speed: { min: 60, max: 140 },
-      angle: { min: -20, max: 40 },
-      scale: { start: 1.5, end: 0.3 },
-      alpha: { start: 1, end: 0 },
-      lifespan: 900,
-      quantity: 8,
-      gravityY: 280,
-      rotate: { min: -180, max: 180 }
+    // Main chunky stream (dark green/brown mix) - FROM MOUTH!
+    const mainStream = this.scene.add.particles(mouthX, mouthY, 'puke-green', {
+      speed: { min: 120, max: 200 },
+      angle: { min: sprayDirection - 15, max: sprayDirection + 15 }, // Tight forward arc
+      scale: { start: 1.5, end: 0.8 }, // Stays chunky, doesn't disappear
+      alpha: { start: 1, end: 0.3 },
+      lifespan: 600,
+      quantity: 20, // More particles for stream effect
+      gravityY: 400, // Heavy gravity for arc
+      rotate: 0 // No rotation - just gross chunks
     });
-    particleEmitters.push(yellowChunks);
+    particleEmitters.push(mainStream);
     
-    // Brown bits (smaller, scattered) - FROM MOUTH!
-    const brownBits = this.scene.add.particles(mouthX, mouthY, 'puke-brown', {
-      speed: { min: 50, max: 120 },
-      angle: { min: -45, max: 45 },
-      scale: { start: 0.8, end: 0 },
-      alpha: { start: 0.8, end: 0 },
+    // Large brown chunks (heaviest) - FROM MOUTH!
+    const brownChunks = this.scene.add.particles(mouthX, mouthY, 'puke-brown', {
+      speed: { min: 100, max: 160 },
+      angle: { min: sprayDirection - 10, max: sprayDirection + 10 },
+      scale: { start: 1.8, end: 1.0 }, // Large chunky blobs
+      alpha: { start: 1, end: 0.5 },
       lifespan: 700,
-      quantity: 10,
-      gravityY: 300
-    });
-    particleEmitters.push(brownBits);
-    
-    // Lime green splatter (fast, spreads wide) - FROM MOUTH!
-    const limeSplatter = this.scene.add.particles(mouthX, mouthY, 'puke-lime', {
-      speed: { min: 100, max: 200 },
-      angle: { min: -50, max: 50 },
-      scale: { start: 1, end: 0 },
-      alpha: { start: 0.7, end: 0 },
-      lifespan: 650,
       quantity: 15,
-      gravityY: 200,
-      bounce: 0.3 // Some particles bounce!
+      gravityY: 450, // Very heavy
+      rotate: 0
     });
-    particleEmitters.push(limeSplatter);
+    particleEmitters.push(brownChunks);
+    
+    // Murky yellow liquid - FROM MOUTH!
+    const yellowLiquid = this.scene.add.particles(mouthX, mouthY, 'puke-yellow', {
+      speed: { min: 110, max: 180 },
+      angle: { min: sprayDirection - 12, max: sprayDirection + 12 },
+      scale: { start: 1.3, end: 0.6 },
+      alpha: { start: 0.9, end: 0.3 },
+      lifespan: 650,
+      quantity: 12,
+      gravityY: 420,
+      rotate: 0
+    });
+    particleEmitters.push(yellowLiquid);
+    
+    // Dark olive splatter - FROM MOUTH!
+    const oliveSplatter = this.scene.add.particles(mouthX, mouthY, 'puke-lime', {
+      speed: { min: 130, max: 190 },
+      angle: { min: sprayDirection - 18, max: sprayDirection + 18 },
+      scale: { start: 1.4, end: 0.7 },
+      alpha: { start: 0.95, end: 0.4 },
+      lifespan: 620,
+      quantity: 18,
+      gravityY: 430,
+      rotate: 0
+    });
+    particleEmitters.push(oliveSplatter);
     
     // Explode all particle systems
     particleEmitters.forEach(emitter => emitter.explode());
