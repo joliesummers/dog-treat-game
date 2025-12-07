@@ -37,8 +37,12 @@ export class GameScene extends Phaser.Scene {
 
   // Helper: Play sound effect (safe - won't crash if sound missing)
   private playSound(key: string, volume: number = 1.0) {
-    if (this.sound.get(key)) {
-      this.sound.play(key, { volume });
+    try {
+      if (this.sound.get(key)) {
+        this.sound.play(key, { volume });
+      }
+    } catch (error) {
+      // Silently fail if sound can't play
     }
   }
 
