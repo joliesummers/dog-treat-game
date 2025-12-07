@@ -26,34 +26,60 @@ export class Treat {
     if (!scene.textures.exists(textureKey)) {
       const graphics = scene.add.graphics();
       const boneColor = 0xFFE4B5; // Moccasin color for bone
-      const outlineColor = 0xD2B48C; // Tan outline
+      const outlineColor = 0x000000; // BLACK OUTLINE for Angry Birds style!
       
-      // Draw bone shape (two circles connected by rectangle)
-      const width = 12 * scale;
-      const height = 8 * scale;
+      // Draw realistic dog bone shape (dumbbell/hourglass)
+      const boneWidth = 16 * scale;
+      const boneHeight = 8 * scale;
       const centerX = 16 * scale;
-      const centerY = 12 * scale;
+      const centerY = 8 * scale;
+      const endRadius = 4 * scale;
+      const waistWidth = 2.5 * scale;
       
+      graphics.lineStyle(3 * scale, outlineColor, 1); // Thick outline!
       graphics.fillStyle(boneColor, 1);
-      graphics.lineStyle(2, outlineColor, 1);
       
-      // Left circle (bone end)
-      graphics.fillCircle(centerX - width/2, centerY - height/3, height/2);
-      graphics.strokeCircle(centerX - width/2, centerY - height/3, height/2);
-      graphics.fillCircle(centerX - width/2, centerY + height/3, height/2);
-      graphics.strokeCircle(centerX - width/2, centerY + height/3, height/2);
+      // Draw bone as a path (smooth dumbbell shape)
+      graphics.beginPath();
       
-      // Center bar
-      graphics.fillRect(centerX - width/2, centerY - height/4, width, height/2);
-      graphics.strokeRect(centerX - width/2, centerY - height/4, width, height/2);
+      // Left end (top knob)
+      graphics.arc(centerX - boneWidth/2, centerY - boneHeight/3, endRadius, 0, Math.PI * 2);
+      graphics.closePath();
+      graphics.fillPath();
+      graphics.strokePath();
       
-      // Right circle (bone end)
-      graphics.fillCircle(centerX + width/2, centerY - height/3, height/2);
-      graphics.strokeCircle(centerX + width/2, centerY - height/3, height/2);
-      graphics.fillCircle(centerX + width/2, centerY + height/3, height/2);
-      graphics.strokeCircle(centerX + width/2, centerY + height/3, height/2);
+      // Left end (bottom knob)
+      graphics.beginPath();
+      graphics.arc(centerX - boneWidth/2, centerY + boneHeight/3, endRadius, 0, Math.PI * 2);
+      graphics.closePath();
+      graphics.fillPath();
+      graphics.strokePath();
       
-      graphics.generateTexture(textureKey, 32 * scale, 24 * scale);
+      // Center waist (narrow middle)
+      graphics.beginPath();
+      graphics.moveTo(centerX - boneWidth/2 + endRadius, centerY - waistWidth/2);
+      graphics.lineTo(centerX + boneWidth/2 - endRadius, centerY - waistWidth/2);
+      graphics.lineTo(centerX + boneWidth/2 - endRadius, centerY + waistWidth/2);
+      graphics.lineTo(centerX - boneWidth/2 + endRadius, centerY + waistWidth/2);
+      graphics.closePath();
+      graphics.fillPath();
+      graphics.strokePath();
+      
+      // Right end (top knob)
+      graphics.beginPath();
+      graphics.arc(centerX + boneWidth/2, centerY - boneHeight/3, endRadius, 0, Math.PI * 2);
+      graphics.closePath();
+      graphics.fillPath();
+      graphics.strokePath();
+      
+      // Right end (bottom knob)
+      graphics.beginPath();
+      graphics.arc(centerX + boneWidth/2, centerY + boneHeight/3, endRadius, 0, Math.PI * 2);
+      graphics.closePath();
+      graphics.fillPath();
+      graphics.strokePath();
+      
+      graphics.generateTexture(textureKey, 32 * scale, 16 * scale);
       graphics.destroy();
     }
     
@@ -61,24 +87,25 @@ export class Treat {
     this.sprite = scene.physics.add.sprite(x, y, textureKey);
     this.sprite.setCollideWorldBounds(true);
     
-    // Add floating animation
+    // Add floating animation - BOUNCIER with Elastic easing!
     scene.tweens.add({
       targets: this.sprite,
-      y: y - 10,
-      duration: 1000,
+      y: y - 15, // Float higher
+      duration: 1200,
       yoyo: true,
       repeat: -1,
-      ease: 'Sine.easeInOut'
+      ease: 'Elastic.easeInOut' // Elastic bounce!
     });
     
-    // Add sparkle effect
+    // Add sparkle effect with Back easing
     scene.tweens.add({
       targets: this.sprite,
       alpha: 0.7,
-      duration: 500,
+      scale: 1.1,
+      duration: 600,
       yoyo: true,
       repeat: -1,
-      ease: 'Sine.easeInOut'
+      ease: 'Back.easeInOut' // Overshoot for cartoony effect
     });
   }
   

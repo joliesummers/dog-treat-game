@@ -14,10 +14,14 @@ export class BreedSelectScene extends Phaser.Scene {
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
     
-    // Background
+    // Set camera background to match gradient
+    this.cameras.main.setBackgroundColor('#FFCD56');
+    
+    // Background - Clean and simple!
     const sky = this.add.graphics();
-    sky.fillGradientStyle(0x667eea, 0x667eea, 0x764ba2, 0x764ba2, 1);
+    sky.fillGradientStyle(0xFFE082, 0xFFE082, 0xFFCD56, 0xFFCD56, 1); // Warm yellow gradient
     sky.fillRect(0, 0, width, height);
+    sky.setScrollFactor(0); // Fixed background
     
     // Title
     this.add.text(width / 2, 60, 'Choose Your Dog!', {

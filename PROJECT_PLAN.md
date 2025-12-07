@@ -206,6 +206,72 @@
 
 ---
 
+### 🚧 Milestone 10: "Angry Birds Polish" - Visual Style Overhaul (IN PROGRESS)
+
+**Value**: Game has a cohesive, polished "Angry Birds" aesthetic with bouncy, cartoony animations
+
+**Visual Design Goals:**
+- Replace blue/purple gradients with bright, saturated colors
+- Add bold black outlines (3-4px) to all sprites for cartoon look
+- Implement "squash & stretch" animations for impact
+- Create more exaggerated, bouncy movement (elastic easing)
+- Add playful particle effects (stars, dust clouds, sparkles)
+
+**Planned Changes:**
+
+**Color Palette Overhaul:**
+- ✅ Enhanced puke effect with multi-color chunks (yellow, green, brown, lime)
+- ✅ GameScene Sky: Bright cyan `0x4DD0E1 → 0xB2EBF2` ✨
+- ✅ MenuScene: Warm red-orange gradient `0xFF7043 → 0xEF5350` ✨
+- ✅ BreedSelectScene: Sunny yellow gradient `0xFFE082 → 0xFFCD56` ✨
+- ✅ HTML Background: Soft cyan `#B2EBF2 → #80DEEA` (complements game) ✨
+- ✅ Grass: Vibrant green `0x8BC34A`, `0x689F38` ✨
+- 🔲 Platforms: Warm wood tones with visible grain
+- 🔲 UI elements: Bold yellows, oranges, reds for buttons/text
+
+**Sprite Enhancements:**
+- 🔲 Dog: Add 3-4px black outline, squash on landing, stretch on jump
+- ✅ Treats: Redesigned as realistic dog bones (dumbbell shape with knobs), bold 3px black outline, elastic bounce with `Elastic.easeInOut` and `Back.easeInOut` ✨
+- 🔲 Poo: Stink line animations (wavy lines above)
+- 🔲 Squirrel: Bold outline, more exaggerated bounce
+- 🔲 Platforms: Slight bounce/shake when dog lands
+
+**Animation Improvements:**
+- ✅ Replaced MenuScene animations with `Elastic.easeInOut` and `Back.easeInOut` ✨
+- ✅ MenuScene title: Exaggerated bounce with `Back.easeInOut` (1.1 scale, 1200ms) ✨
+- ✅ Treat animations: Elastic floating and scale pulse ✨
+- 🔲 Add anticipation: Dog crouches before jumping
+- 🔲 Add follow-through: Treats lean toward dog before collection
+- 🔲 Dust clouds when dog lands
+- 🔲 Speed lines for fast movement
+
+**Particle Effects:**
+- ✅ Puke: Multi-color chunks (yellow/green/brown/lime) with arc trajectory, multiple emitters, rotation
+- 🔲 Collect: Replace generic particles with stars ⭐ and sparkles ✨
+- 🔲 Landing: Dust cloud puffs
+- 🔲 Damage: Cartoon "impact" effect
+
+**Files to Update:**
+1. `src/entities/Dog.ts` - Sprite outline, squash/stretch, dust on landing, enhanced puke
+2. `src/entities/Treat.ts` - Outline, elastic animations, star particles
+3. `src/entities/BadItem.ts` - Outline, stink lines
+4. `src/entities/Squirrel.ts` - Outline, exaggerated bounce
+5. `src/scenes/GameScene.ts` - Sky gradient, grass colors, platform rendering
+6. `src/scenes/MenuScene.ts` - Background gradient, title animation
+7. `src/scenes/BreedSelectScene.ts` - Background gradient, selection animations
+
+**Testing Checklist:**
+- [ ] All sprites have visible outlines
+- [ ] Animations feel bouncy and exaggerated
+- [ ] Color palette is cohesive and saturated
+- [ ] No blue/purple gradients remain
+- [ ] Particle effects use themed graphics (stars, not circles)
+- [ ] Game feels more "alive" and cartoony
+
+**Status**: In Progress - Puke effect ✅, All scene gradients ✅, Treat sprites/animations ✅, Dog/Poo/Squirrel sprites pending, Particle effects pending
+
+---
+
 ## Testing Strategy
 
 **See**: [TESTING_ROADMAP.md](./TESTING_ROADMAP.md) for detailed phased approach
@@ -261,7 +327,7 @@ All fixes committed in separate commits for traceability.
 - **Boss levels** - Special challenge levels with unique mechanics
 - **Mobile touch controls** - Virtual joystick for mobile play
 - **Achievements** - Complete all levels, no-damage run, speed runs
-- **Visual polish** - Replace placeholders with pixel art sprites
+- **Pixel art sprites** - Replace programmatic graphics with custom pixel art (after Milestone 10)
 
 ---
 
@@ -293,14 +359,18 @@ All fixes committed in separate commits for traceability.
 
 ## Development Status Summary
 
-**Completed**: 7 out of 9 milestones ✅  
+**Completed**: 7 out of 10 milestones ✅  
+**In Progress**: Milestone 10 - Angry Birds Polish 🎨  
 **MVP Status**: Complete and deployed! 🎉  
-**Next Steps**: 
-1. Share with 5-10 players for feedback
-2. Fix any critical bugs that emerge
-3. Decide: Add Golden Retriever (Milestone 7) OR Add more levels (Milestone 8)
+**Current Focus**: 
+1. Visual style overhaul with "Angry Birds" aesthetic
+2. Enhanced animations (squash/stretch, elastic easing)
+3. Improved particle effects and visual polish
+4. More cohesive, cartoony art style
 
-**Recommendation**: Get user feedback before adding more features. Focus on what players want most!
+**Next Steps After Milestone 10**: 
+- Share updated game with players for feedback
+- Consider Milestone 8 (more levels) based on player interest
 
 ---
 

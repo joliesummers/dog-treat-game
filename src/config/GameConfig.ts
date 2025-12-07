@@ -5,7 +5,7 @@ export const GameConfig: Phaser.Types.Core.GameConfig = {
   width: 800,
   height: 600,
   parent: 'game-container',
-  backgroundColor: '#87CEEB',
+  backgroundColor: '#B2EBF2', // Soft cyan to match our new palette
   physics: {
     default: 'arcade',
     arcade: {

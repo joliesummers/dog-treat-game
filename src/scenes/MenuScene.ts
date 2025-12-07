@@ -9,10 +9,14 @@ export class MenuScene extends Phaser.Scene {
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
     
-    // Animated background
+    // Set camera background to match gradient
+    this.cameras.main.setBackgroundColor('#EF5350');
+    
+    // Animated background - Angry Birds style!
     const sky = this.add.graphics();
-    sky.fillGradientStyle(0x4A90E2, 0x4A90E2, 0x7B68EE, 0x7B68EE, 1);
+    sky.fillGradientStyle(0xFF7043, 0xFF7043, 0xEF5350, 0xEF5350, 1); // Warm red-orange gradient
     sky.fillRect(0, 0, width, height);
+    sky.setScrollFactor(0); // Fixed background
     
     // Floating treats animation
     for (let i = 0; i < 8; i++) {
@@ -26,7 +30,7 @@ export class MenuScene extends Phaser.Scene {
         duration: 2000 + i * 200,
         yoyo: true,
         repeat: -1,
-        ease: 'Sine.easeInOut'
+        ease: 'Elastic.easeInOut' // Bouncier!
       });
     }
     
@@ -40,15 +44,15 @@ export class MenuScene extends Phaser.Scene {
       align: 'center'
     }).setOrigin(0.5);
     
-    // Bounce animation for title
+    // Bounce animation for title - MORE BOUNCY!
     this.tweens.add({
       targets: title,
-      scaleX: 1.05,
-      scaleY: 1.05,
-      duration: 1500,
+      scaleX: 1.1,
+      scaleY: 1.1,
+      duration: 1200,
       yoyo: true,
       repeat: -1,
-      ease: 'Sine.easeInOut'
+      ease: 'Back.easeInOut' // Overshoot for cartoonish effect
     });
     
     // Subtitle

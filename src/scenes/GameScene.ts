@@ -41,9 +41,9 @@ export class GameScene extends Phaser.Scene {
     // Set world bounds to extended level size
     this.physics.world.setBounds(0, 0, levelWidth, height);
     
-    // Add sky gradient background (extended for full level)
+    // Add sky gradient background - Angry Birds style! (extended for full level)
     const sky = this.add.graphics();
-    sky.fillGradientStyle(0x87CEEB, 0x87CEEB, 0xE0F6FF, 0xE0F6FF, 1);
+    sky.fillGradientStyle(0x4DD0E1, 0x4DD0E1, 0xB2EBF2, 0xB2EBF2, 1); // Bright cyan to light turquoise
     sky.fillRect(0, 0, levelWidth, height);
     sky.setScrollFactor(0.5); // Parallax effect for sky
     
@@ -55,13 +55,13 @@ export class GameScene extends Phaser.Scene {
     
     // Main ground (grass with texture) - extended for full level
     const ground = this.add.rectangle(levelWidth / 2, height - 32, levelWidth, 64);
-    ground.setFillStyle(0x228B22); // Grass green
-    ground.setStrokeStyle(2, 0x1A6B1A); // Darker green outline
+    ground.setFillStyle(0x8BC34A); // Vibrant Android green
+    ground.setStrokeStyle(3, 0x558B2F); // Darker saturated green outline
     this.platforms.add(ground);
     
     // Add grass texture details on top
     const grassGraphics = this.add.graphics();
-    grassGraphics.fillStyle(0x32CD32, 0.6); // Lime green for grass blades
+    grassGraphics.fillStyle(0x689F38, 0.7); // Darker vibrant green for grass blades
     for (let i = 0; i < levelWidth; i += 8) {
       const variation = Phaser.Math.Between(-4, 4);
       grassGraphics.fillRect(i, height - 64 + variation, 4, 8);

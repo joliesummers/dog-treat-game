@@ -305,21 +305,132 @@ export class Dog {
     // Start invincibility
     this.isInvincible = true;
     
-    // Create damage particle effect
-    const particles = this.scene.add.particles(this.sprite.x, this.sprite.y, 'dog-placeholder', {
-      speed: { min: 20, max: 80 },
-      scale: { start: 0.5, end: 0 },
-      alpha: { start: 0.8, end: 0 },
-      tint: 0xFF0000,
-      lifespan: 600,
-      quantity: 5,
-      blendMode: 'ADD'
+    // 🤮 ENHANCED PUKE EFFECT 🤮
+    
+    // Main puke emoji - bigger and more dramatic!
+    const mainPuke = this.scene.add.text(
+      this.sprite.x + 25,
+      this.sprite.y - 15,
+      '🤮',
+      { fontSize: '48px' }
+    );
+    
+    // Animate main puke in an arc
+    this.scene.tweens.add({
+      targets: mainPuke,
+      x: this.sprite.x + 100,
+      y: this.sprite.y + 30,
+      scaleX: 1.3,
+      scaleY: 0.8,
+      alpha: 0,
+      duration: 900,
+      ease: 'Quad.easeOut',
+      onComplete: () => {
+        mainPuke.destroy();
+      }
     });
     
-    particles.explode();
+    // Add smaller sick emoji that appears slightly delayed
+    const sickEmoji = this.scene.add.text(
+      this.sprite.x + 20,
+      this.sprite.y - 25,
+      '🤢',
+      { fontSize: '28px' }
+    );
     
-    this.scene.time.delayedCall(600, () => {
-      particles.destroy();
+    this.scene.tweens.add({
+      targets: sickEmoji,
+      y: this.sprite.y - 45,
+      alpha: 0,
+      duration: 600,
+      delay: 100,
+      ease: 'Sine.easeOut',
+      onComplete: () => {
+        sickEmoji.destroy();
+      }
+    });
+    
+    // Create multi-colored puke particle textures
+    const pukeColors = [
+      { name: 'puke-green', color: 0x7FFF00, size: 6 },      // Chartreuse green
+      { name: 'puke-yellow', color: 0xFFFF00, size: 5 },     // Bright yellow
+      { name: 'puke-brown', color: 0x8B4513, size: 4 },      // Saddle brown
+      { name: 'puke-tan', color: 0xD2B48C, size: 3 },        // Tan chunks
+      { name: 'puke-lime', color: 0x9ACD32, size: 7 }        // Yellow-green
+    ];
+    
+    // Generate textures for each color if they don't exist
+    pukeColors.forEach(({ name, color, size }) => {
+      if (!this.scene.textures.exists(name)) {
+        const graphics = this.scene.add.graphics();
+        graphics.fillStyle(color, 1);
+        // Make irregular shapes (not perfect circles)
+        graphics.fillEllipse(size / 2, size / 2, size, size * 0.8);
+        graphics.generateTexture(name, size, size);
+        graphics.destroy();
+      }
+    });
+    
+    // Create multiple particle emitters for variety
+    const particleEmitters: Phaser.GameObjects.Particles.ParticleEmitter[] = [];
+    
+    // Main spray particles (green/yellow mix)
+    const mainSpray = this.scene.add.particles(this.sprite.x + 25, this.sprite.y, 'puke-green', {
+      speed: { min: 80, max: 180 },
+      angle: { min: -30, max: 30 },
+      scale: { start: 1.2, end: 0 },
+      alpha: { start: 0.9, end: 0 },
+      lifespan: 800,
+      quantity: 12,
+      gravityY: 250,
+      rotate: { min: 0, max: 360 }
+    });
+    particleEmitters.push(mainSpray);
+    
+    // Yellow chunks (bigger, slower)
+    const yellowChunks = this.scene.add.particles(this.sprite.x + 25, this.sprite.y, 'puke-yellow', {
+      speed: { min: 60, max: 140 },
+      angle: { min: -20, max: 40 },
+      scale: { start: 1.5, end: 0.3 },
+      alpha: { start: 1, end: 0 },
+      lifespan: 900,
+      quantity: 8,
+      gravityY: 280,
+      rotate: { min: -180, max: 180 }
+    });
+    particleEmitters.push(yellowChunks);
+    
+    // Brown bits (smaller, scattered)
+    const brownBits = this.scene.add.particles(this.sprite.x + 25, this.sprite.y, 'puke-brown', {
+      speed: { min: 50, max: 120 },
+      angle: { min: -45, max: 45 },
+      scale: { start: 0.8, end: 0 },
+      alpha: { start: 0.8, end: 0 },
+      lifespan: 700,
+      quantity: 10,
+      gravityY: 300
+    });
+    particleEmitters.push(brownBits);
+    
+    // Lime green splatter (fast, spreads wide)
+    const limeSplatter = this.scene.add.particles(this.sprite.x + 25, this.sprite.y, 'puke-lime', {
+      speed: { min: 100, max: 200 },
+      angle: { min: -50, max: 50 },
+      scale: { start: 1, end: 0 },
+      alpha: { start: 0.7, end: 0 },
+      lifespan: 650,
+      quantity: 15,
+      gravityY: 200,
+      bounce: 0.3 // Some particles bounce!
+    });
+    particleEmitters.push(limeSplatter);
+    
+    // Explode all particle systems
+    particleEmitters.forEach(emitter => emitter.explode());
+    
+    // Clean up all particles after animation
+    this.scene.time.delayedCall(1000, () => {
+      particleEmitters.forEach(emitter => emitter.destroy());
     });
     
     // Visual feedback - flashing
