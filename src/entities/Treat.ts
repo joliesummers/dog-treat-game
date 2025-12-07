@@ -40,7 +40,7 @@ export class Treat {
       const rightX = centerX + boneLength/2;
       
       // First, fill all the shapes without outlines
-      graphics.lineStyle(0);
+      graphics.lineStyle(0, 0x000000, 0);
       graphics.fillStyle(boneColor, 1);
       
       // Fill all 4 bulbs
