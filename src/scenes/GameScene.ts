@@ -754,7 +754,10 @@ export class GameScene extends Phaser.Scene {
     const camera = this.cameras.main;
     const oldScrollX = camera.scrollX;
     const targetScrollX = camera.scrollX + scrollAmount;
-    const maxScrollX = camera.worldView.width - camera.width;
+    
+    // Use actual WORLD bounds, not camera view!
+    const worldBounds = this.physics.world.bounds;
+    const maxScrollX = worldBounds.width - camera.width;
     
     // Apply the scroll (capped at world bounds)
     camera.scrollX = Math.min(targetScrollX, maxScrollX);
@@ -768,7 +771,7 @@ export class GameScene extends Phaser.Scene {
         oldScrollX: oldScrollX.toFixed(1),
         newScrollX: camera.scrollX.toFixed(1),
         maxScrollX: maxScrollX.toFixed(1),
-        worldWidth: camera.worldView.width
+        worldWidth: worldBounds.width
       });
     }
   }
@@ -782,6 +785,8 @@ export class GameScene extends Phaser.Scene {
     
     // Check if dog is in danger zone
     if (dogX < dangerZoneRight) {
+      console.log('⚠️ DOG IN DANGER ZONE!', {dogX: dogX.toFixed(1), cameraLeftEdge: cameraLeftEdge.toFixed(1), dangerZoneRight: dangerZoneRight.toFixed(1)});
+      
       // Apply damage at intervals
       if (time - this.dangerZoneDamageTimer >= this.DANGER_ZONE_DAMAGE_INTERVAL) {
         this.dangerZoneDamageTimer = time;
@@ -789,6 +794,8 @@ export class GameScene extends Phaser.Scene {
         // Take danger zone damage
         const damageAmount = this.levelConfig.dangerZoneDamagePerSecond;
         const health = this.uiScene?.takeDamage(damageAmount) || 0;
+        
+        console.log('💔 DANGER ZONE DAMAGE! Health now:', health);
         
         // Visual feedback
         this.cameras.main.shake(100, 0.005);
@@ -817,6 +824,24 @@ export class GameScene extends Phaser.Scene {
     
     // Update player
     this.dog?.update();
+    
+    // Constrain dog to not go off left edge of camera (auto-scroll levels)
+    if (this.scrollSpeed > 0 && this.dog) {
+      const dogSprite = this.dog.getSprite();
+      const cameraLeftEdge = this.cameras.main.scrollX;
+      
+      // Don't let dog go past the left edge of the camera
+      if (dogSprite.x < cameraLeftEdge) {
+        dogSprite.x = cameraLeftEdge;
+        // Also stop leftward velocity
+        if (dogSprite.body && 'velocity' in dogSprite.body) {
+          const body = dogSprite.body as Phaser.Physics.Arcade.Body;
+          if (body.velocity.x < 0) {
+            body.velocity.x = 0;
+          }
+        }
+      }
+    }
     
     // Check if dog fell off the world
     if (this.dog && this.dog.getY() > this.cameras.main.height + 50) {
