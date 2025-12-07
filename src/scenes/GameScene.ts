@@ -751,15 +751,26 @@ export class GameScene extends Phaser.Scene {
     this.dangerZoneX += scrollAmount;
     
     // Force camera to scroll right by moving its position
-    // This overrides the follow behavior to create constant forward pressure
     const camera = this.cameras.main;
+    const oldScrollX = camera.scrollX;
     const targetScrollX = camera.scrollX + scrollAmount;
     const maxScrollX = camera.worldView.width - camera.width;
     
     // Apply the scroll (capped at world bounds)
     camera.scrollX = Math.min(targetScrollX, maxScrollX);
     
-    // If dog is too far to the left of camera, it will get caught by danger zone!
+    // Debug logging every 60 frames (once per second at 60fps)
+    if (this.time.now % 1000 < 16) {
+      console.log('📹 AutoScroll:', {
+        scrollSpeed: this.scrollSpeed,
+        delta: delta.toFixed(2),
+        scrollAmount: scrollAmount.toFixed(2),
+        oldScrollX: oldScrollX.toFixed(1),
+        newScrollX: camera.scrollX.toFixed(1),
+        maxScrollX: maxScrollX.toFixed(1),
+        worldWidth: camera.worldView.width
+      });
+    }
   }
   
   private checkDangerZoneCollision(time: number) {
