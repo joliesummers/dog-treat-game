@@ -100,7 +100,7 @@ export class LevelSelectScene extends Phaser.Scene {
   
   private createLevelCard(levelNumber: number, name: string, description: string, x: number, y: number, unlocked: boolean) {
     const cardWidth = 140;
-    const cardHeight = 240;
+    const cardHeight = 260;
     
     // Card background
     const card = this.add.rectangle(x, y, cardWidth, cardHeight, unlocked ? 0xFFFFFF : 0x666666, 0.9);
@@ -137,8 +137,8 @@ export class LevelSelectScene extends Phaser.Scene {
     }
     
     // Level number (big)
-    this.add.text(x, y - 80, `${levelNumber}`, {
-      fontSize: '64px',
+    this.add.text(x, y - 90, `${levelNumber}`, {
+      fontSize: '56px',
       color: unlocked ? '#4CAF50' : '#999999',
       fontStyle: 'bold',
       stroke: '#000000',
@@ -146,8 +146,8 @@ export class LevelSelectScene extends Phaser.Scene {
     }).setOrigin(0.5);
     
     // Level name
-    this.add.text(x, y - 10, name, {
-      fontSize: '16px',
+    this.add.text(x, y - 25, name, {
+      fontSize: '14px',
       color: unlocked ? '#000000' : '#666666',
       fontStyle: 'bold',
       align: 'center',
@@ -155,26 +155,27 @@ export class LevelSelectScene extends Phaser.Scene {
     }).setOrigin(0.5);
     
     // Description
-    this.add.text(x, y + 30, description, {
-      fontSize: '14px',
+    this.add.text(x, y + 10, description, {
+      fontSize: '11px',
       color: unlocked ? '#333333' : '#888888',
       align: 'center',
-      wordWrap: { width: cardWidth - 20 }
+      wordWrap: { width: cardWidth - 20 },
+      lineSpacing: 2
     }).setOrigin(0.5);
     
     // Health system badge
     const levelConfig = LEVEL_CONFIGS[levelNumber];
     const healthBadge = levelConfig.healthDisplay === 'hearts' ? '❤️❤️❤️' : '📊 Health Bar';
-    this.add.text(x, y + 70, healthBadge, {
-      fontSize: '14px',
+    this.add.text(x, y + 65, healthBadge, {
+      fontSize: '12px',
       color: unlocked ? '#4CAF50' : '#666666',
       fontStyle: 'bold'
     }).setOrigin(0.5);
     
     // Auto-scroll indicator
     if (levelConfig.autoScroll) {
-      this.add.text(x, y + 95, '⚡ Auto-Scroll', {
-        fontSize: '12px',
+      this.add.text(x, y + 88, '⚡ Auto-Scroll', {
+        fontSize: '11px',
         color: unlocked ? '#FF5722' : '#666666',
         fontStyle: 'bold'
       }).setOrigin(0.5);
@@ -182,8 +183,8 @@ export class LevelSelectScene extends Phaser.Scene {
     
     // Locked overlay
     if (!unlocked) {
-      this.add.text(x, y + 110, '🔒 LOCKED', {
-        fontSize: '16px',
+      this.add.text(x, y + 108, '🔒 LOCKED', {
+        fontSize: '14px',
         color: '#999999',
         fontStyle: 'bold'
       }).setOrigin(0.5);
