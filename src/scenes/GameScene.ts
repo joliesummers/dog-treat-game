@@ -105,9 +105,38 @@ export class GameScene extends Phaser.Scene {
     ];
     
     platformData.forEach(p => {
-      const platform = this.add.rectangle(p.x, p.y, p.w, p.h);
-      platform.setFillStyle(p.color);
-      platform.setStrokeStyle(3, p.color === 0xD2691E ? 0x8B4513 : 0xA0522D);
+      // Create wood texture platform with grain
+      const textureKey = `wood-platform-${p.w}x${p.h}`;
+      
+      if (!this.textures.exists(textureKey)) {
+        const graphics = this.add.graphics();
+        
+        // Base wood color
+        graphics.fillStyle(p.color, 1);
+        graphics.fillRect(0, 0, p.w, p.h);
+        
+        // Add wood grain lines (horizontal streaks)
+        graphics.lineStyle(1, p.color === 0xD2691E ? 0xA0522D : 0x8B4513, 0.4);
+        for (let i = 0; i < 8; i++) {
+          const y = Phaser.Math.Between(2, p.h - 2);
+          const startX = Phaser.Math.Between(0, p.w * 0.1);
+          const endX = Phaser.Math.Between(p.w * 0.8, p.w);
+          graphics.lineBetween(startX, y, endX, y);
+        }
+        
+        // Add darker top edge (shadow/depth)
+        graphics.lineStyle(2, 0x654321, 0.5);
+        graphics.lineBetween(0, 0, p.w, 0);
+        
+        // Add lighter bottom edge (highlight)
+        graphics.lineStyle(1, p.color === 0xD2691E ? 0xF4A460 : 0xDEB887, 0.6);
+        graphics.lineBetween(0, p.h - 1, p.w, p.h - 1);
+        
+        graphics.generateTexture(textureKey, p.w, p.h);
+        graphics.destroy();
+      }
+      
+      const platform = this.add.image(p.x, p.y, textureKey);
       if (this.platforms) {
         this.platforms.add(platform);
       }
