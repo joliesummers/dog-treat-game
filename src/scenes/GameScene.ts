@@ -218,8 +218,9 @@ export class GameScene extends Phaser.Scene {
     this.scrollSpeed = this.levelConfig.scrollSpeed;
     
     if (this.scrollSpeed > 0) {
-      // For auto-scroll levels: Follow dog but with offset for scroll
-      this.cameras.main.startFollow(this.dog!.getSprite(), false, 0.1, 0.1);
+      // For auto-scroll levels: DON'T follow dog - camera scrolls independently!
+      // Dog must keep up with camera or fall into danger zone
+      console.log('Auto-scroll enabled at ' + this.scrollSpeed + ' px/sec');
     } else {
       // For non-scroll levels: Normal follow
       this.cameras.main.startFollow(this.dog!.getSprite(), false, 0.1, 0.1);
