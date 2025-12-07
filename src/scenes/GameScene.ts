@@ -213,10 +213,17 @@ export class GameScene extends Phaser.Scene {
     
     // Camera follow player with bounds for extended level
     this.cameras.main.setBounds(0, 0, levelWidth, height);
-    this.cameras.main.startFollow(this.dog!.getSprite(), false, 0.1, 0.1);
     
     // Initialize auto-scroll system based on level config
     this.scrollSpeed = this.levelConfig.scrollSpeed;
+    
+    if (this.scrollSpeed > 0) {
+      // For auto-scroll levels: Follow dog but with offset for scroll
+      this.cameras.main.startFollow(this.dog!.getSprite(), false, 0.1, 0.1);
+    } else {
+      // For non-scroll levels: Normal follow
+      this.cameras.main.startFollow(this.dog!.getSprite(), false, 0.1, 0.1);
+    }
     
     // Create danger zone visual if enabled
     if (this.levelConfig.dangerZoneEnabled) {
@@ -705,31 +712,14 @@ export class GameScene extends Phaser.Scene {
     const dangerWidth = 80; // Width of danger zone gradient
     const height = this.cameras.main.height;
     
-    // Draw red gradient from left edge (MORE INTENSE)
-    // Start with opaque red, fade to transparent
+    // Draw red gradient from left edge
     for (let i = 0; i < dangerWidth; i++) {
       const alpha = 1 - (i / dangerWidth); // Fade from 1 to 0
-      this.dangerZoneGraphics.fillStyle(0xFF0000, alpha * 0.7); // Increased from 0.5 to 0.7
+      this.dangerZoneGraphics.fillStyle(0xFF0000, alpha * 0.7);
       this.dangerZoneGraphics.fillRect(i, 0, 1, height);
     }
     
-    // Add animated RIGHT arrows to show movement direction
-    const time = this.time.now / 200; // Animate over time
-    const arrowOffset = (time % 40) - 20; // -20 to 20 loop
-    
-    this.dangerZoneGraphics.fillStyle(0xFFFFFF, 0.8);
-    for (let y = 100; y < height - 100; y += 80) {
-      const arrowY = y + arrowOffset;
-      // Draw simple right arrow (triangle)
-      this.dangerZoneGraphics.fillTriangle(
-        50, arrowY,           // Left point
-        60, arrowY - 8,       // Top right
-        60, arrowY + 8        // Bottom right
-      );
-    }
-    
     // Add warning text
-    this.dangerZoneGraphics.fillStyle(0xFFFFFF, 1);
     const warningText = this.add.text(20, height / 2, '⚠️ DANGER ZONE ⚠️', {
       fontSize: '16px',
       color: '#ffffff',
@@ -747,12 +737,16 @@ export class GameScene extends Phaser.Scene {
     const scrollAmount = (this.scrollSpeed * delta) / 1000;
     this.dangerZoneX += scrollAmount;
     
-    // Update camera scroll position
-    const currentScrollX = this.cameras.main.scrollX;
-    this.cameras.main.scrollX = Math.min(
-      currentScrollX + scrollAmount,
-      this.cameras.main.worldView.width
-    );
+    // Force camera to scroll right by moving its position
+    // This overrides the follow behavior to create constant forward pressure
+    const camera = this.cameras.main;
+    const targetScrollX = camera.scrollX + scrollAmount;
+    const maxScrollX = camera.worldView.width - camera.width;
+    
+    // Apply the scroll (capped at world bounds)
+    camera.scrollX = Math.min(targetScrollX, maxScrollX);
+    
+    // If dog is too far to the left of camera, it will get caught by danger zone!
   }
   
   private checkDangerZoneCollision(time: number) {
