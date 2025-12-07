@@ -35,6 +35,13 @@ export class GameScene extends Phaser.Scene {
     this.levelConfig = getCurrentLevelConfig(1);
   }
 
+  // Helper: Play sound effect (safe - won't crash if sound missing)
+  private playSound(key: string, volume: number = 1.0) {
+    if (this.sound.get(key)) {
+      this.sound.play(key, { volume });
+    }
+  }
+
   create() {
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
@@ -158,7 +165,10 @@ export class GameScene extends Phaser.Scene {
       scene: this,
       x: 50,
       y: height - 100,
-      breed: selectedBreed
+      breed: selectedBreed,
+      onJump: () => this.playSound('jump', 0.3),
+      onLand: () => this.playSound('land', 0.2),
+      onDistracted: () => this.playSound('distract', 0.3)
     });
     
     // Set up collision between dog and platforms
@@ -463,6 +473,9 @@ export class GameScene extends Phaser.Scene {
       // Play collection animation
       treat.collect();
       
+      // Play eat sound effect
+      this.playSound('eat', 0.4);
+      
       // Update UI with points
       const currentScore = this.uiScene?.addPoints(points) || 0;
       const targetScore = this.uiScene?.getTargetScore() || 0;
@@ -473,6 +486,10 @@ export class GameScene extends Phaser.Scene {
     if (currentScore >= targetScore && !this.gameOver) {
       this.gameOver = true;
       this.physics.pause();
+      
+      // Play victory sound
+      this.playSound('victory', 0.6);
+      
       this.time.delayedCall(500, () => {
         this.scene.launch('LevelCompleteScene');
       });
@@ -486,6 +503,9 @@ export class GameScene extends Phaser.Scene {
     
     // Check if dog can take damage
     if (this.dog && this.dog.takeDamage()) {
+      // Play damage sound (puke/splat)
+      this.playSound('damage', 0.5);
+      
       // Take damage in UI
       const health = this.uiScene?.takeDamage() || 0;
       
@@ -499,6 +519,10 @@ export class GameScene extends Phaser.Scene {
   private triggerGameOver() {
     this.gameOver = true;
     this.physics.pause();
+    
+    // Play game over sound
+    this.playSound('gameover', 0.5);
+    
     this.time.delayedCall(500, () => {
       this.scene.launch('GameOverScene');
     });

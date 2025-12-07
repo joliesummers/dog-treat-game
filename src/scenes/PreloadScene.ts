@@ -41,7 +41,27 @@ export class PreloadScene extends Phaser.Scene {
       loadingText.destroy();
     });
     
-    // Assets will be loaded here in future milestones
+    // Load sound effects (8-bit retro style)
+    // Note: Sounds are optional - game works without them
+    this.load.audio('jump', 'assets/audio/jump.wav');
+    this.load.audio('eat', 'assets/audio/eat.wav');
+    this.load.audio('damage', 'assets/audio/damage.wav');
+    this.load.audio('distract', 'assets/audio/distract.wav');
+    this.load.audio('land', 'assets/audio/land.wav');
+    this.load.audio('victory', 'assets/audio/victory.wav');
+    this.load.audio('gameover', 'assets/audio/gameover.wav');
+    
+    // Background music (optional)
+    this.load.audio('menu-music', 'assets/audio/menu-music.wav');
+    this.load.audio('game-music', 'assets/audio/game-music.wav');
+    
+    // Suppress missing audio warnings (files are optional)
+    this.load.on('loaderror', (file: Phaser.Loader.File) => {
+      if (file.type === 'audio') {
+        // Silently skip missing audio files
+        return;
+      }
+    });
   }
 
   create() {

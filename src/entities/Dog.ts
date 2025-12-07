@@ -8,6 +8,9 @@ export interface DogConfig {
   y: number;
   texture?: string;
   breed?: BreedType;
+  onJump?: () => void;
+  onLand?: () => void;
+  onDistracted?: () => void;
 }
 
 export class Dog {
@@ -24,6 +27,11 @@ export class Dog {
   private MOVE_SPEED: number;
   private JUMP_VELOCITY: number;
   
+  // Sound callbacks
+  private onJump?: () => void;
+  private onLand?: () => void;
+  private onDistracted?: () => void;
+  
   // State
   private isJumping = false;
   private isInvincible = false;
@@ -38,6 +46,11 @@ export class Dog {
     // Set breed
     const breedKey = config.breed || 'pug';
     this.breed = DOG_BREEDS[breedKey];
+    
+    // Set sound callbacks
+    this.onJump = config.onJump;
+    this.onLand = config.onLand;
+    this.onDistracted = config.onDistracted;
     
     // Apply breed stats to movement
     this.MOVE_SPEED = this.BASE_MOVE_SPEED * this.breed.speed;
@@ -228,6 +241,9 @@ export class Dog {
       this.sprite.setVelocityY(this.JUMP_VELOCITY * jumpMultiplier);
       this.isJumping = true;
       
+      // Play jump sound
+      this.onJump?.();
+      
       // STRETCH animation on jump (extend vertically, compress horizontally)
       this.scene.tweens.add({
         targets: this.sprite,
@@ -242,6 +258,9 @@ export class Dog {
     // Update jump state and add SQUASH animation on landing
     if (onGround && this.isJumping) {
       this.isJumping = false;
+      
+      // Play land sound
+      this.onLand?.();
       
       // SQUASH animation on landing (compress vertically, expand horizontally)
       this.scene.tweens.add({
@@ -263,6 +282,9 @@ export class Dog {
     
     this.isDistracted = true;
     this.chasingSquirrel = true;
+    
+    // Play distraction sound
+    this.onDistracted?.();
     
     // Find nearest squirrel - get from scene registry
     const squirrels = this.scene.registry.get('squirrels') as Array<{ x: number, y: number }> || [];
