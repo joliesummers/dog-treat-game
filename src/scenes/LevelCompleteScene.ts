@@ -15,11 +15,11 @@ export class LevelCompleteScene extends Phaser.Scene {
     
     // Unlock next level if it exists
     if (nextLevel <= 3) {
-      const savedUnlocked = localStorage.getItem('unlockedLevels');
+      const savedUnlocked = window.localStorage.getItem('unlockedLevels');
       const currentUnlocked = savedUnlocked ? parseInt(savedUnlocked, 10) : 1;
       
       if (nextLevel > currentUnlocked) {
-        localStorage.setItem('unlockedLevels', nextLevel.toString());
+        window.localStorage.setItem('unlockedLevels', nextLevel.toString());
       }
     }
     

@@ -9,17 +9,13 @@ export class LevelSelectScene extends Phaser.Scene {
   }
   
   init() {
-    // TEMP: Unlock all levels for testing
-    this.unlockedLevels = 3;
-    localStorage.setItem('unlockedLevels', '3');
-    
     // Load unlocked levels from localStorage
-    // const saved = localStorage.getItem('unlockedLevels');
-    // if (saved) {
-    //   this.unlockedLevels = parseInt(saved, 10);
-    // } else {
-    //   this.unlockedLevels = 1; // Default: only Level 1 unlocked
-    // }
+    const saved = window.localStorage.getItem('unlockedLevels');
+    if (saved) {
+      this.unlockedLevels = parseInt(saved, 10);
+    } else {
+      this.unlockedLevels = 1; // Default: only Level 1 unlocked
+    }
   }
   
   create() {
@@ -77,7 +73,7 @@ export class LevelSelectScene extends Phaser.Scene {
     // DEBUG MODE: Press L to unlock all levels for testing
     this.input.keyboard?.on('keydown-L', () => {
       this.unlockedLevels = 3;
-      localStorage.setItem('unlockedLevels', '3');
+      window.localStorage.setItem('unlockedLevels', '3');
       this.scene.restart(); // Refresh the scene to show unlocked levels
       
       // Visual feedback
@@ -200,12 +196,10 @@ export class LevelSelectScene extends Phaser.Scene {
     
     // Store selected level in registry for GameScene to read
     this.registry.set('selectedLevel', levelNumber);
-    console.log('🎯 LevelSelectScene: Set selectedLevel to', levelNumber);
     
     // Transition to breed select
     this.cameras.main.fadeOut(300);
     this.cameras.main.once('camerafadeoutcomplete', () => {
-      console.log('🔄 Transitioning to BreedSelectScene (level', levelNumber, 'saved in registry)');
       this.scene.start('BreedSelectScene');
     });
   }

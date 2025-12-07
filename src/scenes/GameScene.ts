@@ -49,27 +49,15 @@ export class GameScene extends Phaser.Scene {
     
     // Get selected level from registry (set by LevelSelectScene)
     const selectedLevel = this.registry.get('selectedLevel') as number;
-    console.log('📋 Registry selectedLevel:', selectedLevel);
     if (selectedLevel && selectedLevel > 0) {
       this.currentLevel = selectedLevel;
-      console.log('✅ Set currentLevel to:', this.currentLevel);
-    } else {
-      console.log('⚠️ No selectedLevel in registry, defaulting to Level 1');
     }
-    
-    console.log('🎮 GameScene loading Level ' + this.currentLevel);
     
     // Get UI scene reference and initialize health system
     this.uiScene = this.scene.get('UIScene') as UIScene;
     
     // Initialize health system based on current level config
     this.levelConfig = getCurrentLevelConfig(this.currentLevel);
-    console.log('📊 Level Config:', {
-      level: this.levelConfig.levelNumber,
-      autoScroll: this.levelConfig.autoScroll,
-      scrollSpeed: this.levelConfig.scrollSpeed,
-      maxHealth: this.levelConfig.maxHealth
-    });
     this.uiScene.initializeHealthSystem(this.levelConfig);
     
     // Set level width based on config
@@ -232,7 +220,6 @@ export class GameScene extends Phaser.Scene {
     if (this.scrollSpeed > 0) {
       // For auto-scroll levels: DON'T follow dog - camera scrolls independently!
       // Dog must keep up with camera or fall into danger zone
-      console.log('Auto-scroll enabled at ' + this.scrollSpeed + ' px/sec');
     } else {
       // For non-scroll levels: Normal follow
       this.cameras.main.startFollow(this.dog!.getSprite(), false, 0.1, 0.1);
@@ -752,7 +739,6 @@ export class GameScene extends Phaser.Scene {
     
     // Force camera to scroll right by moving its position
     const camera = this.cameras.main;
-    const oldScrollX = camera.scrollX;
     const targetScrollX = camera.scrollX + scrollAmount;
     
     // Use actual WORLD bounds, not camera view!
@@ -761,19 +747,6 @@ export class GameScene extends Phaser.Scene {
     
     // Apply the scroll (capped at world bounds)
     camera.scrollX = Math.min(targetScrollX, maxScrollX);
-    
-    // Debug logging every 60 frames (once per second at 60fps)
-    if (this.time.now % 1000 < 16) {
-      console.log('📹 AutoScroll:', {
-        scrollSpeed: this.scrollSpeed,
-        delta: delta.toFixed(2),
-        scrollAmount: scrollAmount.toFixed(2),
-        oldScrollX: oldScrollX.toFixed(1),
-        newScrollX: camera.scrollX.toFixed(1),
-        maxScrollX: maxScrollX.toFixed(1),
-        worldWidth: worldBounds.width
-      });
-    }
   }
   
   private checkDangerZoneCollision(time: number) {
@@ -785,8 +758,6 @@ export class GameScene extends Phaser.Scene {
     
     // Check if dog is in danger zone
     if (dogX < dangerZoneRight) {
-      console.log('⚠️ DOG IN DANGER ZONE!', {dogX: dogX.toFixed(1), cameraLeftEdge: cameraLeftEdge.toFixed(1), dangerZoneRight: dangerZoneRight.toFixed(1)});
-      
       // Apply damage at intervals
       if (time - this.dangerZoneDamageTimer >= this.DANGER_ZONE_DAMAGE_INTERVAL) {
         this.dangerZoneDamageTimer = time;
@@ -794,8 +765,6 @@ export class GameScene extends Phaser.Scene {
         // Take danger zone damage
         const damageAmount = this.levelConfig.dangerZoneDamagePerSecond;
         const health = this.uiScene?.takeDamage(damageAmount) || 0;
-        
-        console.log('💔 DANGER ZONE DAMAGE! Health now:', health);
         
         // Visual feedback
         this.cameras.main.shake(100, 0.005);
