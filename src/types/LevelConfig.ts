@@ -77,7 +77,7 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
   
   3: {
     levelNumber: 3,
-    name: 'Owner Pursuit: Full Speed!',
+    name: 'Owner Pursuit',
     
     healthDisplay: 'bar',
     maxHealth: 10,
