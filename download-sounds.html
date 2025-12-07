@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Download Game Sounds</title>
+    <style>
+        body {
+            font-family: monospace;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #00ff00;
+        }
+        .sound {
+            background: #2a2a2a;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #00ff00;
+        }
+        button {
+            background: #00ff00;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            font-family: monospace;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #00cc00;
+        }
+        .info {
+            background: #4a4a00;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-left: 4px solid #ffff00;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔊 Download Game Sounds</h1>
+    
+    <div class="info">
+        <strong>Instructions:</strong><br>
+        1. Click each "Open in jsfxr" button below<br>
+        2. In jsfxr, click "Download .wav"<br>
+        3. Save with the exact filename shown<br>
+        4. Move all 7 files to: <code>public/assets/audio/</code>
+    </div>
+
+    <div class="sound">
+        <h3>1. Jump Sound</h3>
+        <p>Filename: <code>jump.wav</code></p>
+        <button onclick="window.open('https://sfxr.me/#111111113h3C8CCCwvqJXBWNjJgNCLx96P6TqSBdTjTkKVfedB6SdBBRBm6bX8gWb7eQ1111C5s1AwV6eY8iQggvWi6WK1111111111111111111111', '_blank')">Open in jsfxr</button>
+    </div>
+
+    <div class="sound">
+        <h3>2. Eat Sound</h3>
+        <p>Filename: <code>eat.wav</code></p>
+        <button onclick="window.open('https://sfxr.me/#111111113PQEm5C4PErbJg5jmfJoqhiAP77xCATdj6CHmJVXQ49JsfVbZx9VPKr4J3mMeL41111fAe12UoaRs74WXXX111111111111111111111111', '_blank')">Open in jsfxr</button>
+    </div>
+
+    <div class="sound">
+        <h3>3. Damage Sound</h3>
+        <p>Filename: <code>damage.wav</code></p>
+        <button onclick="window.open('https://sfxr.me/#111111118FpbcQ86iTYadwxPa2BdEdPnLwNRt9eFWKJLrJb45zfpZZzzM3qsPrcNAo11111111fxVZBvbJJJJ2XXXXXX11111111111111111111111', '_blank')">Open in jsfxr</button>
+    </div>
+
+    <div class="sound">
+        <h3>4. Distract Sound</h3>
+        <p>Filename: <code>distract.wav</code></p>
+        <button onclick="window.open('https://sfxr.me/#1111111135NJ1y5r7RmJSsNk3X6Z7Q1fnTSNfKLVRzb9p7FtdAWF7ufH3pCpV6VJCbv1111111rGFAW6Z8FsQTJJJJ11111111111111111111111', '_blank')">Open in jsfxr</button>
+    </div>
+
+    <div class="sound">
+        <h3>5. Land Sound</h3>
+        <p>Filename: <code>land.wav</code></p>
+        <button onclick="window.open('https://sfxr.me/#11111111XHo4yfYkVDWwASCTJ3rtvnvv3zDQzQnTp7p9SXdZjAQjLwXgc1EwHr1111112iMFhG1111111111111111111111111111111111111', '_blank')">Open in jsfxr</button>
+    </div>
+
+    <div class="sound">
+        <h3>6. Victory Sound</h3>
+        <p>Filename: <code>victory.wav</code></p>
+        <button onclick="window.open('https://sfxr.me/#111111113nBBjhFTYDTp1kRY2U7mzxF3hvJoSWwbVMoUCJJJJJJJJJ5Ah5s5sYu5g1111111YT8RrwMJJJWWWWWWWW11111111111111111111111111', '_blank')">Open in jsfxr</button>
+    </div>
+
+    <div class="sound">
+        <h3>7. Game Over Sound</h3>
+        <p>Filename: <code>gameover.wav</code></p>
+        <button onclick="window.open('https://sfxr.me/#111111113jMfJfzcD8Uh6tUtmmb2hYc1RNzrE3Z1tY3Y9dxhx4F1GfM6ppN49C1111111AJJvZzc1111111111111111111111111111111111111', '_blank')">Open in jsfxr</button>
+    </div>
+
+    <div class="info">
+        <strong>After downloading all 7 files:</strong><br>
+        Move them to: <code>public/assets/audio/</code><br>
+        Then run: <code>npm run dev</code>
+    </div>
+</body>
+</html>
+
