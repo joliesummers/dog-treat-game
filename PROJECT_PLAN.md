@@ -383,6 +383,130 @@
 
 ---
 
+### 🌍 Milestone 11: "World 2: Park Adventure" - New Themed Levels (PLANNED)
+
+**Value**: Fresh environments with unique visual themes and new mechanics, inspired by Super Mario Bros world progression
+
+**Concept**: Each "world" has 4 levels with a cohesive theme and visual style, introducing new obstacles and mechanics
+
+---
+
+#### 🎨 World System Design (Mario-Inspired)
+
+**World 1: Backyard Escape** (Current - Levels 1-3) ✅
+- Theme: Escaping the backyard
+- Colors: Warm browns (wood platforms), vibrant greens (grass)
+- Obstacles: Poo 💩, Squirrels 🐿️
+- Difficulty: Tutorial → Gentle scroll → Fast scroll
+
+**World 2: Park Adventure** (Levels 4-7) 🌳
+- Theme: Running through the local park
+- Colors: Bright greens, blue sky, stone paths
+- New Obstacles: 
+  - 🦆 Ducks (waddle back and forth on platforms)
+  - 🌳 Trees (static obstacles you must jump over)
+  - 💦 Sprinklers (periodic water bursts that slow you down)
+- New Mechanic: **Weather system** (rain makes platforms slippery)
+- Platforms: Stone/concrete (gray with texture)
+- Scroll Speed: 60 → 80 → 100 → 120 px/sec
+
+**World 3: Beach Boardwalk** (Levels 8-11) 🏖️
+- Theme: Chasing treats along the beach
+- Colors: Sandy yellows, ocean blues, pier browns
+- New Obstacles:
+  - 🦀 Crabs (move in patterns)
+  - 🌊 Waves (periodic rising water that damages)
+  - ☀️ Seagulls (dive bomb from above)
+- New Mechanic: **Tide system** (water level rises/falls)
+- Platforms: Wooden piers (worn wood, some broken/rickety)
+- Scroll Speed: 80 → 100 → 120 → 140 px/sec
+
+**World 4: City Streets** (Levels 12-15) 🏙️
+- Theme: Urban chase through downtown
+- Colors: Grays, reds (brick), neon signs
+- New Obstacles:
+  - 🚗 Cars (moving platforms AND hazards)
+  - 🚧 Construction zones (falling debris)
+  - 👔 People (slow you down if you bump them)
+- New Mechanic: **Traffic lights** (stop/go timing challenges)
+- Platforms: Building ledges, awnings, fire escapes
+- Scroll Speed: 100 → 120 → 140 → 160 px/sec
+
+---
+
+#### 📊 Difficulty Escalation Across Worlds
+
+| Factor | World 1 | World 2 | World 3 | World 4 |
+|--------|---------|---------|---------|---------|
+| **Platform Width** | 100-200px | 90-180px | 80-160px | 70-140px |
+| **Scroll Speed Range** | 0-100 | 60-120 | 80-140 | 100-160 |
+| **Max Health** | 3-10 | 10-12 | 12-15 | 15-20 |
+| **Obstacle Types** | 2 | 4 | 5 | 6 |
+| **Level Length** | 4-8k px | 6-10k px | 8-12k px | 10-14k px |
+| **New Mechanics** | Auto-scroll | Weather | Tides | Traffic |
+
+---
+
+#### 🎮 Implementation Approach (Per World)
+
+**Phase A: Theme & Art**
+- Design color palette and visual style
+- Create new obstacle sprites (South Park style)
+- Add world-specific background elements
+- Design platform textures/patterns
+
+**Phase B: Mechanics**
+- Implement world-specific hazard behaviors
+- Add new mechanic (weather/tides/traffic)
+- Balance obstacle difficulty progression
+- Test new mechanics feel fair
+
+**Phase C: Level Design**
+- Design 4 levels per world
+- Progressive difficulty within world
+- Strategic treat/hazard placement
+- Playtest for pacing
+
+**Phase D: Polish**
+- World-specific sound effects
+- Transition screens between worlds
+- World completion rewards
+- Achievement tracking
+
+---
+
+#### 🏆 World Completion Rewards
+
+- **Complete World 1**: Unlock Chihuahua breed (high jumper)
+- **Complete World 2**: Unlock Corgi breed (speed runner)
+- **Complete World 3**: Unlock Husky breed (tanky, more health)
+- **Complete World 4**: Unlock endless mode
+
+---
+
+**Status**: Planned for future expansion
+
+**Estimated Time Per World**: 12-16 hours (theme: 3-4h, mechanics: 4-5h, levels: 4-5h, polish: 2-3h)
+
+---
+
+### 🌟 Milestone 12: "World Builder" - Level Editor (PLANNED)
+
+**Value**: Community-created content, infinite replayability
+
+**Features**:
+- In-game level editor (place platforms, treats, hazards)
+- Save/load custom levels (JSON format)
+- Share levels via URL (Base64 encoded)
+- Community level browser
+- Leaderboards for custom levels
+
+**Inspiration**: Super Mario Maker
+
+**Status**: Future consideration - after World 2-4 are complete
+
+---
+
 ## Testing Strategy
 
 **See**: [TESTING_ROADMAP.md](./TESTING_ROADMAP.md) for detailed phased approach
