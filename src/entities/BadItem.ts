@@ -5,6 +5,7 @@ export type BadItemType = 'poo';
 export class BadItem {
   public sprite: Phaser.Physics.Arcade.Sprite;
   private itemType: BadItemType;
+  private stinkLines: Phaser.GameObjects.Graphics[] = [];
   
   constructor(scene: Phaser.Scene, x: number, y: number, type: BadItemType = 'poo') {
     this.itemType = type;
@@ -76,6 +77,64 @@ export class BadItem {
       repeat: -1,
       ease: 'Sine.easeInOut'
     });
+    
+    // 💨 Add South Park-style STINK LINES (thin wavy lines rising)
+    this.createStinkLines(scene, x, y);
+  }
+  
+  private createStinkLines(scene: Phaser.Scene, x: number, y: number) {
+    // Create 3 wavy stink lines rising from the poo
+    for (let i = 0; i < 3; i++) {
+      const stinkLine = scene.add.graphics();
+      stinkLine.lineStyle(1.5, 0x8B7355, 0.6); // Thin brown line, semi-transparent
+      
+      // Offset each line slightly left/right
+      const offsetX = (i - 1) * 6; // -6, 0, +6
+      const startY = y - 14; // Above the poo
+      
+      // Draw simple wavy line using lineTo (zigzag pattern)
+      stinkLine.beginPath();
+      stinkLine.moveTo(x + offsetX, startY);
+      
+      // Create wavy path going upward (zigzag)
+      for (let wave = 0; wave < 4; wave++) {
+        const waveY = startY - (wave * 5);
+        const waveX = x + offsetX + (wave % 2 === 0 ? 3 : -3);
+        stinkLine.lineTo(waveX, waveY);
+      }
+      
+      stinkLine.strokePath();
+      stinkLine.setAlpha(0); // Start invisible
+      this.stinkLines.push(stinkLine);
+      
+      // Animate stink line: fade in, rise, sway, fade out
+      const delay = i * 200; // Stagger each line
+      
+      scene.tweens.add({
+        targets: stinkLine,
+        alpha: { from: 0, to: 0.6 },
+        y: stinkLine.y - 20, // Rise upward
+        duration: 2000,
+        delay: delay,
+        repeat: -1,
+        ease: 'Sine.easeOut',
+        onRepeat: () => {
+          // Reset position when repeating
+          stinkLine.y = 0;
+        }
+      });
+      
+      // Add sway animation (wiggle side to side)
+      scene.tweens.add({
+        targets: stinkLine,
+        x: { from: stinkLine.x - 2, to: stinkLine.x + 2 },
+        duration: 800,
+        delay: delay,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut'
+      });
+    }
   }
   
   getSprite(): Phaser.Physics.Arcade.Sprite {
