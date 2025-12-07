@@ -182,6 +182,8 @@
 
 #### 🎮 Game Elements Reference
 
+**For detailed game element documentation, see [LEVELS.md](./LEVELS.md)**
+
 **HELPFUL Elements (Collect These!):**
 - 🦴 **Treats (Dog Bones)** - Worth 1-3 points based on size
   - Small (1pt): Quick snack, easy to grab
@@ -304,6 +306,8 @@
 ---
 
 #### 🎮 World 1: Backyard Escape - Level Progression
+
+**For detailed level-by-level breakdown, see [LEVELS.md](./LEVELS.md)**
 
 | Level | Health | Auto-Scroll | Danger Zone | Platforms | Length | Difficulty |
 |-------|--------|-------------|-------------|-----------|--------|------------|
@@ -473,6 +477,8 @@
 ---
 
 #### 🎨 World System Design (Mario-Inspired)
+
+**For detailed world themes and visual design, see [WORLDS.md](./WORLDS.md)**
 
 **World 1: Backyard Escape** (Levels 1-5) 🏡
 - Theme: Escaping the backyard from your owner
@@ -696,7 +702,9 @@ All fixes committed in separate commits for traceability.
 
 ### Documentation
 - `README.md` - Project overview and quick start
-- `PROJECT_PLAN.md` - This file - master plan
+- `PROJECT_PLAN.md` - This file - master plan and roadmap
+- `LEVELS.md` - Detailed level designs and game elements reference
+- `WORLDS.md` - World themes, visual design, and progression system
 - `TESTING_ROADMAP.md` - Phased testing strategy
 - `DEPLOYMENT.md` - Deployment instructions
 - `SETUP_GITHUB.md` - GitHub setup guide
