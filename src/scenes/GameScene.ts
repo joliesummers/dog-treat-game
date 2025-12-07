@@ -25,7 +25,7 @@ export class GameScene extends Phaser.Scene {
   
   // Auto-scroll system
   private scrollSpeed: number = 0; // pixels per second
-  private dangerZoneGraphics?: Phaser.GameObjects.Graphics;
+  private ownerSprite?: Phaser.GameObjects.Container; // Owner chasing the dog!
   private dangerZoneX: number = 0; // Left edge of danger zone
   private dangerZoneDamageTimer: number = 0; // Track damage timing
   private readonly DANGER_ZONE_DAMAGE_INTERVAL = 1000; // Damage every 1 second
@@ -818,39 +818,72 @@ export class GameScene extends Phaser.Scene {
   }
   
   private createDangerZone() {
-    // Create danger zone visual (red gradient on left edge)
-    this.dangerZoneGraphics = this.add.graphics();
-    this.dangerZoneGraphics.setDepth(1000); // Always on top
-    this.dangerZoneGraphics.setScrollFactor(0); // Fixed to camera
-    this.updateDangerZoneVisual();
+    // Create owner sprite chasing the dog! (South Park style)
+    this.ownerSprite = this.createOwnerSprite();
+    this.ownerSprite.setScrollFactor(0); // Fixed to camera
+    this.ownerSprite.setDepth(1000);
+    this.updateOwnerPosition();
   }
   
-  private updateDangerZoneVisual() {
-    if (!this.dangerZoneGraphics) return;
+  private createOwnerSprite(): Phaser.GameObjects.Container {
+    const container = this.add.container(0, 0);
+    const graphics = this.add.graphics();
     
-    this.dangerZoneGraphics.clear();
+    // Owner proportions (taller than dog, angry stance)
+    const bodyWidth = 60;
+    const bodyHeight = 100;
+    const headSize = 40;
     
-    const dangerWidth = 80; // Width of danger zone gradient
-    const height = this.cameras.main.height;
+    // Body (simple shirt - blue)
+    graphics.fillStyle(0x4169E1, 1); // Royal blue shirt
+    graphics.fillRect(-bodyWidth/2, 0, bodyWidth, bodyHeight);
     
-    // Draw red gradient from left edge
-    for (let i = 0; i < dangerWidth; i++) {
-      const alpha = 1 - (i / dangerWidth); // Fade from 1 to 0
-      this.dangerZoneGraphics.fillStyle(0xFF0000, alpha * 0.7);
-      this.dangerZoneGraphics.fillRect(i, 0, 1, height);
+    // Pants (brown)
+    graphics.fillStyle(0x8B4513, 1);
+    graphics.fillRect(-bodyWidth/2, bodyHeight, bodyWidth, 50);
+    
+    // Head (peach skin tone)
+    graphics.fillStyle(0xFFDBB5, 1);
+    graphics.fillCircle(0, -headSize/2, headSize/2);
+    
+    // Angry eyes (X_X pattern - very angry!)
+    graphics.lineStyle(3, 0x000000, 1);
+    graphics.lineBetween(-12, -headSize/2 - 8, -6, -headSize/2 - 2); // Left eye X
+    graphics.lineBetween(-12, -headSize/2 - 2, -6, -headSize/2 - 8);
+    graphics.lineBetween(6, -headSize/2 - 8, 12, -headSize/2 - 2); // Right eye X
+    graphics.lineBetween(6, -headSize/2 - 2, 12, -headSize/2 - 8);
+    
+    // Angry mouth (shouting!)
+    graphics.fillStyle(0x000000, 1);
+    graphics.fillEllipse(0, -headSize/2 + 10, 15, 12);
+    
+    // Hair (brown, messy)
+    graphics.fillStyle(0x654321, 1);
+    graphics.fillCircle(-10, -headSize - 5, 8);
+    graphics.fillCircle(0, -headSize - 8, 10);
+    graphics.fillCircle(10, -headSize - 5, 8);
+    
+    // Arm reaching forward (chasing!)
+    graphics.fillStyle(0xFFDBB5, 1);
+    graphics.fillEllipse(bodyWidth/2 + 15, 20, 30, 12); // Reaching arm
+    
+    // Add "angry" speed lines behind owner
+    graphics.lineStyle(2, 0xFF0000, 0.6);
+    for (let i = 0; i < 5; i++) {
+      const y = i * 30;
+      graphics.lineBetween(-50 - i * 5, y, -30 - i * 5, y);
     }
     
-    // Add warning text
-    const warningText = this.add.text(20, height / 2, '⚠️ DANGER ZONE ⚠️', {
-      fontSize: '16px',
-      color: '#ffffff',
-      fontStyle: 'bold',
-      stroke: '#000000',
-      strokeThickness: 4
-    });
-    warningText.setScrollFactor(0);
-    warningText.setDepth(1001);
-    warningText.setRotation(-Math.PI / 2); // Vertical text
+    container.add(graphics);
+    return container;
+  }
+  
+  private updateOwnerPosition() {
+    if (!this.ownerSprite) return;
+    
+    const height = this.cameras.main.height;
+    // Position owner on left edge, at ground level
+    this.ownerSprite.setPosition(60, height - 120);
   }
   
   private updateAutoScroll(delta: number) {
