@@ -53,11 +53,19 @@ export class GameScene extends Phaser.Scene {
       this.currentLevel = selectedLevel;
     }
     
+    console.log('🎮 GameScene loading Level ' + this.currentLevel);
+    
     // Get UI scene reference and initialize health system
     this.uiScene = this.scene.get('UIScene') as UIScene;
     
     // Initialize health system based on current level config
     this.levelConfig = getCurrentLevelConfig(this.currentLevel);
+    console.log('📊 Level Config:', {
+      level: this.levelConfig.levelNumber,
+      autoScroll: this.levelConfig.autoScroll,
+      scrollSpeed: this.levelConfig.scrollSpeed,
+      maxHealth: this.levelConfig.maxHealth
+    });
     this.uiScene.initializeHealthSystem(this.levelConfig);
     
     // Set level width based on config
