@@ -252,6 +252,9 @@ export class Dog {
         yoyo: true,
         ease: 'Back.easeOut'
       });
+      
+      // 💨 DUST CLOUD PUFFS on landing!
+      this.createDustClouds();
     }
   }
   
@@ -509,6 +512,52 @@ export class Dog {
   
   getEatSpeed(): number {
     return this.breed.eatSpeed;
+  }
+  
+  private createDustClouds() {
+    // Create dust cloud texture if it doesn't exist
+    if (!this.scene.textures.exists('dust-cloud')) {
+      const graphics = this.scene.add.graphics();
+      graphics.fillStyle(0xD3D3D3, 0.6); // Light gray, semi-transparent
+      
+      // Draw fluffy cloud shape (irregular ellipses)
+      graphics.fillEllipse(8, 6, 12, 8);
+      graphics.fillEllipse(4, 8, 8, 6);
+      graphics.fillEllipse(12, 8, 8, 6);
+      
+      graphics.generateTexture('dust-cloud', 16, 12);
+      graphics.destroy();
+    }
+    
+    // Spawn 3-5 dust puffs at dog's feet
+    const dustCount = Phaser.Math.Between(3, 5);
+    const footY = this.sprite.y + 18; // At dog's feet
+    
+    for (let i = 0; i < dustCount; i++) {
+      const offsetX = Phaser.Math.Between(-10, 10);
+      
+      const dust = this.scene.add.particles(
+        this.sprite.x + offsetX, 
+        footY, 
+        'dust-cloud', 
+        {
+          speed: { min: 20, max: 50 },
+          angle: { min: -120, max: -60 }, // Spray sideways and up
+          scale: { start: 0.5, end: 1.2 }, // Puff expands
+          alpha: { start: 0.6, end: 0 },
+          lifespan: 300,
+          quantity: 1,
+          gravityY: -50 // Float up slightly
+        }
+      );
+      
+      dust.explode();
+      
+      // Clean up after animation
+      this.scene.time.delayedCall(400, () => {
+        dust.destroy();
+      });
+    }
   }
 }
 
