@@ -28,55 +28,77 @@ export class Treat {
       const boneColor = 0xFFE4B5; // Moccasin color for bone
       const outlineColor = 0x000000; // BLACK OUTLINE for Angry Birds style!
       
-      // Draw realistic dog bone shape (dumbbell/hourglass)
-      const boneWidth = 16 * scale;
-      const boneHeight = 8 * scale;
+      // Draw cute bone shape with ONLY exterior outline!
       const centerX = 16 * scale;
       const centerY = 8 * scale;
-      const endRadius = 4 * scale;
-      const waistWidth = 2.5 * scale;
+      const boneLength = 13 * scale;
+      const endRadius = 3 * scale;
+      const waistHeight = 1.8 * scale;
+      const bulbSpacing = 2.2 * scale;
       
-      graphics.lineStyle(3 * scale, outlineColor, 1); // Thick outline!
+      const leftX = centerX - boneLength/2;
+      const rightX = centerX + boneLength/2;
+      
+      // First, fill all the shapes without outlines
+      graphics.lineStyle(0);
       graphics.fillStyle(boneColor, 1);
       
-      // Draw bone as a path (smooth dumbbell shape)
+      // Fill all 4 bulbs
+      graphics.fillCircle(leftX, centerY - bulbSpacing, endRadius);
+      graphics.fillCircle(leftX, centerY + bulbSpacing, endRadius);
+      graphics.fillCircle(rightX, centerY - bulbSpacing, endRadius);
+      graphics.fillCircle(rightX, centerY + bulbSpacing, endRadius);
+      
+      // Fill the middle waist connecting them
+      graphics.fillRect(
+        leftX - endRadius/2,
+        centerY - waistHeight,
+        boneLength + endRadius,
+        waistHeight * 2
+      );
+      
+      // Now trace ONLY the OUTER perimeter as one continuous path
+      graphics.lineStyle(2.5 * scale, outlineColor, 1);
       graphics.beginPath();
       
-      // Left end (top knob)
-      graphics.arc(centerX - boneWidth/2, centerY - boneHeight/3, endRadius, 0, Math.PI * 2);
-      graphics.closePath();
-      graphics.fillPath();
-      graphics.strokePath();
+      // Start at the top of the left-top bulb
+      graphics.moveTo(leftX, centerY - bulbSpacing - endRadius);
       
-      // Left end (bottom knob)
-      graphics.beginPath();
-      graphics.arc(centerX - boneWidth/2, centerY + boneHeight/3, endRadius, 0, Math.PI * 2);
-      graphics.closePath();
-      graphics.fillPath();
-      graphics.strokePath();
+      // Outer arc of LEFT-TOP BULB (top, going clockwise around to right side)
+      graphics.arc(leftX, centerY - bulbSpacing, endRadius, -Math.PI/2, 0, false);
       
-      // Center waist (narrow middle)
-      graphics.beginPath();
-      graphics.moveTo(centerX - boneWidth/2 + endRadius, centerY - waistWidth/2);
-      graphics.lineTo(centerX + boneWidth/2 - endRadius, centerY - waistWidth/2);
-      graphics.lineTo(centerX + boneWidth/2 - endRadius, centerY + waistWidth/2);
-      graphics.lineTo(centerX - boneWidth/2 + endRadius, centerY + waistWidth/2);
-      graphics.closePath();
-      graphics.fillPath();
-      graphics.strokePath();
+      // Now at right edge of left-top bulb, go inward to waist
+      graphics.lineTo(leftX + endRadius, centerY - waistHeight);
       
-      // Right end (top knob)
-      graphics.beginPath();
-      graphics.arc(centerX + boneWidth/2, centerY - boneHeight/3, endRadius, 0, Math.PI * 2);
-      graphics.closePath();
-      graphics.fillPath();
-      graphics.strokePath();
+      // TOP of waist - horizontal line to right side
+      graphics.lineTo(rightX - endRadius, centerY - waistHeight);
       
-      // Right end (bottom knob)
-      graphics.beginPath();
-      graphics.arc(centerX + boneWidth/2, centerY + boneHeight/3, endRadius, 0, Math.PI * 2);
+      // Go outward from waist to right-top bulb
+      graphics.lineTo(rightX - endRadius, centerY - bulbSpacing);
+      
+      // Outer arc of RIGHT-TOP BULB (going around clockwise)
+      graphics.arc(rightX, centerY - bulbSpacing, endRadius, Math.PI, 0, false);
+      
+      // Outer arc of RIGHT-BOTTOM BULB (continuing clockwise down right side)
+      graphics.arc(rightX, centerY + bulbSpacing, endRadius, 0, Math.PI, false);
+      
+      // Go inward from right-bottom bulb to waist
+      graphics.lineTo(rightX - endRadius, centerY + waistHeight);
+      
+      // BOTTOM of waist - horizontal line back to left
+      graphics.lineTo(leftX + endRadius, centerY + waistHeight);
+      
+      // Go outward to left-bottom bulb
+      graphics.lineTo(leftX + endRadius, centerY + bulbSpacing);
+      
+      // Outer arc of LEFT-BOTTOM BULB (going around clockwise)
+      graphics.arc(leftX, centerY + bulbSpacing, endRadius, 0, Math.PI, false);
+      
+      // Outer arc of LEFT-TOP BULB (left side, completing back to start)
+      graphics.arc(leftX, centerY - bulbSpacing, endRadius, Math.PI, Math.PI * 1.5, false);
+      
+      // Close the path
       graphics.closePath();
-      graphics.fillPath();
       graphics.strokePath();
       
       graphics.generateTexture(textureKey, 32 * scale, 16 * scale);
