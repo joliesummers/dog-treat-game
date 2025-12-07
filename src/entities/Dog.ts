@@ -414,50 +414,20 @@ export class Dog {
     // Start invincibility
     this.isInvincible = true;
     
-    // 🤮 ENHANCED PUKE EFFECT 🤮
+    // 🤮 ENHANCED PUKE EFFECT - FROM DOG'S MOUTH! 🤮
     
-    // Main puke emoji - bigger and more dramatic!
-    const mainPuke = this.scene.add.text(
-      this.sprite.x + 25,
-      this.sprite.y - 15,
-      '🤮',
-      { fontSize: '48px' }
-    );
+    // Calculate mouth position based on breed
+    // Pug mouth: texture (48, 23), offset from center (30, 20) = (18, 3)
+    // Golden mouth: texture (54, 22), offset from center (30, 20) = (24, 2)
+    const mouthOffsetX = this.breed.name === 'Pug' ? 18 : 24;
+    const mouthOffsetY = this.breed.name === 'Pug' ? 3 : 2;
     
-    // Animate main puke in an arc
-    this.scene.tweens.add({
-      targets: mainPuke,
-      x: this.sprite.x + 100,
-      y: this.sprite.y + 30,
-      scaleX: 1.3,
-      scaleY: 0.8,
-      alpha: 0,
-      duration: 900,
-      ease: 'Quad.easeOut',
-      onComplete: () => {
-        mainPuke.destroy();
-      }
-    });
+    // Adjust for sprite flip
+    const facingDirection = this.sprite.flipX ? -1 : 1;
+    const mouthX = this.sprite.x + (mouthOffsetX * facingDirection);
+    const mouthY = this.sprite.y + mouthOffsetY;
     
-    // Add smaller sick emoji that appears slightly delayed
-    const sickEmoji = this.scene.add.text(
-      this.sprite.x + 20,
-      this.sprite.y - 25,
-      '🤢',
-      { fontSize: '28px' }
-    );
-    
-    this.scene.tweens.add({
-      targets: sickEmoji,
-      y: this.sprite.y - 45,
-      alpha: 0,
-      duration: 600,
-      delay: 100,
-      ease: 'Sine.easeOut',
-      onComplete: () => {
-        sickEmoji.destroy();
-      }
-    });
+    // Pure particle puke effect - no emojis, just chunks from mouth!
     
     // Create multi-colored puke particle textures
     const pukeColors = [
@@ -483,8 +453,8 @@ export class Dog {
     // Create multiple particle emitters for variety
     const particleEmitters: Phaser.GameObjects.Particles.ParticleEmitter[] = [];
     
-    // Main spray particles (green/yellow mix)
-    const mainSpray = this.scene.add.particles(this.sprite.x + 25, this.sprite.y, 'puke-green', {
+    // Main spray particles (green/yellow mix) - FROM MOUTH!
+    const mainSpray = this.scene.add.particles(mouthX, mouthY, 'puke-green', {
       speed: { min: 80, max: 180 },
       angle: { min: -30, max: 30 },
       scale: { start: 1.2, end: 0 },
@@ -496,8 +466,8 @@ export class Dog {
     });
     particleEmitters.push(mainSpray);
     
-    // Yellow chunks (bigger, slower)
-    const yellowChunks = this.scene.add.particles(this.sprite.x + 25, this.sprite.y, 'puke-yellow', {
+    // Yellow chunks (bigger, slower) - FROM MOUTH!
+    const yellowChunks = this.scene.add.particles(mouthX, mouthY, 'puke-yellow', {
       speed: { min: 60, max: 140 },
       angle: { min: -20, max: 40 },
       scale: { start: 1.5, end: 0.3 },
@@ -509,8 +479,8 @@ export class Dog {
     });
     particleEmitters.push(yellowChunks);
     
-    // Brown bits (smaller, scattered)
-    const brownBits = this.scene.add.particles(this.sprite.x + 25, this.sprite.y, 'puke-brown', {
+    // Brown bits (smaller, scattered) - FROM MOUTH!
+    const brownBits = this.scene.add.particles(mouthX, mouthY, 'puke-brown', {
       speed: { min: 50, max: 120 },
       angle: { min: -45, max: 45 },
       scale: { start: 0.8, end: 0 },
@@ -521,8 +491,8 @@ export class Dog {
     });
     particleEmitters.push(brownBits);
     
-    // Lime green splatter (fast, spreads wide)
-    const limeSplatter = this.scene.add.particles(this.sprite.x + 25, this.sprite.y, 'puke-lime', {
+    // Lime green splatter (fast, spreads wide) - FROM MOUTH!
+    const limeSplatter = this.scene.add.particles(mouthX, mouthY, 'puke-lime', {
       speed: { min: 100, max: 200 },
       angle: { min: -50, max: 50 },
       scale: { start: 1, end: 0 },
