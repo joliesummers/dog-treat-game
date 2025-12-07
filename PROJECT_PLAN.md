@@ -665,13 +665,13 @@ All fixes committed in separate commits for traceability.
 
 ---
 
-### 🔊 Milestone 10.5: "Sound & Music" - Audio Enhancement (IN PROGRESS)
+### 🔊 Milestone 10.5: "Sound & Music" - Audio Enhancement (DEFERRED)
 
 **Value**: Game feels alive with retro 8-bit sound effects and music
 
-**Status**: 🔧 Sound system implemented, placeholder sounds needed
+**Status**: ⏸️ **DEFERRED** - Sound system ready, awaiting proper audio files
 
-**Implemented:**
+**✅ Completed (Code Infrastructure):**
 - ✅ Sound system infrastructure (PreloadScene, GameScene, Dog.ts)
 - ✅ 7 sound events wired up (jump, land, eat, damage, distract, victory, gameover)
 - ✅ Safe playback (won't crash if sounds missing)
@@ -679,24 +679,44 @@ All fixes committed in separate commits for traceability.
 - ✅ Sound callbacks in Dog entity
 - ✅ SOUND_EFFECTS.md complete guide
 
-**⚠️ PLACEHOLDER SOUNDS NEEDED:**
-- 🔲 Generate temporary .wav files (see `GENERATE_PLACEHOLDER_SOUNDS.md`)
-- 🔲 Add files to `public/assets/audio/`
-- 🔲 Test all 7 sounds in-game
-- 📋 **FUTURE**: Replace placeholders with proper 8-bit sounds
+**⚠️ BLOCKED - Audio Format Issue:**
+- ❌ jsfxr exports 8-bit PCM (incompatible with Phaser/Web Audio API)
+- ❌ Phaser requires 16-bit PCM or MP3 format
+- ❌ Current .wav files load but fail to decode
+- 📋 **Need**: 16-bit audio files or MP3 format
 
-**Optional (Future):**
-- 📋 Background music - Menu theme
-- 📋 Background music - Gameplay theme (speeds up per level?)
-- 📋 Music volume control
-- 📋 Sound effects toggle
+**To Complete This Milestone (When Ready):**
+
+1. **Generate proper audio files** using ONE of these methods:
+   - **Option A**: Use Chiptone (https://sfbgames.itch.io/chiptone) - exports 16-bit
+   - **Option B**: Download free pack (https://opengameart.org/content/512-sound-effects-8-bit-style)
+   - **Option C**: Install ffmpeg and convert: `ffmpeg -i input.wav -acodec pcm_s16le output.wav`
+   - **Option D**: Export as MP3 from jsfxr (update PreloadScene to load .mp3)
+
+2. **Replace files** in `public/assets/audio/`:
+   - jump.wav (16-bit)
+   - eat.wav (16-bit)
+   - damage.wav (16-bit)
+   - distract.wav (16-bit)
+   - land.wav (16-bit)
+   - victory.wav (16-bit)
+   - gameover.wav (16-bit)
+
+3. **Test** sounds work in-game
+
+4. **(Optional)** Add background music:
+   - menu-music.wav
+   - game-music.wav
+
+**🎮 Game Works 100% Without Sounds** - This is pure polish, not a blocker!
 
 **Files:**
 - `SOUND_EFFECTS.md` - Professional sound generation guide
-- `GENERATE_PLACEHOLDER_SOUNDS.md` - Quick placeholder setup
-- `src/scenes/PreloadScene.ts` - Loads audio files
-- `src/scenes/GameScene.ts` - Plays sound effects
-- `src/entities/Dog.ts` - Sound callbacks
+- `GENERATE_PLACEHOLDER_SOUNDS.md` - Quick placeholder setup (8-bit issue documented)
+- `AUDIO_FIX.md` - Audio format troubleshooting
+- `src/scenes/PreloadScene.ts` - Loads audio files (ready when files are ready)
+- `src/scenes/GameScene.ts` - Plays sound effects (ready when files are ready)
+- `src/entities/Dog.ts` - Sound callbacks (ready when files are ready)
 
 ---
 
@@ -704,8 +724,8 @@ All fixes committed in separate commits for traceability.
 
 ### High Priority
 - **More dog breeds** - Chihuahua (jumps high), Corgi (fast runner), Husky (strong/tanky)
-- ✅ ~~**Sound effects**~~ - System implemented, needs placeholder files
-- **Background music** - Looping 8-bit chiptune track (planned)
+- ⏸️ **Sound effects** - System code complete, needs 16-bit audio files (see AUDIO_FIX.md)
+- **Background music** - Looping 8-bit chiptune track (deferred until sound effects work)
 
 ### Medium Priority
 - **Power-ups** - Speed boost, invincibility star, magnet for treats
@@ -752,9 +772,10 @@ All fixes committed in separate commits for traceability.
 
 ## Development Status Summary
 
-**Completed**: 9 out of 10 milestones ✅  
-**In Progress**: None - Ready for expansion! 🚀  
-**MVP Status**: Complete and deployed with 3-level progression! 🎉  
+**Completed**: 10 out of 12 milestones ✅  
+**In Progress**: None - World 1 Complete! 🚀  
+**Deferred**: Milestone 10.5 (Audio) - needs 16-bit audio files  
+**MVP Status**: Complete and deployed with 5-level World 1! 🎉  
 
 **Current Focus**: 
 1. Visual style overhaul with **"South Park construction paper"** aesthetic (pivot from Angry Birds)

@@ -125,24 +125,6 @@ export class MenuScene extends Phaser.Scene {
       fontSize: '14px',
       color: '#cccccc'
     }).setOrigin(0.5);
-    
-    // DEBUG: Sound test button
-    const testButton = this.add.text(20, height - 30, '🔊 Test Sound', {
-      fontSize: '14px',
-      color: '#ffff00',
-      backgroundColor: '#000000',
-      padding: { x: 8, y: 4 }
-    }).setInteractive({ useHandCursor: true });
-    
-    testButton.on('pointerdown', () => {
-      // Unlock audio
-      const soundManager = this.sound as Phaser.Sound.WebAudioSoundManager;
-      if (soundManager.context) {
-        soundManager.context.resume();
-      }
-      // Play test sound
-      this.sound.play('jump', { volume: 0.5 });
-    });
   }
 }
 
