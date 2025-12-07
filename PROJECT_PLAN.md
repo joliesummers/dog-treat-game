@@ -180,6 +180,42 @@
 
 ---
 
+#### 🎮 Game Elements Reference
+
+**HELPFUL Elements (Collect These!):**
+- 🦴 **Treats (Dog Bones)** - Worth 1-3 points based on size
+  - Small (1pt): Quick snack, easy to grab
+  - Medium (2pt): Better reward, slightly higher
+  - Large (3pt): Best reward, usually on high/risky platforms
+  - Collect all to win level!
+  - Triggers: Gold stars ⭐ + sparkles ✨ particle burst
+
+**HARMFUL Elements (Avoid These!):**
+- 💩 **Poo** - Causes damage (-1 heart)
+  - Triggers: Dog pukes 🤢 with green streamy particles
+  - Triggers: Puking face overlay (X_X eyes)
+  - Invincibility: 2 seconds after damage (dog flashes)
+  - With stink lines rising (South Park style)
+
+- 🐿️ **Squirrels** - Distract Golden Retriever only (Pug immune)
+  - 15% chance per second near Golden
+  - Duration: 1.5 seconds
+  - Effect: Movement reduced to 50%, jump to 70%
+  - Visual: 💭 thought bubble appears
+  - **Dangerous on auto-scroll levels** - danger zone catches up!
+
+- 🔴 **Danger Zone** (Levels 2-5 only) - Red gradient on left edge
+  - Damage: -1 HP/sec (Levels 2-3), -2 HP/sec (Levels 4-5)
+  - Appears when camera auto-scrolls
+  - Can't move off-screen past it
+  - Must keep moving forward!
+
+- ⬇️ **Falling** - Fall off bottom of screen
+  - Level 1: Instant death
+  - Levels 2-5: -5 health (unless health < 5, then death)
+
+---
+
 #### 🎯 Core Mechanic: Auto-Scroll "Danger Zone"
 
 **Concept**: Left side of screen slowly scrolls right (like endless runner). If dog gets caught in danger zone = damage/death.
@@ -187,7 +223,9 @@
 **Thematic Evolution:**
 - **Level 1**: No auto-scroll (tutorial level, learn basics)
 - **Level 2**: Gentle auto-scroll introduced (danger zone = red gradient edge)
-- **Level 3**: Faster scroll + owner sprite chasing (visual storytelling!)
+- **Level 3**: Medium scroll (getting harder)
+- **Level 4**: Fast scroll (real pressure)
+- **Level 5**: Very fast scroll + brutal platforming (World 1 finale!)
 
 ---
 
@@ -265,13 +303,56 @@
 
 ---
 
-#### 🎮 Level Progression Summary
+#### 🎮 World 1: Backyard Escape - Level Progression
 
-| Level | Health System | Auto-Scroll | Danger Zone | Theme |
-|-------|---------------|-------------|-------------|-------|
-| **1** | 3 Hearts | ❌ None | Fall = death | "Tutorial: Learn to Move" |
-| **2** | 10 Hearts | ✅ 60 px/sec | Red gradient, -1 HP/sec | "Chase Begins: Keep Moving" |
-| **3** | 10 Hearts | ✅ 100 px/sec | Red gradient, -2 HP/sec | "Owner Pursuit: Full Speed!" |
+| Level | Health | Auto-Scroll | Danger Zone | Platforms | Length | Difficulty |
+|-------|--------|-------------|-------------|-----------|--------|------------|
+| **1** | 3 ❤️ | None | Fall = death | 19 wide (120-200px) | 4000px | Tutorial |
+| **2** | 10 ❤️ | 60 px/sec | -1 HP/sec | 28 medium (120-160px) | 6000px | Beginner |
+| **3** | 10 ❤️ | 100 px/sec | -1 HP/sec | 35 narrow (100-120px) | 8000px | Intermediate |
+| **4** | 10 ❤️ | 140 px/sec | -2 HP/sec | 42 tiny (90-110px) | 10000px | Advanced |
+| **5** | 12 ❤️ | 180 px/sec | -3 HP/sec | 50 minimal (80-100px) | 12000px | Expert |
+
+**Difficulty Progression Explained:**
+
+**Level 1 - Tutorial: "Safe Backyard"**
+- Learn mechanics without pressure
+- Wide platforms, forgiving jumps
+- No time pressure, explore freely
+- 12 treats, 8 poo hazards, 5 squirrels
+- **Goal**: Build confidence and muscle memory
+
+**Level 2 - Beginner: "Owner Spots You"**
+- Auto-scroll introduces forward pressure
+- Narrower platforms, wider gaps
+- Must keep moving but pace is gentle
+- 18 treats, 12 poo hazards, 8 squirrels
+- **Goal**: Learn to manage time pressure
+
+**Level 3 - Intermediate: "Owner Gets Serious"** (CURRENT)
+- Faster scroll, precision jumps required
+- Tiny platforms, extreme height variation
+- Split-second decisions needed
+- 24 treats, 16 poo hazards, 10 squirrels
+- **Goal**: Master timing and spatial awareness
+
+**Level 4 - Advanced: "Owner Running!"** (PLANNED)
+- Very fast scroll (2.33 px/frame @ 60fps)
+- Clusters of poo requiring path planning
+- Moving squirrels block routes
+- 30 treats, 20 poo hazards, 12 squirrels
+- **New Challenge**: Poo clusters force risky jumps
+- **Goal**: Perfect execution under intense pressure
+
+**Level 5 - Expert: "Escape the Backyard!"** (PLANNED)
+- Extreme scroll speed (3 px/frame!)
+- Minimal landing space (80-100px platforms)
+- Squirrels + poo on same platforms (tight squeezes)
+- 36 treats, 24 poo hazards, 15 squirrels
+- **New Challenge**: Multiple hazards per platform
+- Triple danger zone damage (-3 HP/sec)
+- Extra 2 hearts (12 total) to compensate
+- **Goal**: World 1 finale - prove mastery!
 
 ---
 
@@ -393,13 +474,18 @@
 
 #### 🎨 World System Design (Mario-Inspired)
 
-**World 1: Backyard Escape** (Current - Levels 1-3) ✅
-- Theme: Escaping the backyard
-- Colors: Warm browns (wood platforms), vibrant greens (grass)
-- Obstacles: Poo 💩, Squirrels 🐿️
-- Difficulty: Tutorial → Gentle scroll → Fast scroll
+**World 1: Backyard Escape** (Levels 1-5) 🏡
+- Theme: Escaping the backyard from your owner
+- Colors: Warm browns (wood platforms), vibrant greens (grass), cyan sky
+- Obstacles: Poo 💩 (damage), Squirrels 🐿️ (distract Golden only)
+- Difficulty Curve: Tutorial → Beginner → Intermediate → Advanced → Expert
+- Status: ✅ Levels 1-3 complete, 📋 Levels 4-5 planned
+- Scroll Speed: 0 → 60 → 100 → 140 → 180 px/sec
+- Platform Progression: Wide/safe → Narrow/risky → Tiny/brutal → Minimal/expert
+- Health Scaling: 3 → 10 → 10 → 10 → 12 hearts
+- **Completion Reward**: Unlock Chihuahua breed + World 2
 
-**World 2: Park Adventure** (Levels 4-7) 🌳
+**World 2: Park Adventure** (Levels 6-10) 🌳
 - Theme: Running through the local park
 - Colors: Bright greens, blue sky, stone paths
 - New Obstacles: 
@@ -408,9 +494,9 @@
   - 💦 Sprinklers (periodic water bursts that slow you down)
 - New Mechanic: **Weather system** (rain makes platforms slippery)
 - Platforms: Stone/concrete (gray with texture)
-- Scroll Speed: 60 → 80 → 100 → 120 px/sec
+- Scroll Speed: 120 → 140 → 160 → 180 → 200 px/sec (builds on World 1)
 
-**World 3: Beach Boardwalk** (Levels 8-11) 🏖️
+**World 3: Beach Boardwalk** (Levels 11-15) 🏖️
 - Theme: Chasing treats along the beach
 - Colors: Sandy yellows, ocean blues, pier browns
 - New Obstacles:
@@ -419,9 +505,9 @@
   - ☀️ Seagulls (dive bomb from above)
 - New Mechanic: **Tide system** (water level rises/falls)
 - Platforms: Wooden piers (worn wood, some broken/rickety)
-- Scroll Speed: 80 → 100 → 120 → 140 px/sec
+- Scroll Speed: 160 → 180 → 200 → 220 → 240 px/sec
 
-**World 4: City Streets** (Levels 12-15) 🏙️
+**World 4: City Streets** (Levels 16-20) 🏙️
 - Theme: Urban chase through downtown
 - Colors: Grays, reds (brick), neon signs
 - New Obstacles:
@@ -430,7 +516,32 @@
   - 👔 People (slow you down if you bump them)
 - New Mechanic: **Traffic lights** (stop/go timing challenges)
 - Platforms: Building ledges, awnings, fire escapes
-- Scroll Speed: 100 → 120 → 140 → 160 px/sec
+- Scroll Speed: 200 → 220 → 240 → 260 → 280 px/sec (INTENSE!)
+
+---
+
+#### 📊 World 1 Detailed Difficulty Progression
+
+| Element | L1 | L2 | L3 | L4 (Plan) | L5 (Plan) |
+|---------|----|----|----|-----------| --------|
+| **Treats** | 12 | 18 | 24 | 30 | 36 |
+| **Poo Hazards** | 8 | 12 | 16 | 20 | 24 |
+| **Squirrels** | 5 | 8 | 10 | 12 | 15 |
+| **Platforms** | 19 | 28 | 35 | 42 | 50 |
+| **Platform Width** | 120-200px | 120-160px | 100-120px | 90-110px | 80-100px |
+| **Gap Distance** | Safe | Risky | Brutal | Precise | Pixel-perfect |
+| **Scroll Speed** | 0 | 60 | 100 | 140 | 180 px/sec |
+| **Danger Damage** | None | 1/sec | 1/sec | 2/sec | 3/sec |
+| **Length** | 4000px | 6000px | 8000px | 10000px | 12000px |
+| **Hearts** | 3 | 10 | 10 | 10 | 12 |
+
+**How Difficulty Increases:**
+1. **More Obstacles**: Treat count +50%, poo count +50% each level
+2. **Narrower Platforms**: -10-20px each level = harder landings
+3. **Faster Scroll**: +40 px/sec each level = more pressure
+4. **More Danger**: Danger zone damage increases
+5. **Longer Levels**: +2000px each level = endurance test
+6. **Tighter Spaces**: Poo + squirrels on same platforms (L4-5)
 
 ---
 
@@ -438,11 +549,12 @@
 
 | Factor | World 1 | World 2 | World 3 | World 4 |
 |--------|---------|---------|---------|---------|
-| **Platform Width** | 100-200px | 90-180px | 80-160px | 70-140px |
-| **Scroll Speed Range** | 0-100 | 60-120 | 80-140 | 100-160 |
-| **Max Health** | 3-10 | 10-12 | 12-15 | 15-20 |
+| **Levels** | 1-5 | 6-10 | 11-15 | 16-20 |
+| **Platform Width** | 80-200px | 70-180px | 60-160px | 50-140px |
+| **Scroll Speed Range** | 0-180 | 120-200 | 160-240 | 200-280 |
+| **Max Health** | 3-12 | 12-15 | 15-18 | 18-20 |
 | **Obstacle Types** | 2 | 4 | 5 | 6 |
-| **Level Length** | 4-8k px | 6-10k px | 8-12k px | 10-14k px |
+| **Level Length** | 4-12k px | 8-14k px | 10-16k px | 12-18k px |
 | **New Mechanics** | Auto-scroll | Weather | Tides | Traffic |
 
 ---
