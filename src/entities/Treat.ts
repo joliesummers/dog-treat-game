@@ -132,30 +132,90 @@ export class Treat {
   }
   
   collect() {
-    // Create particle burst effect (more particles for larger treats)
-    const particleCount = 8 * this.size;
-    const textureKey = `treat-size-${this.size}`;
+    // Create STAR particle textures if they don't exist
+    if (!this.scene.textures.exists('star-particle')) {
+      const graphics = this.scene.add.graphics();
+      graphics.fillStyle(0xFFD700, 1); // Gold star
+      graphics.lineStyle(1, 0xFFFFFF, 1); // White outline for sparkle
+      
+      // Draw 5-pointed star
+      const centerX = 8;
+      const centerY = 8;
+      const outerRadius = 7;
+      const innerRadius = 3;
+      
+      graphics.beginPath();
+      for (let i = 0; i < 5; i++) {
+        const outerAngle = (i * 2 * Math.PI) / 5 - Math.PI / 2;
+        const innerAngle = ((i * 2 + 1) * Math.PI) / 5 - Math.PI / 2;
+        
+        const outerX = centerX + Math.cos(outerAngle) * outerRadius;
+        const outerY = centerY + Math.sin(outerAngle) * outerRadius;
+        const innerX = centerX + Math.cos(innerAngle) * innerRadius;
+        const innerY = centerY + Math.sin(innerAngle) * innerRadius;
+        
+        if (i === 0) {
+          graphics.moveTo(outerX, outerY);
+        } else {
+          graphics.lineTo(outerX, outerY);
+        }
+        graphics.lineTo(innerX, innerY);
+      }
+      graphics.closePath();
+      graphics.fillPath();
+      graphics.strokePath();
+      
+      graphics.generateTexture('star-particle', 16, 16);
+      graphics.destroy();
+    }
     
-    const particles = this.scene.add.particles(this.sprite.x, this.sprite.y, textureKey, {
-      speed: { min: 50, max: 150 },
-      scale: { start: 0.8, end: 0 },
+    // Create SPARKLE texture (smaller, white)
+    if (!this.scene.textures.exists('sparkle-particle')) {
+      const graphics = this.scene.add.graphics();
+      graphics.fillStyle(0xFFFFFF, 1);
+      graphics.fillCircle(4, 4, 3);
+      graphics.generateTexture('sparkle-particle', 8, 8);
+      graphics.destroy();
+    }
+    
+    // Star burst effect (more stars for larger treats)
+    const starCount = 6 * this.size;
+    const starParticles = this.scene.add.particles(this.sprite.x, this.sprite.y, 'star-particle', {
+      speed: { min: 80, max: 180 },
+      scale: { start: 1.2, end: 0 },
       alpha: { start: 1, end: 0 },
-      lifespan: 400,
-      quantity: particleCount,
+      lifespan: 500,
+      quantity: starCount,
+      rotate: { start: 0, end: 360 }, // Stars spin!
       blendMode: 'ADD'
     });
     
-    particles.explode();
+    // Sparkle burst (small white sparkles)
+    const sparkleCount = 10 * this.size;
+    const sparkles = this.scene.add.particles(this.sprite.x, this.sprite.y, 'sparkle-particle', {
+      speed: { min: 40, max: 120 },
+      scale: { start: 0.8, end: 0 },
+      alpha: { start: 1, end: 0 },
+      lifespan: 400,
+      quantity: sparkleCount,
+      blendMode: 'ADD'
+    });
+    
+    starParticles.explode();
+    sparkles.explode();
     
     // Play collection animation
     this.scene.tweens.add({
       targets: this.sprite,
       scale: 1.5,
       alpha: 0,
+      rotation: Math.PI * 2, // Spin as it disappears!
       duration: 200,
+      ease: 'Back.easeIn',
       onComplete: () => {
         this.sprite.destroy();
-        particles.destroy();
+        starParticles.destroy();
+        sparkles.destroy();
       }
     });
   }
