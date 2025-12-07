@@ -58,74 +58,35 @@ export class Dog {
       const graphics = this.scene.add.graphics();
       
       if (breedKey === 'pug') {
-          // PUG - Stocky, flat face, curly tail, compact
-          const outlineWidth = 3;
-          const outlineColor = 0x000000;
+          // PUG - South Park construction paper style (NO external outlines)
           
-          // Body (shorter, stockier)
+          // Body (shorter, stockier) - flat fill, no outline
           graphics.fillStyle(this.breed.color, 1);
           graphics.fillRoundedRect(10, 14, 28, 18, 8);
-          graphics.lineStyle(outlineWidth, outlineColor, 1);
-          graphics.strokeRoundedRect(10, 14, 28, 18, 8);
           
-          // Head (round, large relative to body)
-          graphics.lineStyle(0, 0x000000, 0);
+          // Head (round, large relative to body) - flat fill
           graphics.fillStyle(this.breed.color, 1);
           graphics.fillCircle(42, 18, 14);
-          graphics.lineStyle(outlineWidth, outlineColor, 1);
-          graphics.strokeCircle(42, 18, 14);
           
           // Flat face characteristic - add a lighter muzzle area
-          graphics.lineStyle(0, 0x000000, 0);
           graphics.fillStyle(0xE6D4B5, 1); // Lighter tan for muzzle
           graphics.fillCircle(48, 20, 8);
-          graphics.lineStyle(outlineWidth, outlineColor, 1);
-          graphics.strokeCircle(48, 20, 8);
           
-          // Small floppy ears (close to head)
-          graphics.lineStyle(0, 0x000000, 0);
+          // Small floppy ears (close to head) - flat fill
           graphics.fillStyle(this.breed.color, 1);
           graphics.fillEllipse(36, 12, 8, 10);
-          graphics.lineStyle(outlineWidth, outlineColor, 1);
-          graphics.strokeEllipse(36, 12, 8, 10);
-          
-          graphics.lineStyle(0, 0x000000, 0);
-          graphics.fillStyle(this.breed.color, 1);
           graphics.fillEllipse(48, 12, 8, 10);
-          graphics.lineStyle(outlineWidth, outlineColor, 1);
-          graphics.strokeEllipse(48, 12, 8, 10);
           
-          // Curly tail (signature pug curl!)
-          graphics.lineStyle(0, 0x000000, 0);
+          // Curly tail (signature pug curl!) - flat fill
           graphics.fillStyle(this.breed.color, 1);
           graphics.fillCircle(8, 18, 7);
-          graphics.lineStyle(outlineWidth, outlineColor, 1);
-          graphics.strokeCircle(8, 18, 7);
-          
-          graphics.lineStyle(0, 0x000000, 0);
-          graphics.fillStyle(this.breed.color, 1);
           graphics.fillCircle(6, 14, 5);
-          graphics.lineStyle(outlineWidth, outlineColor, 1);
-          graphics.strokeCircle(6, 14, 5);
           
-          // Short legs
-          graphics.lineStyle(0, 0x000000, 0);
+          // Short legs - flat fill
           graphics.fillStyle(this.breed.color, 1);
           graphics.fillRect(14, 28, 7, 8);
-          graphics.lineStyle(outlineWidth, outlineColor, 1);
-          graphics.strokeRect(14, 28, 7, 8);
-          
-          graphics.lineStyle(0, 0x000000, 0);
-          graphics.fillStyle(this.breed.color, 1);
           graphics.fillRect(24, 28, 7, 8);
-          graphics.lineStyle(outlineWidth, outlineColor, 1);
-          graphics.strokeRect(24, 28, 7, 8);
-          
-          graphics.lineStyle(0, 0x000000, 0);
-          graphics.fillStyle(this.breed.color, 1);
           graphics.fillRect(30, 28, 7, 8);
-          graphics.lineStyle(outlineWidth, outlineColor, 1);
-          graphics.strokeRect(30, 28, 7, 8);
           
           // Face details - BIG expressive eyes
           graphics.fillStyle(0x000000, 1);
@@ -152,80 +113,36 @@ export class Dog {
           graphics.lineBetween(46, 10, 48, 12);
           
       } else {
-        // GOLDEN RETRIEVER - Athletic, longer snout, fluffy tail
-        const outlineWidth = 3;
-        const outlineColor = 0x000000;
+        // GOLDEN RETRIEVER - South Park construction paper style (NO external outlines)
           
-          // Body (longer, athletic)
+          // Body (longer, athletic) - flat fill, no outline
           graphics.fillStyle(this.breed.color, 1);
           graphics.fillRoundedRect(8, 14, 36, 18, 6);
-          graphics.lineStyle(outlineWidth, outlineColor, 1);
-          graphics.strokeRoundedRect(8, 14, 36, 18, 6);
           
-          // Head (oval, elegant)
-          graphics.lineStyle(0, 0x000000, 0);
+          // Head (oval, elegant) - flat fill
           graphics.fillStyle(this.breed.color, 1);
           graphics.fillEllipse(46, 18, 14, 12);
-          graphics.lineStyle(outlineWidth, outlineColor, 1);
-          graphics.strokeEllipse(46, 18, 14, 12);
           
-          // Longer snout (golden characteristic)
-          graphics.lineStyle(0, 0x000000, 0);
+          // Longer snout (golden characteristic) - flat fill
           graphics.fillStyle(0xE5C392, 1); // Lighter golden for snout
           graphics.fillEllipse(52, 20, 10, 8);
-          graphics.lineStyle(outlineWidth, outlineColor, 1);
-          graphics.strokeEllipse(52, 20, 10, 8);
           
-          // Pointed upright ears
-          graphics.lineStyle(0, 0x000000, 0);
+          // Pointed upright ears - flat fill
           graphics.fillStyle(this.breed.color, 1);
           graphics.fillTriangle(38, 10, 42, 4, 46, 10);
-          graphics.lineStyle(outlineWidth, outlineColor, 1);
-          graphics.strokeTriangle(38, 10, 42, 4, 46, 10);
-          
-          graphics.lineStyle(0, 0x000000, 0);
-          graphics.fillStyle(this.breed.color, 1);
           graphics.fillTriangle(46, 10, 50, 4, 54, 10);
-          graphics.lineStyle(outlineWidth, outlineColor, 1);
-          graphics.strokeTriangle(46, 10, 50, 4, 54, 10);
           
-          // Fluffy tail (signature golden tail!)
-          graphics.lineStyle(0, 0x000000, 0);
+          // Fluffy tail (signature golden tail!) - flat fill
           graphics.fillStyle(this.breed.color, 1);
           graphics.fillEllipse(6, 18, 12, 10);
-          graphics.lineStyle(outlineWidth, outlineColor, 1);
-          graphics.strokeEllipse(6, 18, 12, 10);
-          
-          graphics.lineStyle(0, 0x000000, 0);
-          graphics.fillStyle(this.breed.color, 1);
           graphics.fillEllipse(2, 16, 8, 8);
-          graphics.lineStyle(outlineWidth, outlineColor, 1);
-          graphics.strokeEllipse(2, 16, 8, 8);
           
-          // Longer legs (athletic build)
-          graphics.lineStyle(0, 0x000000, 0);
+          // Longer legs (athletic build) - flat fill
           graphics.fillStyle(this.breed.color, 1);
           graphics.fillRect(12, 28, 6, 10);
-          graphics.lineStyle(outlineWidth, outlineColor, 1);
-          graphics.strokeRect(12, 28, 6, 10);
-          
-          graphics.lineStyle(0, 0x000000, 0);
-          graphics.fillStyle(this.breed.color, 1);
           graphics.fillRect(20, 28, 6, 10);
-          graphics.lineStyle(outlineWidth, outlineColor, 1);
-          graphics.strokeRect(20, 28, 6, 10);
-          
-          graphics.lineStyle(0, 0x000000, 0);
-          graphics.fillStyle(this.breed.color, 1);
           graphics.fillRect(30, 28, 6, 10);
-          graphics.lineStyle(outlineWidth, outlineColor, 1);
-          graphics.strokeRect(30, 28, 6, 10);
-          
-          graphics.lineStyle(0, 0x000000, 0);
-          graphics.fillStyle(this.breed.color, 1);
           graphics.fillRect(38, 28, 6, 10);
-          graphics.lineStyle(outlineWidth, outlineColor, 1);
-          graphics.strokeRect(38, 28, 6, 10);
           
           // Face details - Friendly golden eyes
           graphics.fillStyle(0x000000, 1);
@@ -429,23 +346,23 @@ export class Dog {
     
     // Pure particle puke effect - no emojis, just chunks from mouth!
     
-    // Create GROSS South Park-style puke textures (murky, chunky, disgusting)
+    // Create South Park-style puke textures (construction paper green, streamy)
     const pukeColors = [
-      { name: 'puke-green', color: 0x4A5D23, size: 10 },     // Dark murky green
-      { name: 'puke-yellow', color: 0xB8860B, size: 8 },     // Dark goldenrod (gross yellow)
-      { name: 'puke-brown', color: 0x654321, size: 12 },     // Dark brown chunks
-      { name: 'puke-tan', color: 0x8B7355, size: 6 },        // Murky tan
-      { name: 'puke-lime', color: 0x556B2F, size: 9 }        // Dark olive green
+      { name: 'puke-green', color: 0x8FBC8F, size: 10, width: 16 },     // Light construction paper green
+      { name: 'puke-yellow', color: 0xF0E68C, size: 8, width: 12 },     // Khaki/pale yellow
+      { name: 'puke-brown', color: 0x8B7355, size: 10, width: 14 },     // Light brown chunks
+      { name: 'puke-tan', color: 0xD2B48C, size: 6, width: 10 },        // Tan
+      { name: 'puke-lime', color: 0x9ACD32, size: 9, width: 14 }        // Yellow-green lime
     ];
     
-    // Generate textures for each color if they don't exist
-    pukeColors.forEach(({ name, color, size }) => {
+    // Generate STREAMY textures (elongated, not round)
+    pukeColors.forEach(({ name, color, size, width }) => {
       if (!this.scene.textures.exists(name)) {
         const graphics = this.scene.add.graphics();
         graphics.fillStyle(color, 1);
-        // Make irregular shapes (not perfect circles)
-        graphics.fillEllipse(size / 2, size / 2, size, size * 0.8);
-        graphics.generateTexture(name, size, size);
+        // Make STREAMY elongated shapes (horizontal ellipses for stream effect)
+        graphics.fillEllipse(width / 2, size / 2, width, size * 0.6);
+        graphics.generateTexture(name, width, size);
         graphics.destroy();
       }
     });

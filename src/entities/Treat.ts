@@ -57,8 +57,8 @@ export class Treat {
         waistHeight * 2
       );
       
-      // Now trace ONLY the OUTER perimeter as one continuous path
-      graphics.lineStyle(2.5 * scale, outlineColor, 1);
+      // Now trace ONLY the OUTER perimeter as one continuous path (THIN South Park style)
+      graphics.lineStyle(1.5 * scale, outlineColor, 1);
       graphics.beginPath();
       
       // Start at the top of the left-top bulb
