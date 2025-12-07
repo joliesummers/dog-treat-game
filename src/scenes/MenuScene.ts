@@ -81,6 +81,11 @@ export class MenuScene extends Phaser.Scene {
     });
     
     playButton.on('pointerdown', () => {
+      // Unlock audio context (browser requirement)
+      const soundManager = this.sound as Phaser.Sound.WebAudioSoundManager;
+      if (soundManager.context) {
+        soundManager.context.resume();
+      }
       this.scene.start('LevelSelectScene');
     });
     
@@ -100,6 +105,11 @@ export class MenuScene extends Phaser.Scene {
     
     // Start game function
     const startGame = () => {
+      // Unlock audio context (browser requirement)
+      const soundManager = this.sound as Phaser.Sound.WebAudioSoundManager;
+      if (soundManager.context) {
+        soundManager.context.resume();
+      }
       this.scene.start('LevelSelectScene');
     };
     
