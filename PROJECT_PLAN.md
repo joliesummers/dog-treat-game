@@ -85,6 +85,8 @@
 
 **Status**: 8 bad items (chocolate/grapes), 3-heart system, invincibility frames with flashing, Game Over screen with multiple input methods
 
+**Future Enhancement Note**: Health system will be expanded to larger scale (10+ points) with percentage/bar display for Levels 2-3. Current 3-heart system maintained for Level 1 simplicity.
+
 ---
 
 ### ✅ Milestone 4: "Level Design" - First Complete Level (COMPLETED)
@@ -167,23 +169,128 @@
 - **Falling Bad Items**: Mix of 4 static platform hazards + random falling items every 3-5 seconds
 - **Dynamic Challenge**: Must watch both platforms AND sky for incoming chocolate/grapes
 
+**Future Enhancement Note**: Distraction mechanic will gain additional consequence in Levels 2-3 with auto-scroll - being distracted allows the "danger zone" to catch up to the dog, adding strategic risk to Golden Retriever's speed advantage.
+
 ---
 
-### 🚧 Milestone 8: "Level 2 & 3" - Content Expansion (PENDING)
+### 🚧 Milestone 8: "Auto-Scroll Chase" - Progressive Difficulty System (PLANNED)
 
-**Value**: Extended gameplay with progression
+**Value**: Tension-building mechanics that evolve across levels, themed as "owner chasing escaped dog"
 
-**Planned Features:**
-- Design 2 additional levels with increasing difficulty
-- Add level selection screen
-- Implement level unlock system (beat 1 to unlock 2)
-- Vary obstacles/layout per level (gaps, moving platforms optional)
-- Add level transition screens
-- **Playable test**: 3-level progression feels rewarding
+---
 
-**Testing**: Before starting, add Phase 3 tests from [TESTING_ROADMAP.md](./TESTING_ROADMAP.md)
+#### 🎯 Core Mechanic: Auto-Scroll "Danger Zone"
 
-**Status**: Not started - Consider after Milestone 7 and user feedback
+**Concept**: Left side of screen slowly scrolls right (like endless runner). If dog gets caught in danger zone = damage/death.
+
+**Thematic Evolution:**
+- **Level 1**: No auto-scroll (tutorial level, learn basics)
+- **Level 2**: Gentle auto-scroll introduced (danger zone = red gradient edge)
+- **Level 3**: Faster scroll + owner sprite chasing (visual storytelling!)
+
+---
+
+#### 📊 Health System Overhaul
+
+**Current State (Level 1):**
+- ✅ 3 hearts (simple, clear for beginners)
+- ✅ Bad items reduce health
+- ✅ Fall death = instant game over
+
+**New System (Levels 2-3):**
+- 🔲 Expand to **10-point health bar** (percentage-based, more granular)
+- 🔲 Multiple damage sources:
+  1. **Bad items** (chocolate/grapes) = -2 health
+  2. **Danger zone contact** = -1 health per second (continuous drain)
+  3. **Fall death** = -5 health (no longer instant death, unless health < 5)
+- 🔲 Health UI shows **bar + percentage** instead of hearts (e.g., "Health: 70%")
+- 🔲 Color-coded health bar: Green (80-100%), Yellow (40-79%), Red (0-39%)
+
+**Design Rationale:**
+- Level 1 keeps 3 hearts for simplicity (gentle onboarding)
+- Levels 2-3 introduce complexity gradually
+- Health bar allows for more nuanced difficulty tuning
+
+---
+
+#### 🐕 Distraction Mechanic Enhancement
+
+**Current Behavior:**
+- Golden Retriever: 15% chance/second to get distracted (1.5s freeze)
+- Movement reduced to 50%, jump to 70%
+
+**Enhanced Consequence (Levels 2-3 with auto-scroll):**
+- 🔲 While distracted, **danger zone continues advancing**
+- 🔲 Dog cannot move forward → gets closer to danger zone
+- 🔲 **High risk/high reward**: Golden's speed advantage comes with danger zone pressure
+- 🔲 Pug's reliability becomes strategic advantage (no distractions = safer pacing)
+
+**Gameplay Impact:**
+- Golden Retriever: Fast but risky (distractions can be deadly with auto-scroll)
+- Pug: Slower but consistent (better for auto-scroll levels)
+- Breeds now have **level-specific advantages** (replay value!)
+
+---
+
+#### 📋 Implementation Checklist
+
+**Phase 1: Health System Refactor (Level 1 consistency)**
+- 🔲 Create abstract health system that supports both hearts (Level 1) and bar (Levels 2-3)
+- 🔲 Refactor `UIScene` to display health based on level configuration
+- 🔲 Add `LevelConfig` type with `healthSystem: 'hearts' | 'bar'`
+- 🔲 Test Level 1 still works with refactored system
+
+**Phase 2: Auto-Scroll Mechanic (Level 2)**
+- 🔲 Implement camera auto-scroll (constant left-to-right movement)
+- 🔲 Add "danger zone" left boundary (red gradient visual)
+- 🔲 Detect dog entering danger zone (continuous health drain)
+- 🔲 Tune scroll speed for Level 2 (gentle introduction)
+- 🔲 Add visual warning when dog gets too close to edge
+
+**Phase 3: Content Expansion (Levels 2 & 3)**
+- 🔲 Design Level 2 layout (longer, auto-scroll enabled, 10-point health)
+- 🔲 Design Level 3 layout (faster scroll, more obstacles)
+- 🔲 Create "owner chasing dog" sprite for Level 3 danger zone
+- 🔲 Add level selection screen with unlock system
+- 🔲 Implement level transition screens
+- 🔲 Balance difficulty curve across all 3 levels
+
+**Phase 4: Breed-Specific Strategies**
+- 🔲 Playtest Golden Retriever on auto-scroll levels (distraction = danger)
+- 🔲 Playtest Pug on auto-scroll levels (reliability = advantage)
+- 🔲 Update breed selection screen with level-specific tips
+- 🔲 Ensure both breeds feel viable on all levels (different strategies)
+
+---
+
+#### 🎮 Level Progression Summary
+
+| Level | Health System | Auto-Scroll | Danger Zone | Theme |
+|-------|---------------|-------------|-------------|-------|
+| **1** | 3 Hearts | ❌ None | Fall = death | "Tutorial: Learn to Move" |
+| **2** | 10-Point Bar | ✅ Gentle (slow) | Red gradient, -1 HP/sec | "Chase Begins: Keep Moving" |
+| **3** | 10-Point Bar | ✅ Fast | Owner sprite, -1 HP/sec | "Owner Pursuit: Full Speed!" |
+
+---
+
+#### 🧪 Testing Strategy
+
+**Before Implementation:**
+- Add Phase 3 tests from [TESTING_ROADMAP.md](./TESTING_ROADMAP.md)
+- Create unit tests for health system abstraction
+- Test auto-scroll boundary detection
+
+**Playtesting Focus:**
+- Does Level 1 → Level 2 transition teach auto-scroll clearly?
+- Is danger zone visually obvious?
+- Are distraction consequences fair but challenging?
+- Do both breeds feel viable across all levels?
+
+---
+
+**Status**: Planned - Will begin after Milestone 10 (Angry Birds Polish) is complete
+
+**Estimated Time**: 8-12 hours (health refactor: 2-3h, auto-scroll: 3-4h, level design: 3-5h)
 
 ---
 
@@ -231,7 +338,7 @@
 
 **Sprite Enhancements:**
 - 🔲 Dog: Add 3-4px black outline, squash on landing, stretch on jump
-- ✅ Treats: Redesigned as realistic dog bones (dumbbell shape with knobs), bold 3px black outline, elastic bounce with `Elastic.easeInOut` and `Back.easeInOut` ✨
+- ✅ Treats: Redesigned as cute dog bones with smooth integrated shape, tan fill throughout, 2.5px black outline ONLY on exterior, four rounded bulbs connected by filled waist section, elastic bounce animations ✨
 - 🔲 Poo: Stink line animations (wavy lines above)
 - 🔲 Squirrel: Bold outline, more exaggerated bounce
 - 🔲 Platforms: Slight bounce/shake when dog lands
@@ -268,7 +375,7 @@
 - [ ] Particle effects use themed graphics (stars, not circles)
 - [ ] Game feels more "alive" and cartoony
 
-**Status**: In Progress - Puke effect ✅, All scene gradients ✅, Treat sprites/animations ✅, Dog/Poo/Squirrel sprites pending, Particle effects pending
+**Status**: In Progress - Puke effect ✅, All scene gradients ✅, Treat/bone sprites completely redesigned ✅, Dog/Poo/Squirrel sprites pending, Particle effects pending
 
 ---
 
@@ -362,15 +469,23 @@ All fixes committed in separate commits for traceability.
 **Completed**: 7 out of 10 milestones ✅  
 **In Progress**: Milestone 10 - Angry Birds Polish 🎨  
 **MVP Status**: Complete and deployed! 🎉  
+
 **Current Focus**: 
 1. Visual style overhaul with "Angry Birds" aesthetic
 2. Enhanced animations (squash/stretch, elastic easing)
 3. Improved particle effects and visual polish
 4. More cohesive, cartoony art style
 
+**Upcoming: Milestone 8 Redesign** 🎯
+- **New Vision**: Auto-scroll "chase" mechanic (owner pursuing escaped dog)
+- **Health Evolution**: 3 hearts (L1) → 10-point bar (L2-3) with multiple damage sources
+- **Progressive Difficulty**: Level 1 (tutorial), Level 2 (gentle auto-scroll), Level 3 (fast chase)
+- **Strategic Depth**: Distractions become dangerous with auto-scroll (risk/reward)
+
 **Next Steps After Milestone 10**: 
-- Share updated game with players for feedback
-- Consider Milestone 8 (more levels) based on player interest
+1. Complete visual polish and share for feedback
+2. Begin Milestone 8: Health system refactor + auto-scroll implementation
+3. Design Levels 2-3 with progressive difficulty curve
 
 ---
 
@@ -389,7 +504,12 @@ All fixes committed in separate commits for traceability.
 
 ---
 
-**Last Updated**: December 2024  
-**Version**: v0.1.0 (MVP)  
-**Next Review**: After first user testing session
+**Last Updated**: December 7, 2024  
+**Version**: v0.1.0 (MVP) - Milestone 8 Redesigned  
+**Next Review**: After Milestone 10 completion
+
+**Major Changes**:
+- ✅ Improved bone/treat graphics with smooth integrated design
+- 📋 **Milestone 8 redesigned** with auto-scroll chase mechanic, expandable health system, and progressive difficulty
+- 🎯 New gameplay vision: 3-level progression with evolving mechanics and "escaped dog" theme
 
