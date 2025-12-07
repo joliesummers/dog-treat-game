@@ -97,37 +97,8 @@ export class GameScene extends Phaser.Scene {
     dirt.setFillStyle(0x8B4513); // Saddle brown
     dirt.setStrokeStyle(1, 0x654321);
     
-    // Add MANY floating platforms across the extended level
-    const platformData = [
-      // Section 1 (0-800)
-      { x: 200, y: height - 150, w: 200, h: 32, color: 0xD2691E },
-      { x: 500, y: height - 280, w: 200, h: 32, color: 0xCD853F },
-      { x: 700, y: height - 180, w: 120, h: 32, color: 0xD2691E },
-      { x: 350, y: height - 400, w: 150, h: 32, color: 0xCD853F },
-      
-      // Section 2 (800-1600)
-      { x: 900, y: height - 200, w: 180, h: 32, color: 0xD2691E },
-      { x: 1100, y: height - 350, w: 200, h: 32, color: 0xCD853F },
-      { x: 1350, y: height - 250, w: 150, h: 32, color: 0xD2691E },
-      { x: 1550, y: height - 180, w: 140, h: 32, color: 0xCD853F },
-      
-      // Section 3 (1600-2400)
-      { x: 1750, y: height - 320, w: 160, h: 32, color: 0xD2691E },
-      { x: 1950, y: height - 420, w: 180, h: 32, color: 0xCD853F },
-      { x: 2200, y: height - 220, w: 200, h: 32, color: 0xD2691E },
-      { x: 2450, y: height - 150, w: 120, h: 32, color: 0xCD853F },
-      
-      // Section 4 (2400-3200)
-      { x: 2600, y: height - 280, w: 180, h: 32, color: 0xD2691E },
-      { x: 2850, y: height - 380, w: 160, h: 32, color: 0xCD853F },
-      { x: 3050, y: height - 200, w: 200, h: 32, color: 0xD2691E },
-      { x: 3300, y: height - 320, w: 150, h: 32, color: 0xCD853F },
-      
-      // Section 5 (3200-4000) - Final stretch!
-      { x: 3500, y: height - 250, w: 180, h: 32, color: 0xD2691E },
-      { x: 3750, y: height - 180, w: 200, h: 32, color: 0xCD853F },
-      { x: 3950, y: height - 300, w: 160, h: 32, color: 0xD2691E },
-    ];
+    // Get platform layout based on current level
+    const platformData = this.getPlatformLayout(this.currentLevel, height);
     
     platformData.forEach(p => {
       // Create wood texture platform with grain
@@ -167,10 +138,10 @@ export class GameScene extends Phaser.Scene {
       }
     });
     
-    // Create treats, bad items, and squirrels across extended level
-    this.createTreats(levelWidth, height);
-    this.createBadItems(levelWidth, height);
-    this.createSquirrels(levelWidth, height);
+    // Create treats, bad items, and squirrels based on level config
+    this.createTreats(this.currentLevel, levelWidth, height);
+    this.createBadItems(this.currentLevel, levelWidth, height);
+    this.createSquirrels(this.currentLevel, levelWidth, height);
     
     // Calculate and set target score IMMEDIATELY (before any collisions can happen)
     const totalScore = this.treats.reduce((sum, treat) => sum + treat.getPointValue(), 0);
@@ -287,7 +258,8 @@ export class GameScene extends Phaser.Scene {
     }
   }
   
-  private createTreats(levelWidth: number, height: number) {
+  private createTreats(_level: number, levelWidth: number, height: number) {
+    // TODO: Use level parameter for level-specific treat placement
     // Extended level with MANY more treats! (~60 treats for longer gameplay)
     // Mix of sizes: small (1pt), medium (2pt), large (3pt)
     const treatPositions = [
@@ -352,7 +324,8 @@ export class GameScene extends Phaser.Scene {
     });
   }
   
-  private createBadItems(levelWidth: number, height: number) {
+  private createBadItems(_level: number, levelWidth: number, height: number) {
+    // TODO: Use level parameter for level-specific bad item placement
     // Poo hazards across extended level (~28 hazards, reduced by 20%)
     const staticBadItemPositions = [
       // Section 1 (0-800)
@@ -405,7 +378,7 @@ export class GameScene extends Phaser.Scene {
     this.startFallingBadItems(levelWidth);
   }
   
-  private createSquirrels(_levelWidth: number, height: number) {
+  private createSquirrels(_level: number, _levelWidth: number, height: number) {
     // MORE squirrels across extended level for distractions! (~15 squirrels)
     const squirrelPositions = [
       // Section 1 (0-800)
@@ -563,6 +536,141 @@ export class GameScene extends Phaser.Scene {
     this.time.delayedCall(500, () => {
       this.scene.launch('GameOverScene');
     });
+  }
+
+  private getPlatformLayout(level: number, height: number) {
+    const layouts: Record<number, Array<{x: number, y: number, w: number, h: number, color: number}>> = {
+      // LEVEL 1: Tutorial - Safe, forgiving jumps, wide platforms
+      1: [
+        // Section 1 (0-800) - Easy introduction
+        { x: 200, y: height - 150, w: 200, h: 32, color: 0xD2691E },
+        { x: 500, y: height - 280, w: 200, h: 32, color: 0xCD853F },
+        { x: 700, y: height - 180, w: 120, h: 32, color: 0xD2691E },
+        { x: 350, y: height - 400, w: 150, h: 32, color: 0xCD853F },
+        
+        // Section 2 (800-1600)
+        { x: 900, y: height - 200, w: 180, h: 32, color: 0xD2691E },
+        { x: 1100, y: height - 350, w: 200, h: 32, color: 0xCD853F },
+        { x: 1350, y: height - 250, w: 150, h: 32, color: 0xD2691E },
+        { x: 1550, y: height - 180, w: 140, h: 32, color: 0xCD853F },
+        
+        // Section 3 (1600-2400)
+        { x: 1750, y: height - 320, w: 160, h: 32, color: 0xD2691E },
+        { x: 1950, y: height - 420, w: 180, h: 32, color: 0xCD853F },
+        { x: 2200, y: height - 220, w: 200, h: 32, color: 0xD2691E },
+        { x: 2450, y: height - 150, w: 120, h: 32, color: 0xCD853F },
+        
+        // Section 4 (2400-3200)
+        { x: 2600, y: height - 280, w: 180, h: 32, color: 0xD2691E },
+        { x: 2850, y: height - 380, w: 160, h: 32, color: 0xCD853F },
+        { x: 3050, y: height - 200, w: 200, h: 32, color: 0xD2691E },
+        { x: 3300, y: height - 320, w: 150, h: 32, color: 0xCD853F },
+        
+        // Section 5 (3200-4000) - Final stretch!
+        { x: 3500, y: height - 250, w: 180, h: 32, color: 0xD2691E },
+        { x: 3750, y: height - 180, w: 200, h: 32, color: 0xCD853F },
+        { x: 3950, y: height - 300, w: 160, h: 32, color: 0xD2691E },
+      ],
+      
+      // LEVEL 2: Challenge - Auto-scroll pressure, wider gaps, narrower platforms
+      2: [
+        // Section 1 (0-1000) - Gradual intro to pressure
+        { x: 250, y: height - 180, w: 160, h: 32, color: 0xD2691E },
+        { x: 520, y: height - 300, w: 140, h: 32, color: 0xCD853F },
+        { x: 800, y: height - 200, w: 120, h: 32, color: 0xD2691E },
+        { x: 450, y: height - 420, w: 130, h: 32, color: 0xCD853F },
+        
+        // Section 2 (1000-2000) - Wider gaps, keep moving!
+        { x: 1100, y: height - 250, w: 140, h: 32, color: 0xD2691E },
+        { x: 1380, y: height - 380, w: 120, h: 32, color: 0xCD853F },
+        { x: 1600, y: height - 220, w: 150, h: 32, color: 0xD2691E },
+        { x: 1850, y: height - 350, w: 130, h: 32, color: 0xCD853F },
+        
+        // Section 3 (2000-3000) - Vertical challenges
+        { x: 2100, y: height - 450, w: 120, h: 32, color: 0xD2691E },
+        { x: 2320, y: height - 280, w: 140, h: 32, color: 0xCD853F },
+        { x: 2580, y: height - 400, w: 130, h: 32, color: 0xD2691E },
+        { x: 2820, y: height - 220, w: 150, h: 32, color: 0xCD853F },
+        
+        // Section 4 (3000-4000) - Quick succession
+        { x: 3050, y: height - 300, w: 120, h: 32, color: 0xD2691E },
+        { x: 3250, y: height - 420, w: 130, h: 32, color: 0xCD853F },
+        { x: 3470, y: height - 250, w: 140, h: 32, color: 0xD2691E },
+        { x: 3700, y: height - 370, w: 120, h: 32, color: 0xCD853F },
+        
+        // Section 5 (4000-5000) - Endurance test        { x: 4000, y: height - 280, w: 130, h: 32, color: 0xD2691E },
+        { x: 4220, y: height - 410, w: 120, h: 32, color: 0xCD853F },
+        { x: 4430, y: height - 230, w: 150, h: 32, color: 0xD2691E },
+        { x: 4680, y: height - 350, w: 130, h: 32, color: 0xCD853F },
+        
+        // Section 6 (5000-6000) - Final sprint
+        { x: 4950, y: height - 450, w: 120, h: 32, color: 0xD2691E },
+        { x: 5180, y: height - 270, w: 140, h: 32, color: 0xCD853F },
+        { x: 5420, y: height - 380, w: 130, h: 32, color: 0xD2691E },
+        { x: 5670, y: height - 220, w: 150, h: 32, color: 0xCD853F },
+        { x: 5900, y: height - 340, w: 140, h: 32, color: 0xD2691E },
+      ],
+      
+      // LEVEL 3: Expert - Fast auto-scroll, precise jumps, narrow platforms, extreme variation
+      3: [
+        // Section 1 (0-1000) - Immediate pressure
+        { x: 200, y: height - 220, w: 110, h: 32, color: 0xD2691E },
+        { x: 420, y: height - 380, w: 100, h: 32, color: 0xCD853F },
+        { x: 630, y: height - 250, w: 120, h: 32, color: 0xD2691E },
+        { x: 850, y: height - 450, w: 100, h: 32, color: 0xCD853F },
+        
+        // Section 2 (1000-2000) - Precision jumps
+        { x: 1050, y: height - 300, w: 110, h: 32, color: 0xD2691E },
+        { x: 1250, y: height - 470, w: 100, h: 32, color: 0xCD853F },
+        { x: 1450, y: height - 240, w: 120, h: 32, color: 0xD2691E },
+        { x: 1660, y: height - 400, w: 100, h: 32, color: 0xCD853F },
+        { x: 1860, y: height - 280, w: 110, h: 32, color: 0xD2691E },
+        
+        // Section 3 (2000-3000) - Rapid height changes
+        { x: 2080, y: height - 450, w: 100, h: 32, color: 0xCD853F },
+        { x: 2270, y: height - 220, w: 120, h: 32, color: 0xD2691E },
+        { x: 2480, y: height - 480, w: 100, h: 32, color: 0xCD853F },
+        { x: 2680, y: height - 260, w: 110, h: 32, color: 0xD2691E },
+        { x: 2880, y: height - 420, w: 100, h: 32, color: 0xCD853F },
+        
+        // Section 4 (3000-4000) - Extreme challenges
+        { x: 3100, y: height - 320, w: 100, h: 32, color: 0xD2691E },
+        { x: 3290, y: height - 490, w: 100, h: 32, color: 0xCD853F },
+        { x: 3480, y: height - 240, w: 110, h: 32, color: 0xD2691E },
+        { x: 3680, y: height - 440, w: 100, h: 32, color: 0xCD853F },
+        { x: 3870, y: height - 290, w: 120, h: 32, color: 0xD2691E },
+        
+        // Section 5 (4000-5000) - No mercy
+        { x: 4090, y: height - 460, w: 100, h: 32, color: 0xCD853F },
+        { x: 4280, y: height - 250, w: 110, h: 32, color: 0xD2691E },
+        { x: 4470, y: height - 420, w: 100, h: 32, color: 0xCD853F },
+        { x: 4660, y: height - 280, w: 120, h: 32, color: 0xD2691E },
+        { x: 4860, y: height - 480, w: 100, h: 32, color: 0xCD853F },
+        
+        // Section 6 (5000-6000) - Brutal endurance
+        { x: 5070, y: height - 310, w: 110, h: 32, color: 0xD2691E },
+        { x: 5270, y: height - 470, w: 100, h: 32, color: 0xCD853F },
+        { x: 5470, y: height - 260, w: 120, h: 32, color: 0xD2691E },
+        { x: 5680, y: height - 430, w: 100, h: 32, color: 0xCD853F },
+        { x: 5880, y: height - 300, w: 110, h: 32, color: 0xD2691E },
+        
+        // Section 7 (6000-7000) - Almost there
+        { x: 6100, y: height - 450, w: 100, h: 32, color: 0xCD853F },
+        { x: 6300, y: height - 240, w: 120, h: 32, color: 0xD2691E },
+        { x: 6510, y: height - 400, w: 100, h: 32, color: 0xCD853F },
+        { x: 6710, y: height - 270, w: 110, h: 32, color: 0xD2691E },
+        { x: 6910, y: height - 460, w: 100, h: 32, color: 0xCD853F },
+        
+        // Section 8 (7000-8000) - Final gauntlet!
+        { x: 7120, y: height - 320, w: 110, h: 32, color: 0xD2691E },
+        { x: 7330, y: height - 480, w: 100, h: 32, color: 0xCD853F },
+        { x: 7540, y: height - 260, w: 120, h: 32, color: 0xD2691E },
+        { x: 7750, y: height - 420, w: 100, h: 32, color: 0xCD853F },
+        { x: 7950, y: height - 300, w: 130, h: 32, color: 0xD2691E }, // Wider final platform!
+      ]
+    };
+    
+    return layouts[level] || layouts[1];
   }
 
   private createPlatformTextures() {
