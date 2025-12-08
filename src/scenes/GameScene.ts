@@ -1076,6 +1076,9 @@ export class GameScene extends Phaser.Scene {
   private checkDangerZoneCollision(time: number) {
     if (!this.dog) return;
     
+    // Don't apply danger zone damage until scrolling has started!
+    if (!this.scrollingEnabled) return;
+    
     const dogX = this.dog.getSprite().x;
     const cameraLeftEdge = this.cameras.main.scrollX;
     const dangerZoneRight = cameraLeftEdge + 80; // Danger zone width
