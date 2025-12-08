@@ -27,6 +27,7 @@ export class GameScene extends Phaser.Scene {
   private scrollSpeed: number = 0; // pixels per second
   private scrollingEnabled: boolean = false; // Whether scrolling has started
   private scrollStartTime: number = 0; // When scrolling should start (in ms from scene start)
+  private sceneStartTime: number = 0; // When this scene was created (for timing the delay)
   private ownerSprite?: Phaser.GameObjects.Container; // Owner chasing the dog!
   private dangerZoneX: number = 0; // Left edge of danger zone
   private dangerZoneDamageTimer: number = 0; // Track damage timing
@@ -51,6 +52,9 @@ export class GameScene extends Phaser.Scene {
   create() {
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
+    
+    // Record when this scene started (for countdown timing)
+    this.sceneStartTime = this.time.now;
     
     // Reset game state completely
     this.gameOver = false;
@@ -1116,10 +1120,11 @@ export class GameScene extends Phaser.Scene {
     // Don't update if paused or game over
     if (this.isPaused || this.gameOver) return;
     
-    // Check if it's time to start scrolling
-    if (this.scrollSpeed > 0 && !this.scrollingEnabled && time >= this.scrollStartTime) {
+    // Check if it's time to start scrolling (based on time elapsed since scene started)
+    const elapsedTime = time - this.sceneStartTime;
+    if (this.scrollSpeed > 0 && !this.scrollingEnabled && elapsedTime >= this.scrollStartTime) {
       this.scrollingEnabled = true;
-      console.log('🏃 Owner starts chasing!');
+      console.log(`🏃 Owner starts chasing NOW! (${elapsedTime}ms elapsed, delay was ${this.scrollStartTime}ms)`);
     }
     
     // Auto-scroll camera if enabled
