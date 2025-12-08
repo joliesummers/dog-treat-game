@@ -11,6 +11,8 @@ export class VirtualDPad {
   
   private leftPressed: boolean = false;
   private rightPressed: boolean = false;
+  private leftPointerId: number | null = null;
+  private rightPointerId: number | null = null;
 
   constructor(scene: Phaser.Scene, x: number, y: number, size: number = 120) {
     this.scene = scene;
@@ -51,48 +53,72 @@ export class VirtualDPad {
     
     this.container.add([this.leftZone, this.rightZone, this.leftArrow, this.rightArrow]);
     
-    // Touch event handlers for LEFT
+    // Touch event handlers for LEFT - track pointer ID
     this.leftZone.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
       if (pointer.event) {
         pointer.event.preventDefault();
       }
-      this.leftPressed = true;
-      this.leftArrow.setScale(1.2);
-      this.leftArrow.setAlpha(1.0);
+      // Only accept if no other pointer is active on left
+      if (this.leftPointerId === null) {
+        this.leftPointerId = pointer.id;
+        this.leftPressed = true;
+        this.leftArrow.setScale(1.2);
+        this.leftArrow.setAlpha(1.0);
+      }
     });
     
-    this.leftZone.on('pointerup', () => {
-      this.leftPressed = false;
-      this.leftArrow.setScale(1.0);
-      this.leftArrow.setAlpha(0.7);
+    this.leftZone.on('pointerup', (pointer: Phaser.Input.Pointer) => {
+      // Only release if this is the pointer that pressed it
+      if (this.leftPointerId === pointer.id) {
+        this.leftPointerId = null;
+        this.leftPressed = false;
+        this.leftArrow.setScale(1.0);
+        this.leftArrow.setAlpha(0.7);
+      }
     });
     
-    this.leftZone.on('pointerout', () => {
-      this.leftPressed = false;
-      this.leftArrow.setScale(1.0);
-      this.leftArrow.setAlpha(0.7);
+    this.leftZone.on('pointerout', (pointer: Phaser.Input.Pointer) => {
+      // Only release if this is the pointer that pressed it
+      if (this.leftPointerId === pointer.id) {
+        this.leftPointerId = null;
+        this.leftPressed = false;
+        this.leftArrow.setScale(1.0);
+        this.leftArrow.setAlpha(0.7);
+      }
     });
     
-    // Touch event handlers for RIGHT
+    // Touch event handlers for RIGHT - track pointer ID
     this.rightZone.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
       if (pointer.event) {
         pointer.event.preventDefault();
       }
-      this.rightPressed = true;
-      this.rightArrow.setScale(1.2);
-      this.rightArrow.setAlpha(1.0);
+      // Only accept if no other pointer is active on right
+      if (this.rightPointerId === null) {
+        this.rightPointerId = pointer.id;
+        this.rightPressed = true;
+        this.rightArrow.setScale(1.2);
+        this.rightArrow.setAlpha(1.0);
+      }
     });
     
-    this.rightZone.on('pointerup', () => {
-      this.rightPressed = false;
-      this.rightArrow.setScale(1.0);
-      this.rightArrow.setAlpha(0.7);
+    this.rightZone.on('pointerup', (pointer: Phaser.Input.Pointer) => {
+      // Only release if this is the pointer that pressed it
+      if (this.rightPointerId === pointer.id) {
+        this.rightPointerId = null;
+        this.rightPressed = false;
+        this.rightArrow.setScale(1.0);
+        this.rightArrow.setAlpha(0.7);
+      }
     });
     
-    this.rightZone.on('pointerout', () => {
-      this.rightPressed = false;
-      this.rightArrow.setScale(1.0);
-      this.rightArrow.setAlpha(0.7);
+    this.rightZone.on('pointerout', (pointer: Phaser.Input.Pointer) => {
+      // Only release if this is the pointer that pressed it
+      if (this.rightPointerId === pointer.id) {
+        this.rightPointerId = null;
+        this.rightPressed = false;
+        this.rightArrow.setScale(1.0);
+        this.rightArrow.setAlpha(0.7);
+      }
     });
   }
   

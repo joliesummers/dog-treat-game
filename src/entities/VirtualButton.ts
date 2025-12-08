@@ -17,6 +17,7 @@ export class VirtualButton {
   private labelText?: Phaser.GameObjects.Text;
   private isPressed: boolean = false;
   private size: number;
+  private activePointerId: number | null = null;
 
   constructor(config: VirtualButtonConfig) {
     this.scene = config.scene;
@@ -55,20 +56,32 @@ export class VirtualButton {
     // Add to container
     this.container.add([this.background, this.icon]);
     
-    // Touch event handlers
+    // Touch event handlers - track pointer ID for multi-touch
     this.background.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
       if (pointer.event) {
         pointer.event.preventDefault(); // Prevent mobile browser defaults
       }
-      this.setPressed(true);
+      // Only accept if no other pointer is active on this button
+      if (this.activePointerId === null) {
+        this.activePointerId = pointer.id;
+        this.setPressed(true);
+      }
     });
     
-    this.background.on('pointerup', () => {
-      this.setPressed(false);
+    this.background.on('pointerup', (pointer: Phaser.Input.Pointer) => {
+      // Only release if this is the pointer that pressed it
+      if (this.activePointerId === pointer.id) {
+        this.activePointerId = null;
+        this.setPressed(false);
+      }
     });
     
-    this.background.on('pointerout', () => {
-      this.setPressed(false);
+    this.background.on('pointerout', (pointer: Phaser.Input.Pointer) => {
+      // Only release if this is the pointer that pressed it
+      if (this.activePointerId === pointer.id) {
+        this.activePointerId = null;
+        this.setPressed(false);
+      }
     });
   }
   
