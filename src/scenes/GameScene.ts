@@ -25,6 +25,8 @@ export class GameScene extends Phaser.Scene {
   
   // Auto-scroll system
   private scrollSpeed: number = 0; // pixels per second
+  private scrollingEnabled: boolean = false; // Whether scrolling has started
+  private scrollStartTime: number = 0; // When scrolling should start (in ms from scene start)
   private ownerSprite?: Phaser.GameObjects.Container; // Owner chasing the dog!
   private dangerZoneX: number = 0; // Left edge of danger zone
   private dangerZoneDamageTimer: number = 0; // Track damage timing
@@ -154,12 +156,13 @@ export class GameScene extends Phaser.Scene {
     this.createBadItems(this.currentLevel, levelWidth, height);
     this.createSquirrels(this.currentLevel, levelWidth, height);
     
-    // Calculate and set target score IMMEDIATELY (before any collisions can happen)
-    const totalScore = this.treats.reduce((sum, treat) => sum + treat.getPointValue(), 0);
+    // Calculate and set target score based on treats needed to win
+    // Use average of 2 points per treat (treats are worth 1, 2, or 3 points)
+    const targetScore = this.levelConfig.treatsNeededToWin * 2;
     
     // Update UI with target score synchronously
     this.uiScene?.reset(); // Reset FIRST (clears score to 0)
-    this.uiScene?.setTargetScore(totalScore); // THEN set target
+    this.uiScene?.setTargetScore(targetScore); // Set target based on needed treats, not all treats
     
     // Get selected breed from registry
     const selectedBreed = this.registry.get('selectedBreed') as BreedType || 'pug';
@@ -230,10 +233,17 @@ export class GameScene extends Phaser.Scene {
     
     // Initialize auto-scroll system based on level config
     this.scrollSpeed = this.levelConfig.scrollSpeed;
+    this.scrollStartTime = this.levelConfig.scrollStartDelay * 1000; // Convert seconds to ms
+    this.scrollingEnabled = (this.scrollSpeed > 0 && this.scrollStartTime === 0); // Start immediately if no delay
     
     if (this.scrollSpeed > 0) {
       // For auto-scroll levels: DON'T follow dog - camera scrolls independently!
       // Dog must keep up with camera or fall into danger zone
+      
+      // Show countdown if there's a delay
+      if (this.scrollStartTime > 0) {
+        this.showScrollCountdown();
+      }
     } else {
       // For non-scroll levels: Normal follow
       this.cameras.main.startFollow(this.dog!.getSprite(), false, 0.1, 0.1);
@@ -1000,7 +1010,45 @@ export class GameScene extends Phaser.Scene {
     this.ownerSprite.setPosition(60, height - 120);
   }
   
+  private showScrollCountdown() {
+    const width = this.cameras.main.width;
+    const height = this.cameras.main.height;
+    
+    // Create countdown text
+    const countdownText = this.add.text(width / 2, height / 2 - 50, 'Owner chases in...', {
+      fontSize: '32px',
+      color: '#ffffff',
+      backgroundColor: '#000000',
+      padding: { x: 20, y: 10 }
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(1000);
+    
+    const timerText = this.add.text(width / 2, height / 2 + 20, '5', {
+      fontSize: '64px',
+      color: '#ff0000',
+      fontStyle: 'bold'
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(1000);
+    
+    // Update countdown every second
+    let secondsLeft = Math.ceil(this.scrollStartTime / 1000);
+    this.time.addEvent({
+      delay: 1000,
+      repeat: secondsLeft - 1,
+      callback: () => {
+        secondsLeft--;
+        timerText.setText(secondsLeft.toString());
+        
+        if (secondsLeft === 0) {
+          countdownText.destroy();
+          timerText.destroy();
+        }
+      }
+    });
+  }
+  
   private updateAutoScroll(delta: number) {
+    // Don't scroll until delay has passed
+    if (!this.scrollingEnabled) return;
+    
     // Move camera right at scroll speed
     const scrollAmount = (this.scrollSpeed * delta) / 1000;
     this.dangerZoneX += scrollAmount;
@@ -1048,6 +1096,12 @@ export class GameScene extends Phaser.Scene {
   update(time: number, delta: number) {
     // Don't update if paused or game over
     if (this.isPaused || this.gameOver) return;
+    
+    // Check if it's time to start scrolling
+    if (this.scrollSpeed > 0 && !this.scrollingEnabled && time >= this.scrollStartTime) {
+      this.scrollingEnabled = true;
+      console.log('🏃 Owner starts chasing!');
+    }
     
     // Auto-scroll camera if enabled
     if (this.scrollSpeed > 0) {

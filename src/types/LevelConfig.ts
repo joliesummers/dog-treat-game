@@ -13,6 +13,7 @@ export interface LevelConfig {
   // Auto-Scroll Settings
   autoScroll: boolean;
   scrollSpeed: number; // pixels per second (0 = no scroll)
+  scrollStartDelay: number; // seconds to wait before auto-scroll starts
   
   // Danger Zone (for auto-scroll levels)
   dangerZoneEnabled: boolean;
@@ -21,7 +22,8 @@ export interface LevelConfig {
   // Level Layout
   levelWidth: number;
   platformCount: number;
-  treatCount: number;
+  treatCount: number; // Total treats available in level
+  treatsNeededToWin: number; // How many treats needed to complete level
   badItemCount: number;
   
   // Theme/Visuals
@@ -40,13 +42,15 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
     
     autoScroll: false,
     scrollSpeed: 0,
+    scrollStartDelay: 0, // No auto-scroll
     
     dangerZoneEnabled: false,
     dangerZoneDamagePerSecond: 0,
     
     levelWidth: 5200,
     platformCount: 25,
-    treatCount: 16,
+    treatCount: 17, // 50% more than needed
+    treatsNeededToWin: 11,
     badItemCount: 10,
     
     theme: 'Backyard Escape',
@@ -62,13 +66,15 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
     
     autoScroll: true,
     scrollSpeed: 60, // Noticeable pressure - doubled!
+    scrollStartDelay: 5, // 5 second grace period before owner starts chasing
     
     dangerZoneEnabled: true,
     dangerZoneDamagePerSecond: 1,
     
     levelWidth: 7800,
     platformCount: 36,
-    treatCount: 23,
+    treatCount: 23, // 41.25% more than needed
+    treatsNeededToWin: 16,
     badItemCount: 16,
     
     theme: 'Neighborhood Chase',
@@ -84,13 +90,15 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
     
     autoScroll: true,
     scrollSpeed: 100, // FAST! Doubled from 50!
+    scrollStartDelay: 5, // 5 second grace period
     
     dangerZoneEnabled: true,
     dangerZoneDamagePerSecond: 1, // More dangerous
     
     levelWidth: 10400,
     platformCount: 46,
-    treatCount: 29,
+    treatCount: 29, // 32.5% more than needed
+    treatsNeededToWin: 22,
     badItemCount: 21,
     
     theme: 'Park Sprint',
@@ -106,13 +114,15 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
     
     autoScroll: true,
     scrollSpeed: 140, // Very fast! (2.33 px/frame)
+    scrollStartDelay: 5, // 5 second grace period
     
     dangerZoneEnabled: true,
     dangerZoneDamagePerSecond: 2, // DOUBLED damage!
     
     levelWidth: 13000,
     platformCount: 55,
-    treatCount: 35,
+    treatCount: 35, // 23.75% more than needed
+    treatsNeededToWin: 28,
     badItemCount: 26,
     
     theme: 'Backyard Sprint',
@@ -128,13 +138,15 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
     
     autoScroll: true,
     scrollSpeed: 180, // EXTREME! (3 px/frame)
+    scrollStartDelay: 5, // 5 second grace period
     
     dangerZoneEnabled: true,
     dangerZoneDamagePerSecond: 3, // TRIPLE damage!
     
     levelWidth: 15600,
     platformCount: 65,
-    treatCount: 40,
+    treatCount: 40, // 15% more than needed
+    treatsNeededToWin: 35,
     badItemCount: 31,
     
     theme: 'Backyard Finale',
