@@ -48,7 +48,7 @@ export class BreedSelectScene extends Phaser.Scene {
     this.createBreedOption('golden', goldenX, goldenY);
     
     // Instructions
-    const instructionText = this.add.text(width / 2, height - 60, 'Press SPACE or Click to Start', {
+    const instructionText = this.add.text(width / 2, height - 60, 'Tap or Press SPACE to Start', {
       fontSize: '20px',
       color: '#ffffff',
       fontStyle: 'bold'

@@ -4,6 +4,8 @@ import { Treat } from '../entities/Treat';
 import { BadItem } from '../entities/BadItem';
 import { Squirrel } from '../entities/Squirrel';
 import { UIScene } from './UIScene';
+import { VirtualButton } from '../entities/VirtualButton';
+import { VirtualDPad } from '../entities/VirtualDPad';
 import type { BreedType } from '../types/DogBreeds';
 import { getCurrentLevelConfig, type LevelConfig } from '../types/LevelConfig';
 
@@ -18,6 +20,11 @@ export class GameScene extends Phaser.Scene {
   private isPaused: boolean = false;
   private pauseText?: Phaser.GameObjects.Text;
   private gameOver: boolean = false;
+  
+  // Mobile controls
+  private virtualDPad?: VirtualDPad;
+  private virtualJumpButton?: VirtualButton;
+  private isMobile: boolean = false;
   
   // Level configuration
   private levelConfig: LevelConfig;
@@ -170,8 +177,6 @@ export class GameScene extends Phaser.Scene {
     // Target score is that percentage of total available points (rounded down)
     const targetScore = Math.floor(totalPointsAvailable * percentageNeeded);
     
-    console.log(`Level ${this.currentLevel}: ${totalPointsAvailable} total points, need ${targetScore} points (${Math.round(percentageNeeded * 100)}% of treats)`);
-    
     // Update UI with target score synchronously
     this.uiScene?.reset(); // Reset FIRST (clears score to 0)
     this.uiScene?.setTargetScore(targetScore); // Set target based on needed treats percentage
@@ -215,8 +220,12 @@ export class GameScene extends Phaser.Scene {
       );
     });
     
-    // Add instructions text
-    const instructions = this.add.text(16, 98, 'Arrow Keys: Move\nUp Arrow: Jump\nCollect treats!\nAvoid poo! 💩', {
+    // Add instructions text (mobile-aware)
+    const controlsHint = this.isMobile 
+      ? 'Use controls below\nDouble tap jump!' 
+      : 'Arrows: Move\nSpace/Up: Jump (2x)';
+    
+    const instructions = this.add.text(16, 98, `${controlsHint}\nCollect treats!\nAvoid poo! 💩`, {
       fontSize: '14px',
       color: '#ffffff',
       backgroundColor: '#000000',
@@ -264,6 +273,12 @@ export class GameScene extends Phaser.Scene {
     // Create danger zone visual if enabled
     if (this.levelConfig.dangerZoneEnabled) {
       this.createDangerZone();
+    }
+    
+    // Create virtual controls for mobile devices
+    this.isMobile = this.sys.game.device.input.touch;
+    if (this.isMobile) {
+      this.createVirtualControls();
     }
   }
   
@@ -527,8 +542,6 @@ export class GameScene extends Phaser.Scene {
     // Don't process if game is already over
     if (this.gameOver) return;
     
-    console.log('💥 Hit bad item (poo)!');
-    
     // Check if dog can take damage
     if (this.dog && this.dog.takeDamage()) {
       // Play damage sound (puke/splat)
@@ -536,8 +549,6 @@ export class GameScene extends Phaser.Scene {
       
       // Take damage in UI
       const health = this.uiScene?.takeDamage() || 0;
-      
-      console.log(`💔 Took damage from bad item! Health now: ${health}`);
       
       // Check lose condition
       if (health <= 0 && !this.gameOver) {
@@ -1061,6 +1072,32 @@ export class GameScene extends Phaser.Scene {
     });
   }
   
+  private createVirtualControls() {
+    const width = this.cameras.main.width;
+    const height = this.cameras.main.height;
+    
+    // Enable multi-touch (allows simultaneous move + jump)
+    this.input.addPointer(2);
+    
+    // D-Pad on bottom-left
+    this.virtualDPad = new VirtualDPad(
+      this,
+      80,           // x: Left side with padding
+      height - 80,  // y: Bottom with padding
+      110           // size: Diameter of D-Pad
+    );
+    
+    // Jump button on bottom-right
+    this.virtualJumpButton = new VirtualButton({
+      scene: this,
+      x: width - 70,   // x: Right side with padding
+      y: height - 70,  // y: Bottom with padding
+      size: 50,        // Larger than D-Pad arrows
+      label: '🐾',     // Paw icon
+      color: 0x8BC34A  // Green
+    });
+  }
+  
   private updateAutoScroll(delta: number) {
     // Don't scroll until delay has passed
     if (!this.scrollingEnabled) return;
@@ -1097,13 +1134,9 @@ export class GameScene extends Phaser.Scene {
       if (time - this.dangerZoneDamageTimer >= this.DANGER_ZONE_DAMAGE_INTERVAL) {
         this.dangerZoneDamageTimer = time;
         
-        console.log('⚠️ DANGER ZONE DAMAGE! Owner caught you!');
-        
         // Take danger zone damage
         const damageAmount = this.levelConfig.dangerZoneDamagePerSecond;
         const health = this.uiScene?.takeDamage(damageAmount) || 0;
-        
-        console.log(`💔 Took ${damageAmount} damage from danger zone! Health now: ${health}`);
         
         // Visual feedback
         this.cameras.main.shake(100, 0.005);
@@ -1124,7 +1157,6 @@ export class GameScene extends Phaser.Scene {
     const elapsedTime = time - this.sceneStartTime;
     if (this.scrollSpeed > 0 && !this.scrollingEnabled && elapsedTime >= this.scrollStartTime) {
       this.scrollingEnabled = true;
-      console.log(`🏃 Owner starts chasing NOW! (${elapsedTime}ms elapsed, delay was ${this.scrollStartTime}ms)`);
     }
     
     // Auto-scroll camera if enabled
@@ -1137,8 +1169,19 @@ export class GameScene extends Phaser.Scene {
       this.checkDangerZoneCollision(time);
     }
     
-    // Update player
-    this.dog?.update();
+    // Get virtual input if on mobile
+    let virtualInput;
+    if (this.isMobile && this.virtualDPad && this.virtualJumpButton) {
+      const dpadDir = this.virtualDPad.getDirection();
+      virtualInput = {
+        left: dpadDir.left,
+        right: dpadDir.right,
+        jump: this.virtualJumpButton.isDown()
+      };
+    }
+    
+    // Update player (with virtual input if available)
+    this.dog?.update(virtualInput);
     
     // Constrain dog to not go off left edge of camera (auto-scroll levels)
     if (this.scrollSpeed > 0 && this.dog) {

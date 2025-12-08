@@ -62,12 +62,12 @@ export class MenuScene extends Phaser.Scene {
       fontStyle: 'italic'
     }).setOrigin(0.5);
     
-    // Play button
+    // Play button (larger for touch)
     const playButton = this.add.text(width / 2, height / 2 + 80, 'PLAY', {
-      fontSize: '32px',
+      fontSize: '40px',
       color: '#ffffff',
       backgroundColor: '#4CAF50',
-      padding: { x: 40, y: 15 },
+      padding: { x: 50, y: 20 },
       fontStyle: 'bold'
     }).setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
@@ -90,7 +90,7 @@ export class MenuScene extends Phaser.Scene {
     });
     
     // Keyboard control
-    const startText = this.add.text(width / 2, height / 2 + 150, 'Press SPACE or Click PLAY to Start', {
+    const startText = this.add.text(width / 2, height / 2 + 150, 'Tap or Press SPACE to Start', {
       fontSize: '18px',
       color: '#ffffff'
     }).setOrigin(0.5);
@@ -120,8 +120,13 @@ export class MenuScene extends Phaser.Scene {
     // Also listen for ANY key as backup
     this.input.keyboard?.on('keydown', startGame);
     
-    // Controls info
-    this.add.text(width / 2, height - 50, 'Arrow Keys: Move  |  Up: Jump  |  P: Pause', {
+    // Controls info (detects if mobile)
+    const isMobile = this.sys.game.device.input.touch;
+    const controlsText = isMobile 
+      ? 'Use on-screen controls to move and jump  |  P: Pause'
+      : 'Arrows: Move  |  Space/Up: Jump (tap twice for double jump)  |  P: Pause';
+    
+    this.add.text(width / 2, height - 50, controlsText, {
       fontSize: '14px',
       color: '#cccccc'
     }).setOrigin(0.5);

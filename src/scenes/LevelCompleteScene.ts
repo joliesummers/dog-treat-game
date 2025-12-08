@@ -48,7 +48,7 @@ export class LevelCompleteScene extends Phaser.Scene {
     }).setOrigin(0.5);
     
     // Instructions
-    const restartText = this.add.text(width / 2, height / 2 + 60, 'Press SPACE or Click to continue', {
+    const restartText = this.add.text(width / 2, height / 2 + 60, 'Tap or Press SPACE to continue', {
       fontSize: '18px',
       color: '#cccccc'
     }).setOrigin(0.5);

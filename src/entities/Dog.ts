@@ -203,8 +203,8 @@ export class Dog {
     }
   }
 
-  update() {
-    if (!this.cursors) return;
+  update(virtualInput?: { left: boolean; right: boolean; jump: boolean }) {
+    if (!this.cursors && !virtualInput) return;
     
     const body = this.sprite.body as Phaser.Physics.Arcade.Body;
     
@@ -230,29 +230,30 @@ export class Dog {
       // Normal player control (slower if distracted)
       const moveMultiplier = this.isDistracted ? 0.5 : 1.0;
       
-      if (this.cursors.left.isDown) {
+      // Check keyboard OR virtual input
+      const leftPressed = (this.cursors?.left.isDown || false) || (virtualInput?.left || false);
+      const rightPressed = (this.cursors?.right.isDown || false) || (virtualInput?.right || false);
+      
+      if (leftPressed) {
         this.sprite.setVelocityX(-this.MOVE_SPEED * moveMultiplier);
         this.sprite.setFlipX(true);
-      } else if (this.cursors.right.isDown) {
+      } else if (rightPressed) {
         this.sprite.setVelocityX(this.MOVE_SPEED * moveMultiplier);
         this.sprite.setFlipX(false);
       }
     }
     
     // Jump system - SIMPLIFIED for reliability
-    const jumpKeyDown = this.cursors.up.isDown || (this.spaceKey?.isDown || false);
+    // Check keyboard OR virtual input
+    const jumpKeyDown = (this.cursors?.up.isDown || false) || 
+                       (this.spaceKey?.isDown || false) || 
+                       (virtualInput?.jump || false);
     const distractionMultiplier = this.isDistracted ? 0.7 : 1.0;
-    
-    // DEBUG: Log state when jump key is pressed
-    if (jumpKeyDown && this.canJumpAgain) {
-      console.log(`🎮 JUMP ATTEMPT: onGround=${onGround}, isJumping=${this.isJumping}, hasDoubleJumped=${this.hasDoubleJumped}, canDoubleJump=${this.breed.canDoubleJump}`);
-    }
     
     // When jump key is pressed AND we can jump again
     if (jumpKeyDown && this.canJumpAgain) {
       // First jump - on ground
       if (onGround) {
-        console.log('✅ FIRST JUMP - from ground');
         this.sprite.setVelocityY(this.JUMP_VELOCITY * distractionMultiplier);
         this.isJumping = true;
         this.hasDoubleJumped = false; // Reset double jump
@@ -273,7 +274,6 @@ export class Dog {
       }
       // Second jump - double jump in air
       else if (this.isJumping && !this.hasDoubleJumped && this.breed.canDoubleJump) {
-        console.log('🚀🚀 DOUBLE JUMP ACTIVATED! 🚀🚀');
         this.sprite.setVelocityY(this.JUMP_VELOCITY * this.breed.doubleJumpPower * distractionMultiplier);
         this.hasDoubleJumped = true;
         this.canJumpAgain = false; // Don't allow triple jump
@@ -297,9 +297,6 @@ export class Dog {
         // Air puff particles
         this.createAirPuff();
       }
-      else {
-        console.log(`❌ Double jump blocked: isJumping=${this.isJumping}, hasDoubleJumped=${this.hasDoubleJumped}, canDoubleJump=${this.breed.canDoubleJump}`);
-      }
     }
     
     // Reset jump ability when key is released
@@ -310,13 +307,11 @@ export class Dog {
     // Track if we've left the ground (prevents false landing detection immediately after jump)
     if (!onGround && this.isJumping) {
       // We're in the air - stay in jumping state
-      console.log('🛫 In air - isJumping stays true');
     }
     
     // Update jump state and add SQUASH animation on landing
     // Only reset if we're on ground AND upward velocity is near zero (actually landing, not just starting jump)
     if (onGround && this.isJumping && body.velocity.y >= -10) {
-      console.log('🛬 LANDED - resetting isJumping');
       this.isJumping = false;
       this.hasDoubleJumped = false; // Reset double jump on landing
       
