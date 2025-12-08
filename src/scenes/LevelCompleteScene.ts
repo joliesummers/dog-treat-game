@@ -12,9 +12,10 @@ export class LevelCompleteScene extends Phaser.Scene {
     // Get current level and unlock next level
     const currentLevel = this.registry.get('selectedLevel') as number || 1;
     const nextLevel = currentLevel + 1;
+    const maxLevels = 5; // Total number of levels available
     
     // Unlock next level if it exists
-    if (nextLevel <= 3) {
+    if (nextLevel <= maxLevels) {
       const savedUnlocked = window.localStorage.getItem('unlockedLevels');
       const currentUnlocked = savedUnlocked ? parseInt(savedUnlocked, 10) : 1;
       
@@ -36,9 +37,9 @@ export class LevelCompleteScene extends Phaser.Scene {
     }).setOrigin(0.5);
     
     // Success message
-    const successMsg = nextLevel <= 3 ? 
+    const successMsg = nextLevel <= maxLevels ? 
       `All treats collected! 🎉\n🔓 Level ${nextLevel} Unlocked!` :
-      'All treats collected! 🎉\nYou beat the game!';
+      'All treats collected! 🎉\n🏆 You beat the game!';
     
     this.add.text(width / 2, height / 2, successMsg, {
       fontSize: '24px',
