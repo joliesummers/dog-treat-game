@@ -245,8 +245,11 @@ export class Dog {
     if (jumpPressed) {
       const distractionMultiplier = this.isDistracted ? 0.7 : 1.0;
       
+      console.log(`Jump pressed! onGround=${onGround}, isJumping=${this.isJumping}, hasDoubleJumped=${this.hasDoubleJumped}, canDoubleJump=${this.breed.canDoubleJump}`);
+      
       // Regular jump (on ground)
       if (onGround) {
+        console.log('✅ FIRST JUMP - from ground');
         this.sprite.setVelocityY(this.JUMP_VELOCITY * distractionMultiplier);
         this.isJumping = true;
         this.hasDoubleJumped = false; // Reset double jump availability
@@ -267,6 +270,7 @@ export class Dog {
       // Double jump (in air, hasn't double jumped yet, breed can double jump)
       // Works at ANY point during the jump arc - ascending, peak, or descending
       else if (!onGround && this.isJumping && !this.hasDoubleJumped && this.breed.canDoubleJump) {
+        console.log('✅ DOUBLE JUMP - in air!');
         const doubleJumpVelocity = this.JUMP_VELOCITY * this.breed.doubleJumpPower * distractionMultiplier;
         this.sprite.setVelocityY(doubleJumpVelocity);
         this.hasDoubleJumped = true;
@@ -289,6 +293,9 @@ export class Dog {
         
         // Visual effect - air puff particles!
         this.createAirPuff();
+      }
+      else {
+        console.log(`❌ Jump blocked - onGround=${onGround}, isJumping=${this.isJumping}, hasDoubleJumped=${this.hasDoubleJumped}, canDoubleJump=${this.breed.canDoubleJump}`);
       }
     }
     
