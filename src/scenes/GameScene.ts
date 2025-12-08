@@ -523,6 +523,8 @@ export class GameScene extends Phaser.Scene {
     // Don't process if game is already over
     if (this.gameOver) return;
     
+    console.log('💥 Hit bad item (poo)!');
+    
     // Check if dog can take damage
     if (this.dog && this.dog.takeDamage()) {
       // Play damage sound (puke/splat)
@@ -530,6 +532,8 @@ export class GameScene extends Phaser.Scene {
       
       // Take damage in UI
       const health = this.uiScene?.takeDamage() || 0;
+      
+      console.log(`💔 Took damage from bad item! Health now: ${health}`);
       
       // Check lose condition
       if (health <= 0 && !this.gameOver) {
@@ -1089,9 +1093,13 @@ export class GameScene extends Phaser.Scene {
       if (time - this.dangerZoneDamageTimer >= this.DANGER_ZONE_DAMAGE_INTERVAL) {
         this.dangerZoneDamageTimer = time;
         
+        console.log('⚠️ DANGER ZONE DAMAGE! Owner caught you!');
+        
         // Take danger zone damage
         const damageAmount = this.levelConfig.dangerZoneDamagePerSecond;
         const health = this.uiScene?.takeDamage(damageAmount) || 0;
+        
+        console.log(`💔 Took ${damageAmount} damage from danger zone! Health now: ${health}`);
         
         // Visual feedback
         this.cameras.main.shake(100, 0.005);
