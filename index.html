@@ -42,8 +42,12 @@
         font-family: Arial, sans-serif;
       }
       
-      /* Desktop: Let Phaser scale naturally */
+      /* Desktop: Scale to fit viewport while maintaining aspect ratio */
       #game-container {
+        width: min(90vw, 133.33vh); /* Maintain 4:3 aspect ratio (800:600) */
+        height: min(90vh, 75vw);
+        max-width: 1200px;
+        max-height: 900px;
         box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
         border-radius: 8px;
         overflow: hidden;
@@ -58,10 +62,12 @@
         }
         
         #game-container {
-          box-shadow: none;
-          border-radius: 0;
           width: 100vw !important;
           height: 100vh !important;
+          max-width: none !important;
+          max-height: none !important;
+          box-shadow: none;
+          border-radius: 0;
         }
       }
     </style>
