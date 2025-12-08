@@ -36,6 +36,7 @@ export class Dog {
   // State
   private isJumping = false;
   private hasDoubleJumped = false;
+  private jumpKeyWasDown = false; // Track if jump key was pressed last frame
   private isInvincible = false;
   private isDistracted = false;
   private distractionIndicator?: Phaser.GameObjects.Text;
@@ -239,17 +240,17 @@ export class Dog {
     }
     
     // Jump system - supports regular jump and double jump
-    const jumpPressed = Phaser.Input.Keyboard.JustDown(this.cursors.up) || 
-                       (this.spaceKey && Phaser.Input.Keyboard.JustDown(this.spaceKey));
+    // Check if jump key is currently down
+    const jumpKeyDown = this.cursors.up.isDown || (this.spaceKey?.isDown || false);
+    
+    // Detect jump key press (was up, now down)
+    const jumpPressed = jumpKeyDown && !this.jumpKeyWasDown;
     
     if (jumpPressed) {
       const distractionMultiplier = this.isDistracted ? 0.7 : 1.0;
       
-      console.log(`Jump pressed! onGround=${onGround}, isJumping=${this.isJumping}, hasDoubleJumped=${this.hasDoubleJumped}, canDoubleJump=${this.breed.canDoubleJump}`);
-      
       // Regular jump (on ground)
       if (onGround) {
-        console.log('✅ FIRST JUMP - from ground');
         this.sprite.setVelocityY(this.JUMP_VELOCITY * distractionMultiplier);
         this.isJumping = true;
         this.hasDoubleJumped = false; // Reset double jump availability
@@ -270,7 +271,6 @@ export class Dog {
       // Double jump (in air, hasn't double jumped yet, breed can double jump)
       // Works at ANY point during the jump arc - ascending, peak, or descending
       else if (!onGround && this.isJumping && !this.hasDoubleJumped && this.breed.canDoubleJump) {
-        console.log('✅ DOUBLE JUMP - in air!');
         const doubleJumpVelocity = this.JUMP_VELOCITY * this.breed.doubleJumpPower * distractionMultiplier;
         this.sprite.setVelocityY(doubleJumpVelocity);
         this.hasDoubleJumped = true;
@@ -294,10 +294,10 @@ export class Dog {
         // Visual effect - air puff particles!
         this.createAirPuff();
       }
-      else {
-        console.log(`❌ Jump blocked - onGround=${onGround}, isJumping=${this.isJumping}, hasDoubleJumped=${this.hasDoubleJumped}, canDoubleJump=${this.breed.canDoubleJump}`);
-      }
     }
+    
+    // Update jump key state for next frame
+    this.jumpKeyWasDown = jumpKeyDown;
     
     // Update jump state and add SQUASH animation on landing
     if (onGround && this.isJumping) {
