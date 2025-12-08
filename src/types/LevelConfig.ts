@@ -44,10 +44,10 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
     dangerZoneEnabled: false,
     dangerZoneDamagePerSecond: 0,
     
-    levelWidth: 4000,
-    platformCount: 19,
-    treatCount: 12,
-    badItemCount: 8,
+    levelWidth: 5200,
+    platformCount: 25,
+    treatCount: 16,
+    badItemCount: 10,
     
     theme: 'Backyard Escape',
     description: 'Learn the basics! Collect bones, avoid poo.'
@@ -66,10 +66,10 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
     dangerZoneEnabled: true,
     dangerZoneDamagePerSecond: 1,
     
-    levelWidth: 6000,
-    platformCount: 28,
-    treatCount: 18,
-    badItemCount: 12,
+    levelWidth: 7800,
+    platformCount: 36,
+    treatCount: 23,
+    badItemCount: 16,
     
     theme: 'Neighborhood Chase',
     description: 'The owner is coming! Keep moving forward!'
@@ -88,10 +88,10 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
     dangerZoneEnabled: true,
     dangerZoneDamagePerSecond: 1, // More dangerous
     
-    levelWidth: 8000,
-    platformCount: 35,
-    treatCount: 24,
-    badItemCount: 16,
+    levelWidth: 10400,
+    platformCount: 46,
+    treatCount: 29,
+    badItemCount: 21,
     
     theme: 'Park Sprint',
     description: 'Full speed chase! Can you outrun your owner?'
@@ -110,10 +110,10 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
     dangerZoneEnabled: true,
     dangerZoneDamagePerSecond: 2, // DOUBLED damage!
     
-    levelWidth: 10000,
-    platformCount: 42,
-    treatCount: 30,
-    badItemCount: 20, // Poo clusters!
+    levelWidth: 13000,
+    platformCount: 55,
+    treatCount: 35,
+    badItemCount: 26,
     
     theme: 'Backyard Sprint',
     description: 'Poo clusters ahead! Navigate carefully at high speed!'
@@ -132,10 +132,10 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
     dangerZoneEnabled: true,
     dangerZoneDamagePerSecond: 3, // TRIPLE damage!
     
-    levelWidth: 12000,
-    platformCount: 50,
-    treatCount: 36,
-    badItemCount: 24, // Multi-hazard platforms!
+    levelWidth: 15600,
+    platformCount: 65,
+    treatCount: 40,
+    badItemCount: 31,
     
     theme: 'Backyard Finale',
     description: 'World 1 finale! Prove your mastery!'

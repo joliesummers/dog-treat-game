@@ -564,6 +564,14 @@ export class GameScene extends Phaser.Scene {
         { x: 3500, y: height - 250, w: 180, h: 32, color: 0xD2691E },
         { x: 3750, y: height - 180, w: 200, h: 32, color: 0xCD853F },
         { x: 3950, y: height - 300, w: 160, h: 32, color: 0xD2691E },
+        
+        // Section 6 (4000-5200) - Extended tutorial area
+        { x: 4150, y: height - 220, w: 180, h: 32, color: 0xCD853F },
+        { x: 4400, y: height - 350, w: 200, h: 32, color: 0xD2691E },
+        { x: 4650, y: height - 190, w: 150, h: 32, color: 0xCD853F },
+        { x: 4850, y: height - 310, w: 180, h: 32, color: 0xD2691E },
+        { x: 5050, y: height - 240, w: 200, h: 32, color: 0xCD853F },
+        { x: 5200, y: height - 180, w: 160, h: 32, color: 0xD2691E },
       ],
       
       // LEVEL 2: Challenge - Auto-scroll pressure, wider gaps, narrower platforms
@@ -603,6 +611,18 @@ export class GameScene extends Phaser.Scene {
         { x: 5420, y: height - 380, w: 130, h: 32, color: 0xD2691E },
         { x: 5670, y: height - 220, w: 150, h: 32, color: 0xCD853F },
         { x: 5900, y: height - 340, w: 140, h: 32, color: 0xD2691E },
+        
+        // Section 7 (6000-7000) - Extended chase continues
+        { x: 6130, y: height - 440, w: 120, h: 32, color: 0xCD853F },
+        { x: 6350, y: height - 280, w: 140, h: 32, color: 0xD2691E },
+        { x: 6580, y: height - 390, w: 130, h: 32, color: 0xCD853F },
+        { x: 6820, y: height - 240, w: 150, h: 32, color: 0xD2691E },
+        
+        // Section 8 (7000-7800) - Final extended sprint
+        { x: 7050, y: height - 360, w: 120, h: 32, color: 0xCD853F },
+        { x: 7280, y: height - 260, w: 140, h: 32, color: 0xD2691E },
+        { x: 7520, y: height - 410, w: 130, h: 32, color: 0xCD853F },
+        { x: 7750, y: height - 300, w: 150, h: 32, color: 0xD2691E },
       ],
       
       // LEVEL 3: Expert - Fast auto-scroll, precise jumps, narrow platforms, extreme variation
@@ -660,7 +680,23 @@ export class GameScene extends Phaser.Scene {
         { x: 7330, y: height - 480, w: 100, h: 32, color: 0xCD853F },
         { x: 7540, y: height - 260, w: 120, h: 32, color: 0xD2691E },
         { x: 7750, y: height - 420, w: 100, h: 32, color: 0xCD853F },
-        { x: 7950, y: height - 300, w: 130, h: 32, color: 0xD2691E }, // Wider final platform!
+        { x: 7950, y: height - 300, w: 110, h: 32, color: 0xD2691E },
+        
+        // Section 9 (8000-9200) - Extended expert challenge
+        { x: 8160, y: height - 450, w: 100, h: 32, color: 0xCD853F },
+        { x: 8360, y: height - 270, w: 110, h: 32, color: 0xD2691E },
+        { x: 8560, y: height - 430, w: 100, h: 32, color: 0xCD853F },
+        { x: 8770, y: height - 290, w: 120, h: 32, color: 0xD2691E },
+        { x: 8980, y: height - 460, w: 100, h: 32, color: 0xCD853F },
+        { x: 9180, y: height - 330, w: 110, h: 32, color: 0xD2691E },
+        
+        // Section 10 (9200-10400) - Extended final stretch
+        { x: 9380, y: height - 250, w: 100, h: 32, color: 0xCD853F },
+        { x: 9580, y: height - 410, w: 110, h: 32, color: 0xD2691E },
+        { x: 9790, y: height - 280, w: 100, h: 32, color: 0xCD853F },
+        { x: 10000, y: height - 440, w: 110, h: 32, color: 0xD2691E },
+        { x: 10210, y: height - 310, w: 120, h: 32, color: 0xCD853F },
+        { x: 10400, y: height - 260, w: 130, h: 32, color: 0xD2691E }, // Wider final platform!
       ],
       
       // LEVEL 4: Advanced - Very fast scroll, tiny platforms, poo clusters!
@@ -732,7 +768,29 @@ export class GameScene extends Phaser.Scene {
         { x: 9350, y: height - 310, w: 100, h: 32, color: 0xCD853F },
         { x: 9540, y: height - 250, w: 95, h: 32, color: 0xD2691E },
         { x: 9730, y: height - 380, w: 90, h: 32, color: 0xCD853F },
-        { x: 9920, y: height - 290, w: 110, h: 32, color: 0xD2691E }, // Slightly wider finish!
+        { x: 9920, y: height - 290, w: 100, h: 32, color: 0xD2691E },
+        
+        // Section 9 (10000-11250) - Extended advanced challenge
+        { x: 10100, y: height - 450, w: 90, h: 32, color: 0xCD853F },
+        { x: 10280, y: height - 320, w: 95, h: 32, color: 0xD2691E },
+        { x: 10470, y: height - 260, w: 100, h: 32, color: 0xCD853F },
+        { x: 10660, y: height - 420, w: 90, h: 32, color: 0xD2691E },
+        { x: 10850, y: height - 290, w: 95, h: 32, color: 0xCD853F },
+        { x: 11040, y: height - 460, w: 90, h: 32, color: 0xD2691E },
+        { x: 11230, y: height - 330, w: 100, h: 32, color: 0xCD853F },
+        
+        // Section 10 (11250-12500) - Extended relentless pressure
+        { x: 11410, y: height - 250, w: 95, h: 32, color: 0xD2691E },
+        { x: 11600, y: height - 410, w: 90, h: 32, color: 0xCD853F },
+        { x: 11790, y: height - 280, w: 100, h: 32, color: 0xD2691E },
+        { x: 11980, y: height - 450, w: 90, h: 32, color: 0xCD853F },
+        { x: 12170, y: height - 320, w: 95, h: 32, color: 0xD2691E },
+        { x: 12360, y: height - 240, w: 100, h: 32, color: 0xCD853F },
+        
+        // Section 11 (12500-13000) - Final extended sprint
+        { x: 12540, y: height - 400, w: 90, h: 32, color: 0xD2691E },
+        { x: 12730, y: height - 270, w: 95, h: 32, color: 0xCD853F },
+        { x: 12920, y: height - 350, w: 110, h: 32, color: 0xD2691E }, // Slightly wider finish!
       ],
       
       // LEVEL 5: Expert - EXTREME scroll, minimal platforms, multi-hazards! WORLD 1 FINALE!
@@ -821,8 +879,36 @@ export class GameScene extends Phaser.Scene {
         { x: 11310, y: height - 290, w: 85, h: 32, color: 0xD2691E },
         { x: 11480, y: height - 460, w: 80, h: 32, color: 0xCD853F },
         { x: 11650, y: height - 330, w: 90, h: 32, color: 0xD2691E },
-        { x: 11820, y: height - 260, w: 100, h: 32, color: 0xCD853F }, // Victory platform!
-        { x: 11970, y: height - 350, w: 120, h: 32, color: 0xD2691E }, // Wide finish line!
+        { x: 11820, y: height - 260, w: 85, h: 32, color: 0xCD853F },
+        
+        // Section 9 (12000-13200) - Extended expert endurance
+        { x: 11980, y: height - 420, w: 80, h: 32, color: 0xD2691E },
+        { x: 12150, y: height - 300, w: 85, h: 32, color: 0xCD853F },
+        { x: 12320, y: height - 250, w: 90, h: 32, color: 0xD2691E },
+        { x: 12490, y: height - 440, w: 80, h: 32, color: 0xCD853F },
+        { x: 12660, y: height - 310, w: 85, h: 32, color: 0xD2691E },
+        { x: 12830, y: height - 270, w: 90, h: 32, color: 0xCD853F },
+        { x: 13000, y: height - 450, w: 80, h: 32, color: 0xD2691E },
+        { x: 13170, y: height - 320, w: 85, h: 32, color: 0xCD853F },
+        
+        // Section 10 (13200-14400) - Extended maximum intensity
+        { x: 13330, y: height - 260, w: 90, h: 32, color: 0xD2691E },
+        { x: 13500, y: height - 430, w: 80, h: 32, color: 0xCD853F },
+        { x: 13670, y: height - 290, w: 85, h: 32, color: 0xD2691E },
+        { x: 13840, y: height - 460, w: 80, h: 32, color: 0xCD853F },
+        { x: 14010, y: height - 330, w: 90, h: 32, color: 0xD2691E },
+        { x: 14180, y: height - 250, w: 85, h: 32, color: 0xCD853F },
+        { x: 14350, y: height - 410, w: 80, h: 32, color: 0xD2691E },
+        
+        // Section 11 (14400-15600) - EPIC FINALE!
+        { x: 14510, y: height - 280, w: 85, h: 32, color: 0xCD853F },
+        { x: 14680, y: height - 440, w: 80, h: 32, color: 0xD2691E },
+        { x: 14850, y: height - 300, w: 90, h: 32, color: 0xCD853F },
+        { x: 15020, y: height - 260, w: 85, h: 32, color: 0xD2691E },
+        { x: 15190, y: height - 420, w: 80, h: 32, color: 0xCD853F },
+        { x: 15360, y: height - 310, w: 90, h: 32, color: 0xD2691E },
+        { x: 15520, y: height - 270, w: 100, h: 32, color: 0xCD853F }, // Victory platform!
+        { x: 15600, y: height - 350, w: 120, h: 32, color: 0xD2691E }, // Wide finish line!
       ]
     };
     
