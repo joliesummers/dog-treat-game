@@ -307,8 +307,16 @@ export class Dog {
       this.canJumpAgain = true;
     }
     
+    // Track if we've left the ground (prevents false landing detection immediately after jump)
+    if (!onGround && this.isJumping) {
+      // We're in the air - stay in jumping state
+      console.log('🛫 In air - isJumping stays true');
+    }
+    
     // Update jump state and add SQUASH animation on landing
-    if (onGround && this.isJumping) {
+    // Only reset if we're on ground AND upward velocity is near zero (actually landing, not just starting jump)
+    if (onGround && this.isJumping && body.velocity.y >= -10) {
+      console.log('🛬 LANDED - resetting isJumping');
       this.isJumping = false;
       this.hasDoubleJumped = false; // Reset double jump on landing
       
