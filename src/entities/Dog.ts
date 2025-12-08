@@ -35,6 +35,7 @@ export class Dog {
   
   // State
   private isJumping = false;
+  private hasDoubleJumped = false;
   private isInvincible = false;
   private isDistracted = false;
   private distractionIndicator?: Phaser.GameObjects.Text;
@@ -237,29 +238,63 @@ export class Dog {
       }
     }
     
-    // Jump (weaker if distracted) - Up arrow or Space bar
-    if ((Phaser.Input.Keyboard.JustDown(this.cursors.up) || (this.spaceKey && Phaser.Input.Keyboard.JustDown(this.spaceKey))) && onGround) {
-      const jumpMultiplier = this.isDistracted ? 0.7 : 1.0;
-      this.sprite.setVelocityY(this.JUMP_VELOCITY * jumpMultiplier);
-      this.isJumping = true;
+    // Jump system - supports regular jump and double jump
+    const jumpPressed = Phaser.Input.Keyboard.JustDown(this.cursors.up) || 
+                       (this.spaceKey && Phaser.Input.Keyboard.JustDown(this.spaceKey));
+    
+    if (jumpPressed) {
+      const distractionMultiplier = this.isDistracted ? 0.7 : 1.0;
       
-      // Play jump sound
-      this.onJump?.();
-      
-      // STRETCH animation on jump (extend vertically, compress horizontally)
-      this.scene.tweens.add({
-        targets: this.sprite,
-        scaleY: 1.2,
-        scaleX: 0.9,
-        duration: 100,
-        yoyo: true,
-        ease: 'Quad.easeOut'
-      });
+      // Regular jump (on ground)
+      if (onGround) {
+        this.sprite.setVelocityY(this.JUMP_VELOCITY * distractionMultiplier);
+        this.isJumping = true;
+        this.hasDoubleJumped = false; // Reset double jump
+        
+        // Play jump sound
+        this.onJump?.();
+        
+        // STRETCH animation on jump (extend vertically, compress horizontally)
+        this.scene.tweens.add({
+          targets: this.sprite,
+          scaleY: 1.2,
+          scaleX: 0.9,
+          duration: 100,
+          yoyo: true,
+          ease: 'Quad.easeOut'
+        });
+      }
+      // Double jump (in air, not on ground, hasn't double jumped yet, breed can double jump)
+      else if (this.isJumping && !this.hasDoubleJumped && this.breed.canDoubleJump) {
+        const doubleJumpVelocity = this.JUMP_VELOCITY * this.breed.doubleJumpPower * distractionMultiplier;
+        this.sprite.setVelocityY(doubleJumpVelocity);
+        this.hasDoubleJumped = true;
+        
+        // Play jump sound (could be different for double jump)
+        this.onJump?.();
+        
+        // SPIN animation for double jump (more dramatic!)
+        this.scene.tweens.add({
+          targets: this.sprite,
+          angle: this.sprite.angle + 360,
+          scaleY: 1.15,
+          scaleX: 1.15,
+          duration: 200,
+          ease: 'Cubic.easeOut',
+          onComplete: () => {
+            this.sprite.setAngle(0); // Reset rotation
+          }
+        });
+        
+        // Visual effect - air puff particles!
+        this.createAirPuff();
+      }
     }
     
     // Update jump state and add SQUASH animation on landing
     if (onGround && this.isJumping) {
       this.isJumping = false;
+      this.hasDoubleJumped = false; // Reset double jump on landing
       
       // Play land sound
       this.onLand?.();
@@ -580,6 +615,51 @@ export class Dog {
       // Clean up after animation
       this.scene.time.delayedCall(400, () => {
         dust.destroy();
+      });
+    }
+  }
+  
+  private createAirPuff() {
+    // Create air puff texture if it doesn't exist (lighter/whiter than dust)
+    if (!this.scene.textures.exists('air-puff')) {
+      const graphics = this.scene.add.graphics();
+      graphics.fillStyle(0xFFFFFF, 0.7); // White, more opaque
+      
+      // Draw circular puff
+      graphics.fillCircle(8, 8, 8);
+      graphics.fillCircle(12, 6, 6);
+      graphics.fillCircle(4, 6, 6);
+      
+      graphics.generateTexture('air-puff', 16, 16);
+      graphics.destroy();
+    }
+    
+    // Spawn air puffs around dog (360 degree burst!)
+    const puffCount = 8;
+    
+    for (let i = 0; i < puffCount; i++) {
+      const angle = (360 / puffCount) * i;
+      
+      const airPuff = this.scene.add.particles(
+        this.sprite.x, 
+        this.sprite.y, 
+        'air-puff', 
+        {
+          speed: { min: 60, max: 100 },
+          angle: { min: angle - 10, max: angle + 10 }, // Radial burst
+          scale: { start: 0.8, end: 1.5 }, // Expand outward
+          alpha: { start: 0.8, end: 0 },
+          lifespan: 400,
+          quantity: 1,
+          gravityY: 0 // No gravity - pure air burst!
+        }
+      );
+      
+      airPuff.explode();
+      
+      // Clean up after animation
+      this.scene.time.delayedCall(500, () => {
+        airPuff.destroy();
       });
     }
   }

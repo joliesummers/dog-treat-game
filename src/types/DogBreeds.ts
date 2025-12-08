@@ -4,6 +4,8 @@ export interface DogBreedStats {
   jumpPower: number;       // Jump velocity multiplier
   eatSpeed: number;        // How fast they eat treats (ms delay)
   distractionChance: number; // Chance per second to get distracted (0-1)
+  canDoubleJump: boolean;  // Can perform double jump
+  doubleJumpPower: number; // Double jump velocity multiplier (relative to base jump)
   description: string;
   color: number;           // Placeholder color until we have sprites
 }
@@ -15,6 +17,8 @@ export const DOG_BREEDS: { [key: string]: DogBreedStats } = {
     jumpPower: 0.95,
     eatSpeed: 0,  // Instant eating!
     distractionChance: 0.0,  // Never distracted - focused on treats!
+    canDoubleJump: true,
+    doubleJumpPower: 0.85,  // Weaker double jump (pugs are heavy!)
     description: 'Fast eater, loves treats!',
     color: 0xD4A574  // Fawn color
   },
@@ -24,6 +28,8 @@ export const DOG_BREEDS: { [key: string]: DogBreedStats } = {
     jumpPower: 1.05,
     eatSpeed: 200,  // Slight delay
     distractionChance: 0.15,  // 15% chance per second to get distracted
+    canDoubleJump: true,
+    doubleJumpPower: 0.9,  // Stronger double jump (athletic!)
     description: 'Fast and jumpy, but easily distracted!',
     color: 0xF4C542  // Golden color
   }
