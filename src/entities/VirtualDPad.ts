@@ -53,6 +53,23 @@ export class VirtualDPad {
     
     this.container.add([this.leftZone, this.rightZone, this.leftArrow, this.rightArrow]);
     
+    // Add global pointer tracking to catch edge cases
+    this.scene.input.on('pointerup', (pointer: Phaser.Input.Pointer) => {
+      // If this pointer was controlling left/right, release it
+      if (this.leftPointerId === pointer.id) {
+        this.leftPointerId = null;
+        this.leftPressed = false;
+        this.leftArrow.setScale(1.0);
+        this.leftArrow.setAlpha(0.7);
+      }
+      if (this.rightPointerId === pointer.id) {
+        this.rightPointerId = null;
+        this.rightPressed = false;
+        this.rightArrow.setScale(1.0);
+        this.rightArrow.setAlpha(0.7);
+      }
+    });
+    
     // Touch event handlers for LEFT - track pointer ID
     this.leftZone.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
       if (pointer.event) {
@@ -79,6 +96,16 @@ export class VirtualDPad {
     
     this.leftZone.on('pointerout', (pointer: Phaser.Input.Pointer) => {
       // Only release if this is the pointer that pressed it
+      if (this.leftPointerId === pointer.id) {
+        this.leftPointerId = null;
+        this.leftPressed = false;
+        this.leftArrow.setScale(1.0);
+        this.leftArrow.setAlpha(0.7);
+      }
+    });
+    
+    this.leftZone.on('pointercancel', (pointer: Phaser.Input.Pointer) => {
+      // Force release on cancel
       if (this.leftPointerId === pointer.id) {
         this.leftPointerId = null;
         this.leftPressed = false;
@@ -120,6 +147,16 @@ export class VirtualDPad {
         this.rightArrow.setAlpha(0.7);
       }
     });
+    
+    this.rightZone.on('pointercancel', (pointer: Phaser.Input.Pointer) => {
+      // Force release on cancel
+      if (this.rightPointerId === pointer.id) {
+        this.rightPointerId = null;
+        this.rightPressed = false;
+        this.rightArrow.setScale(1.0);
+        this.rightArrow.setAlpha(0.7);
+      }
+    });
   }
   
   getDirection(): { left: boolean; right: boolean } {
@@ -129,7 +166,20 @@ export class VirtualDPad {
     };
   }
   
+  reset() {
+    // Force reset all states
+    this.leftPressed = false;
+    this.rightPressed = false;
+    this.leftPointerId = null;
+    this.rightPointerId = null;
+    this.leftArrow.setScale(1.0);
+    this.leftArrow.setAlpha(0.7);
+    this.rightArrow.setScale(1.0);
+    this.rightArrow.setAlpha(0.7);
+  }
+  
   destroy() {
+    this.reset();
     this.container.destroy();
   }
 }

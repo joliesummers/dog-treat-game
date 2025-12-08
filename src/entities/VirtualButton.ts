@@ -56,6 +56,15 @@ export class VirtualButton {
     // Add to container
     this.container.add([this.background, this.icon]);
     
+    // Add global pointer tracking to catch edge cases
+    this.scene.input.on('pointerup', (pointer: Phaser.Input.Pointer) => {
+      // If this pointer was controlling this button, release it
+      if (this.activePointerId === pointer.id) {
+        this.activePointerId = null;
+        this.setPressed(false);
+      }
+    });
+    
     // Touch event handlers - track pointer ID for multi-touch
     this.background.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
       if (pointer.event) {
@@ -83,6 +92,14 @@ export class VirtualButton {
         this.setPressed(false);
       }
     });
+    
+    this.background.on('pointercancel', (pointer: Phaser.Input.Pointer) => {
+      // Force release on cancel
+      if (this.activePointerId === pointer.id) {
+        this.activePointerId = null;
+        this.setPressed(false);
+      }
+    });
   }
   
   private setPressed(pressed: boolean) {
@@ -103,7 +120,16 @@ export class VirtualButton {
     return this.isPressed;
   }
   
+  reset() {
+    // Force reset state
+    this.isPressed = false;
+    this.activePointerId = null;
+    this.container.setScale(1.0);
+    this.background.setAlpha(0.6);
+  }
+  
   destroy() {
+    this.reset();
     this.container.destroy();
   }
 }
