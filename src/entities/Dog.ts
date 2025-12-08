@@ -249,7 +249,7 @@ export class Dog {
       if (onGround) {
         this.sprite.setVelocityY(this.JUMP_VELOCITY * distractionMultiplier);
         this.isJumping = true;
-        this.hasDoubleJumped = false; // Reset double jump
+        this.hasDoubleJumped = false; // Reset double jump availability
         
         // Play jump sound
         this.onJump?.();
@@ -264,8 +264,9 @@ export class Dog {
           ease: 'Quad.easeOut'
         });
       }
-      // Double jump (in air, not on ground, hasn't double jumped yet, breed can double jump)
-      else if (this.isJumping && !this.hasDoubleJumped && this.breed.canDoubleJump) {
+      // Double jump (in air, hasn't double jumped yet, breed can double jump)
+      // Works at ANY point during the jump arc - ascending, peak, or descending
+      else if (!onGround && this.isJumping && !this.hasDoubleJumped && this.breed.canDoubleJump) {
         const doubleJumpVelocity = this.JUMP_VELOCITY * this.breed.doubleJumpPower * distractionMultiplier;
         this.sprite.setVelocityY(doubleJumpVelocity);
         this.hasDoubleJumped = true;
@@ -276,9 +277,9 @@ export class Dog {
         // SPIN animation for double jump (more dramatic!)
         this.scene.tweens.add({
           targets: this.sprite,
-          angle: this.sprite.angle + 360,
           scaleY: 1.15,
           scaleX: 1.15,
+          angle: this.sprite.angle + 360,
           duration: 200,
           ease: 'Cubic.easeOut',
           onComplete: () => {
