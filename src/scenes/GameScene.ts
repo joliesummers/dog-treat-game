@@ -156,13 +156,21 @@ export class GameScene extends Phaser.Scene {
     this.createBadItems(this.currentLevel, levelWidth, height);
     this.createSquirrels(this.currentLevel, levelWidth, height);
     
-    // Calculate and set target score based on treats needed to win
-    // Use average of 2 points per treat (treats are worth 1, 2, or 3 points)
-    const targetScore = this.levelConfig.treatsNeededToWin * 2;
+    // Calculate target score based on actual points available
+    // First, get total points from all treats that spawned
+    const totalPointsAvailable = this.treats.reduce((sum, treat) => sum + treat.getPointValue(), 0);
+    
+    // Calculate what percentage of treats are needed to win
+    const percentageNeeded = this.levelConfig.treatsNeededToWin / this.levelConfig.treatCount;
+    
+    // Target score is that percentage of total available points (rounded down)
+    const targetScore = Math.floor(totalPointsAvailable * percentageNeeded);
+    
+    console.log(`Level ${this.currentLevel}: ${totalPointsAvailable} total points, need ${targetScore} points (${Math.round(percentageNeeded * 100)}% of treats)`);
     
     // Update UI with target score synchronously
     this.uiScene?.reset(); // Reset FIRST (clears score to 0)
-    this.uiScene?.setTargetScore(targetScore); // Set target based on needed treats, not all treats
+    this.uiScene?.setTargetScore(targetScore); // Set target based on needed treats percentage
     
     // Get selected breed from registry
     const selectedBreed = this.registry.get('selectedBreed') as BreedType || 'pug';
