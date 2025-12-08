@@ -36,7 +36,7 @@ export class Dog {
   // State
   private isJumping = false;
   private hasDoubleJumped = false;
-  private jumpKeyWasDown = false; // Track if jump key was pressed last frame
+  private canJumpAgain = true; // Can we accept another jump input?
   private isInvincible = false;
   private isDistracted = false;
   private distractionIndicator?: Phaser.GameObjects.Text;
@@ -239,26 +239,23 @@ export class Dog {
       }
     }
     
-    // Jump system - supports regular jump and double jump
-    // Check if jump key is currently down
+    // Jump system - SIMPLIFIED for reliability
     const jumpKeyDown = this.cursors.up.isDown || (this.spaceKey?.isDown || false);
+    const distractionMultiplier = this.isDistracted ? 0.7 : 1.0;
     
-    // Detect jump key press (was up, now down)
-    const jumpPressed = jumpKeyDown && !this.jumpKeyWasDown;
-    
-    if (jumpPressed) {
-      const distractionMultiplier = this.isDistracted ? 0.7 : 1.0;
-      
-      // Regular jump (on ground)
+    // When jump key is pressed AND we can jump again
+    if (jumpKeyDown && this.canJumpAgain) {
+      // First jump - on ground
       if (onGround) {
         this.sprite.setVelocityY(this.JUMP_VELOCITY * distractionMultiplier);
         this.isJumping = true;
-        this.hasDoubleJumped = false; // Reset double jump availability
+        this.hasDoubleJumped = false; // Reset double jump
+        this.canJumpAgain = false; // Don't allow another jump until key is released
         
         // Play jump sound
         this.onJump?.();
         
-        // STRETCH animation on jump (extend vertically, compress horizontally)
+        // STRETCH animation
         this.scene.tweens.add({
           targets: this.sprite,
           scaleY: 1.2,
@@ -268,17 +265,16 @@ export class Dog {
           ease: 'Quad.easeOut'
         });
       }
-      // Double jump (in air, hasn't double jumped yet, breed can double jump)
-      // Works at ANY point during the jump arc - ascending, peak, or descending
-      else if (!onGround && this.isJumping && !this.hasDoubleJumped && this.breed.canDoubleJump) {
-        const doubleJumpVelocity = this.JUMP_VELOCITY * this.breed.doubleJumpPower * distractionMultiplier;
-        this.sprite.setVelocityY(doubleJumpVelocity);
+      // Second jump - double jump in air
+      else if (this.isJumping && !this.hasDoubleJumped && this.breed.canDoubleJump) {
+        this.sprite.setVelocityY(this.JUMP_VELOCITY * this.breed.doubleJumpPower * distractionMultiplier);
         this.hasDoubleJumped = true;
+        this.canJumpAgain = false; // Don't allow triple jump
         
-        // Play jump sound (could be different for double jump)
+        // Play jump sound
         this.onJump?.();
         
-        // SPIN animation for double jump (more dramatic!)
+        // SPIN animation for double jump
         this.scene.tweens.add({
           targets: this.sprite,
           scaleY: 1.15,
@@ -287,17 +283,19 @@ export class Dog {
           duration: 200,
           ease: 'Cubic.easeOut',
           onComplete: () => {
-            this.sprite.setAngle(0); // Reset rotation
+            this.sprite.setAngle(0);
           }
         });
         
-        // Visual effect - air puff particles!
+        // Air puff particles
         this.createAirPuff();
       }
     }
     
-    // Update jump key state for next frame
-    this.jumpKeyWasDown = jumpKeyDown;
+    // Reset jump ability when key is released
+    if (!jumpKeyDown) {
+      this.canJumpAgain = true;
+    }
     
     // Update jump state and add SQUASH animation on landing
     if (onGround && this.isJumping) {
