@@ -70,18 +70,26 @@ export class VirtualButton {
       if (pointer.event) {
         pointer.event.preventDefault(); // Prevent mobile browser defaults
       }
+      console.log(`[BUTTON DOWN] pointer.id=${pointer.id}, current activePointerId=${this.activePointerId}, isPressed=${this.isPressed}`);
       // Only accept if no other pointer is active on this button
       if (this.activePointerId === null) {
         this.activePointerId = pointer.id;
         this.setPressed(true);
+        console.log(`[BUTTON DOWN] ✅ Accepted! Set activePointerId=${this.activePointerId}`);
+      } else {
+        console.log(`[BUTTON DOWN] ❌ Blocked! activePointerId already set to ${this.activePointerId}`);
       }
     });
     
     this.background.on('pointerup', (pointer: Phaser.Input.Pointer) => {
+      console.log(`[BUTTON UP] pointer.id=${pointer.id}, activePointerId=${this.activePointerId}`);
       // Only release if this is the pointer that pressed it
       if (this.activePointerId === pointer.id) {
         this.activePointerId = null;
         this.setPressed(false);
+        console.log(`[BUTTON UP] ✅ Released! Cleared activePointerId`);
+      } else {
+        console.log(`[BUTTON UP] ❌ Ignored! Pointer mismatch`);
       }
     });
     

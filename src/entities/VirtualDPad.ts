@@ -55,18 +55,21 @@ export class VirtualDPad {
     
     // Add global pointer tracking to catch edge cases
     this.scene.input.on('pointerup', (pointer: Phaser.Input.Pointer) => {
+      console.log(`[GLOBAL UP] pointer.id=${pointer.id}, leftPointerId=${this.leftPointerId}, rightPointerId=${this.rightPointerId}`);
       // If this pointer was controlling left/right, release it
       if (this.leftPointerId === pointer.id) {
         this.leftPointerId = null;
         this.leftPressed = false;
         this.leftArrow.setScale(1.0);
         this.leftArrow.setAlpha(0.7);
+        console.log(`[GLOBAL UP] ✅ Released LEFT via global`);
       }
       if (this.rightPointerId === pointer.id) {
         this.rightPointerId = null;
         this.rightPressed = false;
         this.rightArrow.setScale(1.0);
         this.rightArrow.setAlpha(0.7);
+        console.log(`[GLOBAL UP] ✅ Released RIGHT via global`);
       }
     });
     
@@ -119,22 +122,30 @@ export class VirtualDPad {
       if (pointer.event) {
         pointer.event.preventDefault();
       }
+      console.log(`[RIGHT DOWN] pointer.id=${pointer.id}, current rightPointerId=${this.rightPointerId}, rightPressed=${this.rightPressed}`);
       // Only accept if no other pointer is active on right
       if (this.rightPointerId === null) {
         this.rightPointerId = pointer.id;
         this.rightPressed = true;
         this.rightArrow.setScale(1.2);
         this.rightArrow.setAlpha(1.0);
+        console.log(`[RIGHT DOWN] ✅ Accepted! Set rightPointerId=${this.rightPointerId}`);
+      } else {
+        console.log(`[RIGHT DOWN] ❌ Blocked! rightPointerId already set to ${this.rightPointerId}`);
       }
     });
     
     this.rightZone.on('pointerup', (pointer: Phaser.Input.Pointer) => {
+      console.log(`[RIGHT UP] pointer.id=${pointer.id}, rightPointerId=${this.rightPointerId}`);
       // Only release if this is the pointer that pressed it
       if (this.rightPointerId === pointer.id) {
         this.rightPointerId = null;
         this.rightPressed = false;
         this.rightArrow.setScale(1.0);
         this.rightArrow.setAlpha(0.7);
+        console.log(`[RIGHT UP] ✅ Released! Cleared rightPointerId`);
+      } else {
+        console.log(`[RIGHT UP] ❌ Ignored! Pointer mismatch`);
       }
     });
     
