@@ -470,7 +470,50 @@
 
 ---
 
-### 🌍 Milestone 11: "World 2: Park Adventure" - New Themed Levels (PLANNED)
+### 📱 Milestone 11: "Mobile & Touch Controls" - Play Anywhere (PLANNED)
+
+**Value**: Game is fully playable on phones and tablets with intuitive touch controls
+
+**For detailed mobile implementation plan, see [MOBILE_CONTROLS.md](./MOBILE_CONTROLS.md)**
+
+**Key Features**:
+- Virtual D-Pad for movement (bottom-left)
+- Virtual Jump button (bottom-right)
+- Touch-friendly menus (larger buttons)
+- Responsive layout (portrait + landscape)
+- Multi-touch support (move + jump simultaneously)
+- 60fps performance on modern phones
+
+**Control Scheme**:
+- **Move**: Virtual D-Pad (◄ ►) on left side
+- **Jump**: Large button (🐾) on right side
+- **Double Jump**: Tap jump button twice
+- **Pause**: ⏸️ button in corner
+
+**Platform Support**:
+- iOS Safari (iPhone/iPad)
+- Android Chrome
+- Any modern mobile browser with touch
+
+**Responsive Design**:
+- Phone portrait (320-480px width)
+- Phone landscape (480-768px width) - optimal
+- Tablet (768px+ width)
+- Desktop (1024px+ width) - hides virtual controls
+
+**Implementation Phases**:
+1. **Phase A**: Core touch controls (VirtualButton, VirtualDPad classes)
+2. **Phase B**: Menu touch support (enlarge buttons, update text)
+3. **Phase C**: Polish & responsive layout
+4. **Phase D**: Real device testing & optimization
+
+**Estimated Time**: 4-6 hours
+
+**Status**: 📋 Planning complete - Ready for implementation
+
+---
+
+### 🌍 Milestone 12: "World 2: Park Adventure" - New Themed Levels (PLANNED)
 
 **Value**: Fresh environments with unique visual themes and new mechanics, inspired by Super Mario Bros world progression
 
@@ -610,7 +653,7 @@
 
 ---
 
-### 🌟 Milestone 12: "World Builder" - Level Editor (PLANNED)
+### 🌟 Milestone 13: "World Builder" - Level Editor (PLANNED)
 
 **Value**: Community-created content, infinite replayability
 
@@ -762,6 +805,7 @@ All fixes committed in separate commits for traceability.
 - `PROJECT_PLAN.md` - This file - master plan and roadmap
 - `LEVELS.md` - Detailed level designs and game elements reference
 - `WORLDS.md` - World themes, visual design, and progression system
+- `MOBILE_CONTROLS.md` - Mobile and touchscreen implementation plan
 - `TESTING_ROADMAP.md` - Phased testing strategy
 - `DEPLOYMENT.md` - Deployment instructions
 - `SETUP_GITHUB.md` - GitHub setup guide
@@ -772,8 +816,9 @@ All fixes committed in separate commits for traceability.
 
 ## Development Status Summary
 
-**Completed**: 10 out of 12 milestones ✅  
+**Completed**: 10 out of 13 milestones ✅  
 **In Progress**: None - World 1 Complete! 🚀  
+**Planned Next**: Milestone 11 (Mobile Controls) - See MOBILE_CONTROLS.md  
 **Deferred**: Milestone 10.5 (Audio) - needs 16-bit audio files  
 **MVP Status**: Complete and deployed with 5-level World 1! 🎉  
 
