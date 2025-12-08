@@ -17,6 +17,7 @@ export class Dog {
   public sprite: Phaser.Physics.Arcade.Sprite;
   private scene: Phaser.Scene;
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
+  private spaceKey?: Phaser.Input.Keyboard.Key;
   private breed: DogBreedStats;
   
   // Base movement constants (modified by breed stats)
@@ -196,6 +197,7 @@ export class Dog {
     // Set up input
     if (this.scene.input.keyboard) {
       this.cursors = this.scene.input.keyboard.createCursorKeys();
+      this.spaceKey = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     }
   }
 
@@ -235,8 +237,8 @@ export class Dog {
       }
     }
     
-    // Jump (weaker if distracted)
-    if (Phaser.Input.Keyboard.JustDown(this.cursors.up) && onGround) {
+    // Jump (weaker if distracted) - Up arrow or Space bar
+    if ((Phaser.Input.Keyboard.JustDown(this.cursors.up) || (this.spaceKey && Phaser.Input.Keyboard.JustDown(this.spaceKey))) && onGround) {
       const jumpMultiplier = this.isDistracted ? 0.7 : 1.0;
       this.sprite.setVelocityY(this.JUMP_VELOCITY * jumpMultiplier);
       this.isJumping = true;
