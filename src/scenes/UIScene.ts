@@ -6,7 +6,6 @@ export class UIScene extends Phaser.Scene {
   private healthText?: Phaser.GameObjects.Text;
   private score: number = 0;
   private treatsCollected: number = 0;
-  private totalTreats: number = 0;
   private health: number = 3;
   private maxHealth: number = 3;
   
@@ -49,9 +48,8 @@ export class UIScene extends Phaser.Scene {
     this.updateHealthDisplay();
   }
   
-  setTotalTreats(total: number) {
-    this.totalTreats = total;
-    this.updateScoreDisplay();
+  setTotalTreats(_total: number) {
+    // No longer displayed in UI, but method kept for compatibility
   }
   
   collectTreat() {
@@ -106,7 +104,7 @@ export class UIScene extends Phaser.Scene {
     // Extra safety check - only update if text object exists and scene is active
     if (this.scoreText && this.scene.isActive()) {
       try {
-        this.scoreText.setText(`🦴 Treats: ${this.treatsCollected}/${this.totalTreats} | Score: ${this.score}`);
+        this.scoreText.setText(`🦴 Score: ${this.score}`);
       } catch (e) {
         console.warn('Failed to update score display', e);
       }
