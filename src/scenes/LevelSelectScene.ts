@@ -3,6 +3,8 @@ import { LEVEL_CONFIGS } from '../types/LevelConfig';
 
 export class LevelSelectScene extends Phaser.Scene {
   private unlockedLevels: number = 1; // Start with only Level 1 unlocked
+  private selectedWorld: number = 1; // Which world we're viewing
+  private worldLevels: { start: number; end: number } = { start: 1, end: 5 };
   
   constructor() {
     super('LevelSelectScene');
@@ -15,6 +17,27 @@ export class LevelSelectScene extends Phaser.Scene {
       this.unlockedLevels = parseInt(saved, 10);
     } else {
       this.unlockedLevels = 1; // Default: only Level 1 unlocked
+    }
+    
+    // Get selected world from registry (set by WorldSelectScene)
+    this.selectedWorld = this.registry.get('selectedWorld') || 1;
+    
+    // Determine which levels to show based on world
+    switch (this.selectedWorld) {
+      case 1:
+        this.worldLevels = { start: 1, end: 5 };
+        break;
+      case 2:
+        this.worldLevels = { start: 6, end: 10 };
+        break;
+      case 3:
+        this.worldLevels = { start: 11, end: 15 };
+        break;
+      case 4:
+        this.worldLevels = { start: 16, end: 20 };
+        break;
+      default:
+        this.worldLevels = { start: 1, end: 5 };
     }
   }
   
@@ -29,7 +52,10 @@ export class LevelSelectScene extends Phaser.Scene {
     sky.fillRect(0, 0, width, height);
     
     // Title
-    this.add.text(width / 2, 60, 'Select Level', {
+    const worldNames = ['', 'Backyard Escape', 'Park Adventure', 'Beach Boardwalk', 'City Streets'];
+    const worldName = worldNames[this.selectedWorld] || 'Select Level';
+    
+    this.add.text(width / 2, 60, `World ${this.selectedWorld}: ${worldName}`, {
       fontSize: '40px',
       color: '#ffffff',
       fontStyle: 'bold',
@@ -37,14 +63,32 @@ export class LevelSelectScene extends Phaser.Scene {
       strokeThickness: 6
     }).setOrigin(0.5);
     
-    // Create level cards (5 levels in World 1)
+    // Back to Worlds button
+    const backButton = this.add.text(60, 60, '← Worlds', {
+      fontSize: '20px',
+      color: '#ffffff',
+      backgroundColor: '#666666',
+      padding: { x: 16, y: 8 },
+      fontStyle: 'bold'
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+    
+    backButton.on('pointerover', () => backButton.setScale(1.1));
+    backButton.on('pointerout', () => backButton.setScale(1));
+    backButton.on('pointerdown', () => {
+      this.scene.start('WorldSelectScene');
+    });
+    
+    // Create level cards (5 levels for this world)
     const cardSpacing = 160;
     const cardsPerRow = 5;
     const startX = (width - (cardSpacing * (cardsPerRow - 1))) / 2;
     
-    for (let i = 1; i <= 5; i++) {
+    for (let i = this.worldLevels.start; i <= this.worldLevels.end; i++) {
       const levelConfig = LEVEL_CONFIGS[i];
-      const cardX = startX + (i - 1) * cardSpacing;
+      if (!levelConfig) continue; // Skip if config doesn't exist yet
+      
+      const cardIndex = i - this.worldLevels.start;
+      const cardX = startX + cardIndex * cardSpacing;
       const cardY = height / 2 + 20;
       
       this.createLevelCard(i, levelConfig.name, levelConfig.description, cardX, cardY, i <= this.unlockedLevels);

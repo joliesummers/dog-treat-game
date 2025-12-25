@@ -86,7 +86,7 @@ export class MenuScene extends Phaser.Scene {
       if (soundManager.context) {
         soundManager.context.resume();
       }
-      this.scene.start('LevelSelectScene');
+      this.scene.start('WorldSelectScene');
     });
     
     // Keyboard control
@@ -110,7 +110,7 @@ export class MenuScene extends Phaser.Scene {
       if (soundManager.context) {
         soundManager.context.resume();
       }
-      this.scene.start('LevelSelectScene');
+      this.scene.start('WorldSelectScene');
     };
     
     // Add keyboard handlers (using 'on' not 'once' so it works every time)
