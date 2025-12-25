@@ -22,6 +22,11 @@ export class Squirrel {
     // Create as physics sprite for jump mechanics
     this.sprite = scene.physics.add.sprite(x, y, textureKey);
     this.sprite.setDepth(100); // Above platforms
+    
+    // Disable gravity while perched (don't fall off tree!)
+    const body = this.sprite.body as Phaser.Physics.Arcade.Body;
+    body.setAllowGravity(false);
+    body.setImmovable(true);
 
     // Start in perched state with idle animation
     this.startIdleAnimation();
@@ -137,6 +142,11 @@ export class Squirrel {
 
   private jumpToward(targetX: number, targetY: number) {
     this.state = 'jumping';
+    
+    // Enable gravity for the jump
+    const body = this.sprite.body as Phaser.Physics.Arcade.Body;
+    body.setAllowGravity(true);
+    body.setImmovable(false);
 
     // Calculate arc path
     const startX = this.sprite.x;
