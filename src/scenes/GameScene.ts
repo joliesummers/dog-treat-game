@@ -570,16 +570,21 @@ export class GameScene extends Phaser.Scene {
     // Don't process if game is already over
     if (this.gameOver) return;
     
-    // Check if dog can take damage (applies to ALL breeds now)
+    // Check if dog can take damage (applies to ALL breeds)
     if (this.dog && this.dog.takeDamage()) {
-      // Play distraction sound
-      this.playSound('distract', 0.3);
-      
-      // Take damage in UI
+      // Take damage in UI (ALL breeds take damage from squirrels)
       const health = this.uiScene?.takeDamage() || 0;
       
-      // Force distraction on ALL dogs (not just Golden)
-      this.dog.forceDistraction();
+      // Only distract breeds with distractionChance > 0 (Golden Retriever)
+      // Pug has distractionChance = 0, so won't get distracted
+      const breed = this.dog.getBreed();
+      if (breed.distractionChance > 0) {
+        this.playSound('distract', 0.3);
+        this.dog.forceDistraction();
+      } else {
+        // Pug just takes damage without distraction
+        this.playSound('damage', 0.5);
+      }
       
       // Remove squirrel on contact (prevents multiple hits)
       const index = this.squirrels.indexOf(squirrel);
