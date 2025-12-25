@@ -9,136 +9,79 @@ export interface VirtualButtonConfig {
   color?: number;
 }
 
+/**
+ * VirtualButton - Touch-friendly button for mobile controls
+ * 
+ * Features:
+ * - Semi-transparent circular button
+ * - Visual feedback on press (scale, alpha)
+ * - Fixed to camera (doesn't scroll)
+ * - Always on top (high depth)
+ * - Multi-touch compatible
+ */
 export class VirtualButton {
   private scene: Phaser.Scene;
-  private container: Phaser.GameObjects.Container;
   private background: Phaser.GameObjects.Arc;
-  private icon: Phaser.GameObjects.Text;
-  private labelText?: Phaser.GameObjects.Text;
+  private labelText: Phaser.GameObjects.Text;
   private isPressed: boolean = false;
-  private size: number;
-  private activePointerId: number | null = null;
+  private readonly PRESS_SCALE = 1.15;
+  private readonly NORMAL_SCALE = 1.0;
+  private readonly PRESS_ALPHA = 0.9;
+  private readonly NORMAL_ALPHA = 0.7;
 
   constructor(config: VirtualButtonConfig) {
     this.scene = config.scene;
-    this.size = config.size;
-    
-    // Create container for button elements
-    this.container = this.scene.add.container(config.x, config.y);
-    this.container.setDepth(10000); // Always on top
-    this.container.setScrollFactor(0); // Fixed to camera
-    
-    // Background circle (semi-transparent)
-    const bgColor = config.color || 0x8BC34A; // Default green
-    this.background = this.scene.add.circle(0, 0, this.size, bgColor, 0.6);
-    this.background.setStrokeStyle(3, 0xFFFFFF, 0.8);
-    this.background.setInteractive({ useHandCursor: true });
-    
-    // Icon/Symbol
-    this.icon = this.scene.add.text(0, -8, config.label, {
-      fontSize: `${this.size * 0.6}px`,
+
+    const color = config.color !== undefined ? config.color : 0x8BC34A; // Default green
+
+    // Create background circle
+    this.background = this.scene.add.circle(config.x, config.y, config.size / 2, color, this.NORMAL_ALPHA);
+    this.background.setScrollFactor(0); // Fixed to camera
+    this.background.setDepth(10000); // Always on top
+    this.background.setInteractive(); // Enable touch/click
+
+    // Add label text
+    this.labelText = this.scene.add.text(config.x, config.y, config.label, {
+      fontSize: config.size > 60 ? '28px' : '24px',
       color: '#ffffff',
-      fontStyle: 'bold'
-    }).setOrigin(0.5);
-    
-    // Optional label text below icon
-    if (config.label.length > 2) {
-      // Long label - show just first char as icon
-      this.icon.setText(config.label[0]);
-      this.labelText = this.scene.add.text(0, this.size * 0.5, config.label, {
-        fontSize: '12px',
-        color: '#ffffff',
-        fontStyle: 'bold'
-      }).setOrigin(0.5);
-      this.container.add(this.labelText);
-    }
-    
-    // Add to container
-    this.container.add([this.background, this.icon]);
-    
-    // Add global pointer tracking to catch edge cases
-    this.scene.input.on('pointerup', (pointer: Phaser.Input.Pointer) => {
-      // If this pointer was controlling this button, release it
-      if (this.activePointerId === pointer.id) {
-        this.activePointerId = null;
-        this.setPressed(false);
-      }
+      fontStyle: 'bold',
     });
-    
-    // Touch event handlers - track pointer ID for multi-touch
-    this.background.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-      if (pointer.event) {
-        pointer.event.preventDefault(); // Prevent mobile browser defaults
-      }
-      console.log(`[BUTTON DOWN] pointer.id=${pointer.id}, current activePointerId=${this.activePointerId}, isPressed=${this.isPressed}`);
-      // Only accept if no other pointer is active on this button
-      if (this.activePointerId === null) {
-        this.activePointerId = pointer.id;
-        this.setPressed(true);
-        console.log(`[BUTTON DOWN] ✅ Accepted! Set activePointerId=${this.activePointerId}`);
-      } else {
-        console.log(`[BUTTON DOWN] ❌ Blocked! activePointerId already set to ${this.activePointerId}`);
-      }
-    });
-    
-    this.background.on('pointerup', (pointer: Phaser.Input.Pointer) => {
-      console.log(`[BUTTON UP] pointer.id=${pointer.id}, activePointerId=${this.activePointerId}`);
-      // Only release if this is the pointer that pressed it
-      if (this.activePointerId === pointer.id) {
-        this.activePointerId = null;
-        this.setPressed(false);
-        console.log(`[BUTTON UP] ✅ Released! Cleared activePointerId`);
-      } else {
-        console.log(`[BUTTON UP] ❌ Ignored! Pointer mismatch`);
-      }
-    });
-    
-    this.background.on('pointerout', (pointer: Phaser.Input.Pointer) => {
-      // Only release if this is the pointer that pressed it
-      if (this.activePointerId === pointer.id) {
-        this.activePointerId = null;
-        this.setPressed(false);
-      }
-    });
-    
-    this.background.on('pointercancel', (pointer: Phaser.Input.Pointer) => {
-      // Force release on cancel
-      if (this.activePointerId === pointer.id) {
-        this.activePointerId = null;
-        this.setPressed(false);
-      }
-    });
+    this.labelText.setOrigin(0.5);
+    this.labelText.setScrollFactor(0);
+    this.labelText.setDepth(10001); // Above button background
+
+    // Add pointer events
+    this.background.on('pointerdown', this.onPointerDown, this);
+    this.background.on('pointerup', this.onPointerUp, this);
+    this.background.on('pointerout', this.onPointerUp, this); // Release when pointer leaves
   }
-  
-  private setPressed(pressed: boolean) {
-    this.isPressed = pressed;
-    
-    if (pressed) {
-      // Visual feedback - scale up and brighten
-      this.container.setScale(1.15);
-      this.background.setAlpha(0.9);
-    } else {
-      // Reset to normal
-      this.container.setScale(1.0);
-      this.background.setAlpha(0.6);
-    }
+
+  private onPointerDown(): void {
+    this.isPressed = true;
+    this.background.setScale(this.PRESS_SCALE);
+    this.background.setAlpha(this.PRESS_ALPHA);
+    this.labelText.setScale(this.PRESS_SCALE);
   }
-  
-  isDown(): boolean {
+
+  private onPointerUp(): void {
+    this.isPressed = false;
+    this.background.setScale(this.NORMAL_SCALE);
+    this.background.setAlpha(this.NORMAL_ALPHA);
+    this.labelText.setScale(this.NORMAL_SCALE);
+  }
+
+  /**
+   * Check if button is currently pressed
+   */
+  public isDown(): boolean {
     return this.isPressed;
   }
-  
-  reset() {
-    // Force reset state
-    this.isPressed = false;
-    this.activePointerId = null;
-    this.container.setScale(1.0);
-    this.background.setAlpha(0.6);
-  }
-  
-  destroy() {
-    this.reset();
-    this.container.destroy();
+
+  /**
+   * Clean up resources
+   */
+  public destroy(): void {
+    this.background.destroy();
+    this.labelText.destroy();
   }
 }
-

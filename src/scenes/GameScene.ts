@@ -1079,6 +1079,13 @@ export class GameScene extends Phaser.Scene {
     // Enable multi-touch (allows simultaneous move + jump)
     this.input.addPointer(2);
     
+    // Prevent iOS bounce/zoom on touch
+    this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+      if (pointer.event) {
+        pointer.event.preventDefault();
+      }
+    });
+    
     // D-Pad on bottom-left
     this.virtualDPad = new VirtualDPad(
       this,
@@ -1095,6 +1102,23 @@ export class GameScene extends Phaser.Scene {
       size: 50,        // Larger than D-Pad arrows
       label: '🐾',     // Paw icon
       color: 0x8BC34A  // Green
+    });
+    
+    // Add pause button for mobile (top-right)
+    const pauseButton = new VirtualButton({
+      scene: this,
+      x: width - 40,   // Top-right corner
+      y: 40,
+      size: 30,        // Small button
+      label: '⏸️',     // Pause icon
+      color: 0xFF9800  // Orange
+    });
+    
+    // Check pause button in update loop
+    this.events.on('update', () => {
+      if (pauseButton.isDown() && !this.gameOver) {
+        this.togglePause();
+      }
     });
   }
   
@@ -1172,10 +1196,9 @@ export class GameScene extends Phaser.Scene {
     // Get virtual input if on mobile
     let virtualInput;
     if (this.isMobile && this.virtualDPad && this.virtualJumpButton) {
-      const dpadDir = this.virtualDPad.getDirection();
       virtualInput = {
-        left: dpadDir.left,
-        right: dpadDir.right,
+        left: this.virtualDPad.isLeftPressed(),
+        right: this.virtualDPad.isRightPressed(),
         jump: this.virtualJumpButton.isDown()
       };
     }

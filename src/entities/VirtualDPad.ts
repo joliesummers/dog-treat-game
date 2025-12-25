@@ -1,197 +1,135 @@
 import Phaser from 'phaser';
 
+/**
+ * VirtualDPad - Directional pad for mobile controls
+ * 
+ * Provides left/right movement controls with visual arrow buttons
+ * Returns direction: -1 (left), 0 (none), 1 (right)
+ */
 export class VirtualDPad {
   private scene: Phaser.Scene;
-  private container: Phaser.GameObjects.Container;
-  private leftZone: Phaser.GameObjects.Rectangle;
-  private rightZone: Phaser.GameObjects.Rectangle;
-  private leftArrow: Phaser.GameObjects.Text;
-  private rightArrow: Phaser.GameObjects.Text;
-  private background: Phaser.GameObjects.Graphics;
-  
+  private background: Phaser.GameObjects.Arc;
+  private leftButton: Phaser.GameObjects.Container;
+  private rightButton: Phaser.GameObjects.Container;
   private leftPressed: boolean = false;
   private rightPressed: boolean = false;
-  private leftPointerId: number | null = null;
-  private rightPointerId: number | null = null;
+  
+  private readonly PRESS_SCALE = 1.1;
+  private readonly NORMAL_SCALE = 1.0;
+  private readonly PRESS_ALPHA = 0.9;
+  private readonly NORMAL_ALPHA = 0.6;
 
-  constructor(scene: Phaser.Scene, x: number, y: number, size: number = 120) {
+  constructor(scene: Phaser.Scene, x: number, y: number, size: number) {
     this.scene = scene;
+
+    // Create background circle
+    this.background = this.scene.add.circle(x, y, size, 0x000000, 0.4);
+    this.background.setScrollFactor(0);
+    this.background.setDepth(10000);
+
+    // Create left button
+    this.leftButton = this.createArrowButton(x - size / 2, y, '◄', size * 0.6);
     
-    // Create container
-    this.container = this.scene.add.container(x, y);
-    this.container.setDepth(10000);
-    this.container.setScrollFactor(0);
-    
-    // Background (semi-transparent circle)
-    this.background = this.scene.add.graphics();
-    this.background.fillStyle(0x000000, 0.4);
-    this.background.fillCircle(0, 0, size / 2);
-    this.background.lineStyle(3, 0xFFFFFF, 0.6);
-    this.background.strokeCircle(0, 0, size / 2);
-    this.container.add(this.background);
-    
-    // Left button zone
-    this.leftZone = this.scene.add.rectangle(-size / 4, 0, size / 2, size / 2, 0xFFFFFF, 0.0001);
-    this.leftZone.setInteractive({ useHandCursor: true });
-    
-    // Right button zone
-    this.rightZone = this.scene.add.rectangle(size / 4, 0, size / 2, size / 2, 0xFFFFFF, 0.0001);
-    this.rightZone.setInteractive({ useHandCursor: true });
-    
-    // Arrow icons
-    this.leftArrow = this.scene.add.text(-size / 4, 0, '◄', {
-      fontSize: `${size / 3}px`,
-      color: '#ffffff',
-      fontStyle: 'bold'
-    }).setOrigin(0.5).setAlpha(0.7);
-    
-    this.rightArrow = this.scene.add.text(size / 4, 0, '►', {
-      fontSize: `${size / 3}px`,
-      color: '#ffffff',
-      fontStyle: 'bold'
-    }).setOrigin(0.5).setAlpha(0.7);
-    
-    this.container.add([this.leftZone, this.rightZone, this.leftArrow, this.rightArrow]);
-    
-    // Add global pointer tracking to catch edge cases
-    this.scene.input.on('pointerup', (pointer: Phaser.Input.Pointer) => {
-      console.log(`[GLOBAL UP] pointer.id=${pointer.id}, leftPointerId=${this.leftPointerId}, rightPointerId=${this.rightPointerId}`);
-      // If this pointer was controlling left/right, release it
-      if (this.leftPointerId === pointer.id) {
-        this.leftPointerId = null;
-        this.leftPressed = false;
-        this.leftArrow.setScale(1.0);
-        this.leftArrow.setAlpha(0.7);
-        console.log(`[GLOBAL UP] ✅ Released LEFT via global`);
-      }
-      if (this.rightPointerId === pointer.id) {
-        this.rightPointerId = null;
-        this.rightPressed = false;
-        this.rightArrow.setScale(1.0);
-        this.rightArrow.setAlpha(0.7);
-        console.log(`[GLOBAL UP] ✅ Released RIGHT via global`);
-      }
+    // Create right button
+    this.rightButton = this.createArrowButton(x + size / 2, y, '►', size * 0.6);
+  }
+
+  private createArrowButton(x: number, y: number, arrow: string, size: number): Phaser.GameObjects.Container {
+    const container = this.scene.add.container(x, y);
+    container.setScrollFactor(0);
+    container.setDepth(10001);
+
+    // Button background
+    const bg = this.scene.add.circle(0, 0, size / 2, 0xffffff, this.NORMAL_ALPHA);
+    bg.setInteractive();
+
+    // Arrow text
+    const text = this.scene.add.text(0, 0, arrow, {
+      fontSize: '24px',
+      color: '#000000',
+      fontStyle: 'bold',
     });
+    text.setOrigin(0.5);
+
+    container.add([bg, bg]); // Add bg first so events work
+    container.add(text);
+
+    // Store references for event handling
+    const isLeft = arrow === '◄';
     
-    // Touch event handlers for LEFT - track pointer ID
-    this.leftZone.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-      if (pointer.event) {
-        pointer.event.preventDefault();
-      }
-      // Only accept if no other pointer is active on left
-      if (this.leftPointerId === null) {
-        this.leftPointerId = pointer.id;
+    bg.on('pointerdown', () => {
+      if (isLeft) {
         this.leftPressed = true;
-        this.leftArrow.setScale(1.2);
-        this.leftArrow.setAlpha(1.0);
-      }
-    });
-    
-    this.leftZone.on('pointerup', (pointer: Phaser.Input.Pointer) => {
-      // Only release if this is the pointer that pressed it
-      if (this.leftPointerId === pointer.id) {
-        this.leftPointerId = null;
-        this.leftPressed = false;
-        this.leftArrow.setScale(1.0);
-        this.leftArrow.setAlpha(0.7);
-      }
-    });
-    
-    this.leftZone.on('pointerout', (pointer: Phaser.Input.Pointer) => {
-      // Only release if this is the pointer that pressed it
-      if (this.leftPointerId === pointer.id) {
-        this.leftPointerId = null;
-        this.leftPressed = false;
-        this.leftArrow.setScale(1.0);
-        this.leftArrow.setAlpha(0.7);
-      }
-    });
-    
-    this.leftZone.on('pointercancel', (pointer: Phaser.Input.Pointer) => {
-      // Force release on cancel
-      if (this.leftPointerId === pointer.id) {
-        this.leftPointerId = null;
-        this.leftPressed = false;
-        this.leftArrow.setScale(1.0);
-        this.leftArrow.setAlpha(0.7);
-      }
-    });
-    
-    // Touch event handlers for RIGHT - track pointer ID
-    this.rightZone.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-      if (pointer.event) {
-        pointer.event.preventDefault();
-      }
-      console.log(`[RIGHT DOWN] pointer.id=${pointer.id}, current rightPointerId=${this.rightPointerId}, rightPressed=${this.rightPressed}`);
-      // Only accept if no other pointer is active on right
-      if (this.rightPointerId === null) {
-        this.rightPointerId = pointer.id;
+      } else {
         this.rightPressed = true;
-        this.rightArrow.setScale(1.2);
-        this.rightArrow.setAlpha(1.0);
-        console.log(`[RIGHT DOWN] ✅ Accepted! Set rightPointerId=${this.rightPointerId}`);
+      }
+      bg.setScale(this.PRESS_SCALE);
+      bg.setAlpha(this.PRESS_ALPHA);
+      text.setScale(this.PRESS_SCALE);
+    });
+
+    bg.on('pointerup', () => {
+      if (isLeft) {
+        this.leftPressed = false;
       } else {
-        console.log(`[RIGHT DOWN] ❌ Blocked! rightPointerId already set to ${this.rightPointerId}`);
-      }
-    });
-    
-    this.rightZone.on('pointerup', (pointer: Phaser.Input.Pointer) => {
-      console.log(`[RIGHT UP] pointer.id=${pointer.id}, rightPointerId=${this.rightPointerId}`);
-      // Only release if this is the pointer that pressed it
-      if (this.rightPointerId === pointer.id) {
-        this.rightPointerId = null;
         this.rightPressed = false;
-        this.rightArrow.setScale(1.0);
-        this.rightArrow.setAlpha(0.7);
-        console.log(`[RIGHT UP] ✅ Released! Cleared rightPointerId`);
+      }
+      bg.setScale(this.NORMAL_SCALE);
+      bg.setAlpha(this.NORMAL_ALPHA);
+      text.setScale(this.NORMAL_SCALE);
+    });
+
+    bg.on('pointerout', () => {
+      if (isLeft) {
+        this.leftPressed = false;
       } else {
-        console.log(`[RIGHT UP] ❌ Ignored! Pointer mismatch`);
-      }
-    });
-    
-    this.rightZone.on('pointerout', (pointer: Phaser.Input.Pointer) => {
-      // Only release if this is the pointer that pressed it
-      if (this.rightPointerId === pointer.id) {
-        this.rightPointerId = null;
         this.rightPressed = false;
-        this.rightArrow.setScale(1.0);
-        this.rightArrow.setAlpha(0.7);
       }
+      bg.setScale(this.NORMAL_SCALE);
+      bg.setAlpha(this.NORMAL_ALPHA);
+      text.setScale(this.NORMAL_SCALE);
     });
-    
-    this.rightZone.on('pointercancel', (pointer: Phaser.Input.Pointer) => {
-      // Force release on cancel
-      if (this.rightPointerId === pointer.id) {
-        this.rightPointerId = null;
-        this.rightPressed = false;
-        this.rightArrow.setScale(1.0);
-        this.rightArrow.setAlpha(0.7);
-      }
-    });
+
+    return container;
   }
-  
-  getDirection(): { left: boolean; right: boolean } {
-    return {
-      left: this.leftPressed,
-      right: this.rightPressed
-    };
+
+  /**
+   * Get current direction input
+   * @returns -1 for left, 0 for none, 1 for right
+   */
+  public getDirection(): number {
+    if (this.leftPressed && this.rightPressed) {
+      return 0; // Both pressed = cancel out
+    }
+    if (this.leftPressed) {
+      return -1;
+    }
+    if (this.rightPressed) {
+      return 1;
+    }
+    return 0;
   }
-  
-  reset() {
-    // Force reset all states
-    this.leftPressed = false;
-    this.rightPressed = false;
-    this.leftPointerId = null;
-    this.rightPointerId = null;
-    this.leftArrow.setScale(1.0);
-    this.leftArrow.setAlpha(0.7);
-    this.rightArrow.setScale(1.0);
-    this.rightArrow.setAlpha(0.7);
+
+  /**
+   * Check if left button is pressed
+   */
+  public isLeftPressed(): boolean {
+    return this.leftPressed;
   }
-  
-  destroy() {
-    this.reset();
-    this.container.destroy();
+
+  /**
+   * Check if right button is pressed
+   */
+  public isRightPressed(): boolean {
+    return this.rightPressed;
+  }
+
+  /**
+   * Clean up resources
+   */
+  public destroy(): void {
+    this.background.destroy();
+    this.leftButton.destroy();
+    this.rightButton.destroy();
   }
 }
-

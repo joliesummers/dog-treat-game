@@ -51,7 +51,7 @@ export class LevelSelectScene extends Phaser.Scene {
     }
     
     // Instructions
-    const instructionText = this.add.text(width / 2, height - 60, 'Click a level or press 1/2/3/4/5', {
+    const instructionText = this.add.text(width / 2, height - 60, 'Tap a level or press 1/2/3/4/5', {
       fontSize: '20px',
       color: '#ffffff',
       fontStyle: 'bold'
