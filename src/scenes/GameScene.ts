@@ -38,7 +38,6 @@ export class GameScene extends Phaser.Scene {
   private scrollStartTime: number = 0; // When scrolling should start (in ms from scene start)
   private sceneStartTime: number = 0; // When this scene was created (for timing the delay)
   private ownerSprite?: Phaser.GameObjects.Container; // Owner chasing the dog!
-  private dangerZoneX: number = 0; // Left edge of danger zone
   private dangerZoneDamageTimer: number = 0; // Track damage timing
   private readonly DANGER_ZONE_DAMAGE_INTERVAL = 1000; // Damage every 1 second
   
@@ -268,8 +267,10 @@ export class GameScene extends Phaser.Scene {
     this.scrollingEnabled = (this.scrollSpeed > 0 && this.scrollStartTime === 0); // Start immediately if no delay
     
     if (this.scrollSpeed > 0) {
-      // For auto-scroll levels: DON'T follow dog - camera scrolls independently!
-      // Dog must keep up with camera or fall into danger zone
+      // For auto-scroll levels: Hybrid approach
+      // - Camera scrolls at minimum speed (auto-scroll)
+      // - But also follows dog if they move ahead
+      // This gives smooth camera movement like Level 1 while maintaining pressure from behind
       
       // Show countdown if there's a delay
       if (this.scrollStartTime > 0) {
@@ -1117,31 +1118,37 @@ export class GameScene extends Phaser.Scene {
     // Don't scroll until delay has passed
     if (!this.scrollingEnabled) return;
     
-    // Move camera right at scroll speed
-    const scrollAmount = (this.scrollSpeed * delta) / 1000;
-    this.dangerZoneX += scrollAmount;
-    
-    // Force camera to scroll right by moving its position
     const camera = this.cameras.main;
-    let targetScrollX = camera.scrollX + scrollAmount;
     
-    // If dog is ahead of camera, advance camera to follow dog
+    // Calculate minimum scroll based on auto-scroll speed
+    const scrollAmount = (this.scrollSpeed * delta) / 1000;
+    const minScrollX = camera.scrollX + scrollAmount;
+    
+    // Get dog position
     if (this.dog) {
       const dogX = this.dog.getSprite().x;
       
-      // If dog is significantly ahead (more than 60% across screen), move camera with dog
-      if (dogX > camera.scrollX + (camera.width * 0.6)) {
-        const desiredScrollX = dogX - (camera.width * 0.4); // Keep dog at 40% from left
-        targetScrollX = Math.max(targetScrollX, desiredScrollX);
-      }
+      // Calculate where camera should be to keep dog centered (like Level 1)
+      const idealScrollX = dogX - camera.width / 2;
+      
+      // Use whichever is further right: auto-scroll minimum or dog follow position
+      // This ensures camera never goes slower than auto-scroll, but speeds up with dog
+      const targetScrollX = Math.max(minScrollX, idealScrollX);
+      
+      // Use actual WORLD bounds
+      const worldBounds = this.physics.world.bounds;
+      const maxScrollX = worldBounds.width - camera.width;
+      
+      // Apply smooth camera movement
+      camera.scrollX = Math.min(targetScrollX, maxScrollX);
+    } else {
+      // Fallback: just use auto-scroll if no dog
+      const worldBounds = this.physics.world.bounds;
+      const maxScrollX = worldBounds.width - camera.width;
+      camera.scrollX = Math.min(minScrollX, maxScrollX);
     }
     
-    // Use actual WORLD bounds, not camera view!
-    const worldBounds = this.physics.world.bounds;
-    const maxScrollX = worldBounds.width - camera.width;
-    
-    // Apply the scroll (capped at world bounds)
-    camera.scrollX = Math.min(targetScrollX, maxScrollX);
+    // Danger zone is at camera left edge (no need to track separately)
   }
   
   private checkDangerZoneCollision(time: number) {
