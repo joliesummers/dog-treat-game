@@ -1123,7 +1123,18 @@ export class GameScene extends Phaser.Scene {
     
     // Force camera to scroll right by moving its position
     const camera = this.cameras.main;
-    const targetScrollX = camera.scrollX + scrollAmount;
+    let targetScrollX = camera.scrollX + scrollAmount;
+    
+    // If dog is ahead of camera, advance camera to follow dog
+    if (this.dog) {
+      const dogX = this.dog.getSprite().x;
+      
+      // If dog is significantly ahead (more than 60% across screen), move camera with dog
+      if (dogX > camera.scrollX + (camera.width * 0.6)) {
+        const desiredScrollX = dogX - (camera.width * 0.4); // Keep dog at 40% from left
+        targetScrollX = Math.max(targetScrollX, desiredScrollX);
+      }
+    }
     
     // Use actual WORLD bounds, not camera view!
     const worldBounds = this.physics.world.bounds;
