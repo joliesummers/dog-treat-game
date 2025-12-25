@@ -91,14 +91,14 @@ export class GameScene extends Phaser.Scene {
     // Set world bounds to extended level size
     this.physics.world.setBounds(0, 0, levelWidth, height);
     
-    // Add sky gradient background - Angry Birds style! (extended for full level)
-    const sky = this.add.graphics();
-    sky.fillGradientStyle(0x4DD0E1, 0x4DD0E1, 0xB2EBF2, 0xB2EBF2, 1); // Bright cyan to light turquoise
-    sky.fillRect(0, 0, levelWidth, height);
-    sky.setScrollFactor(0.5); // Parallax effect for sky
+    // Determine which world we're in based on level number
+    const worldNumber = this.getWorldNumber(this.currentLevel);
+    
+    // Add sky gradient background - world-specific!
+    this.createWorldBackground(worldNumber, levelWidth, height);
     
     // Create platform textures if they don't exist
-    this.createPlatformTextures();
+    this.createPlatformTextures(worldNumber);
     
     // Create ground platform
     this.platforms = this.physics.add.staticGroup();
