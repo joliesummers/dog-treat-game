@@ -402,13 +402,16 @@ export class GameScene extends Phaser.Scene {
   }
   
   private createSquirrels(level: number, levelWidth: number, height: number) {
-    // Squirrel count increases with level difficulty
+    // Levels 4-5: No static squirrels (only falling ones)
+    if (level >= 4) {
+      return; // Skip static squirrel creation
+    }
+    
+    // Squirrel count increases with level difficulty (Levels 1-3 only)
     const squirrelCounts: Record<number, number> = {
       1: 5,
       2: 8,
-      3: 10,
-      4: 12,
-      5: 15
+      3: 10
     };
     
     const squirrelCount = squirrelCounts[level] || 5;
@@ -457,8 +460,8 @@ export class GameScene extends Phaser.Scene {
         // Random x position across the screen
         const x = Phaser.Math.Between(100, width - 100);
         
-        // Spawn at top of screen with falling physics
-        const fallingSquirrel = new Squirrel(this, x, -30, true); // true = falling mode
+        // Spawn MUCH higher up for better visibility and dodge time
+        const fallingSquirrel = new Squirrel(this, x, -200, true); // Start high up!
         this.squirrels.push(fallingSquirrel);
         
         // Set up collision with player

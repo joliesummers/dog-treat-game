@@ -53,10 +53,12 @@ export class Squirrel {
     if (this.isFalling) {
       // Create as physics sprite for falling squirrels (Levels 4-5)
       this.sprite = scene.physics.add.sprite(x, y, textureKey);
-      (this.sprite as Phaser.Physics.Arcade.Sprite).setVelocityY(200); // Fall downward
-      (this.sprite as Phaser.Physics.Arcade.Sprite).setGravityY(300); // Accelerate as they fall
       
-      // Add wobble animation while falling
+      // Fall straight down at constant speed (no gravity = predictable path)
+      (this.sprite as Phaser.Physics.Arcade.Sprite).setVelocityY(150); // Slower, constant speed
+      (this.sprite as Phaser.Physics.Arcade.Sprite).setGravityY(0); // No acceleration - straight line!
+      
+      // Add wobble animation while falling (visual only, doesn't affect path)
       scene.tweens.add({
         targets: this.sprite,
         angle: { from: -10, to: 10 },
