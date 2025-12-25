@@ -395,58 +395,14 @@ export class GameScene extends Phaser.Scene {
     // Don't spawn falling bad items on auto-scroll levels (too chaotic)
     // REMOVED: Old falling poo system
     
-    // NEW: Spawn falling squirrels on Levels 4-5 only (Space Invaders style!)
-    if (this.currentLevel >= 4 && this.currentLevel <= 5) {
-      this.startFallingSquirrels(levelWidth);
-    }
+    // Spawn falling squirrels for ALL levels (no more static squirrels!)
+    this.startFallingSquirrels(levelWidth);
   }
   
-  private createSquirrels(level: number, levelWidth: number, height: number) {
-    // Levels 4-5: No static squirrels (only falling ones)
-    if (level >= 4) {
-      return; // Skip static squirrel creation
-    }
-    
-    // Squirrel count increases with level difficulty (Levels 1-3 only)
-    const squirrelCounts: Record<number, number> = {
-      1: 5,
-      2: 8,
-      3: 10
-    };
-    
-    const squirrelCount = squirrelCounts[level] || 5;
-    const spacing = levelWidth / (squirrelCount + 1);
-    const squirrelPositions: Array<{x: number, y: number}> = [];
-    
-    // Level 5: Place some squirrels near existing poo (multi-hazard platforms)
-    const useMultiHazards = level >= 5;
-    const multiHazardCount = useMultiHazards ? Math.floor(squirrelCount * 0.4) : 0; // 40% near poo
-    
-    // Place squirrels near existing poo for multi-hazard challenge
-    for (let i = 0; i < multiHazardCount && i < this.badItems.length; i++) {
-      const poo = this.badItems[i];
-      const pooPos = poo.getSprite();
-      // Place squirrel 50-80px away from poo (on same platform)
-      const offset = Phaser.Math.Between(50, 80) * (Math.random() < 0.5 ? 1 : -1);
-      const x = pooPos.x + offset;
-      const y = pooPos.y;
-      
-      squirrelPositions.push({ x, y });
-      this.squirrels.push(new Squirrel(this, x, y));
-    }
-    
-    // Place remaining squirrels normally
-    for (let i = multiHazardCount; i < squirrelCount; i++) {
-      const baseX = spacing * (i - multiHazardCount + 1);
-      const x = baseX + Phaser.Math.Between(-50, 50);
-      const y = height - Phaser.Math.Between(180, 450);
-      
-      squirrelPositions.push({ x, y });
-      this.squirrels.push(new Squirrel(this, x, y));
-    }
-    
-    // Store squirrel positions in registry for Dog to access
-    this.registry.set('squirrels', squirrelPositions);
+  private createSquirrels(_level: number, _levelWidth: number, _height: number) {
+    // REMOVED: All static squirrels - only falling squirrels now
+    // This method is kept for compatibility but does nothing
+    return;
   }
   
   private startFallingSquirrels(width: number) {
