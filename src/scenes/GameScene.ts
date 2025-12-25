@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { Dog } from '../entities/Dog';
 import { Treat } from '../entities/Treat';
 import { BadItem } from '../entities/BadItem';
-import { Squirrel } from '../entities/Squirrel';
+import { Tree } from '../entities/Tree';
 import { UIScene } from './UIScene';
 import { VirtualButton } from '../entities/VirtualButton';
 import { VirtualDPad } from '../entities/VirtualDPad';
@@ -14,7 +14,7 @@ export class GameScene extends Phaser.Scene {
   private platforms?: Phaser.Physics.Arcade.StaticGroup;
   private treats: Treat[] = [];
   private badItems: BadItem[] = [];
-  private squirrels: Squirrel[] = [];
+  private trees: Tree[] = [];
   private uiScene?: UIScene;
   private isEating: boolean = false;
   private isPaused: boolean = false;
@@ -69,7 +69,7 @@ export class GameScene extends Phaser.Scene {
     this.isPaused = false;
     this.treats = [];
     this.badItems = [];
-    this.squirrels = [];
+    this.trees = [];
     
     // Get selected level from registry (set by LevelSelectScene)
     const selectedLevel = this.registry.get('selectedLevel') as number;
@@ -162,10 +162,10 @@ export class GameScene extends Phaser.Scene {
       }
     });
     
-    // Create treats, bad items, and squirrels based on level config
+    // Create treats, bad items, and trees based on level config
     this.createTreats(this.currentLevel, levelWidth, height);
     this.createBadItems(this.currentLevel, levelWidth, height);
-    this.createSquirrels(this.currentLevel, levelWidth, height);
+    this.createTrees(this.currentLevel, levelWidth, height);
     
     // Calculate target score based on actual points available
     // First, get total points from all treats that spawned
@@ -220,16 +220,7 @@ export class GameScene extends Phaser.Scene {
       );
     });
     
-    // Set up squirrel collision (NEW: All dogs take damage + get distracted)
-    this.squirrels.forEach(squirrel => {
-      this.physics.add.overlap(
-        this.dog!.getSprite(),
-        squirrel.getSprite(),
-        () => this.hitSquirrel(squirrel),
-        undefined,
-        this
-      );
-    });
+    // REMOVED: Old squirrel collision detection - now handled by tree system
     
     // Add instructions text (mobile-aware)
     const controlsHint = this.isMobile 
@@ -393,55 +384,32 @@ export class GameScene extends Phaser.Scene {
     }
     
     // Don't spawn falling bad items on auto-scroll levels (too chaotic)
-    // REMOVED: Old falling poo system
-    
-    // Spawn falling squirrels for ALL levels (no more static squirrels!)
-    this.startFallingSquirrels(levelWidth);
+    // REMOVED: Old falling squirrel system - replaced with tree-based system
   }
   
-  private createSquirrels(_level: number, _levelWidth: number, _height: number) {
-    // REMOVED: All static squirrels - only falling squirrels now
-    // This method is kept for compatibility but does nothing
-    return;
-  }
+  // REMOVED: createSquirrels() and startFallingSquirrels() - replaced with tree system
   
-  private startFallingSquirrels(width: number) {
-    // Spawn falling squirrels less frequently than old bad items (Space Invaders style!)
-    // Every 5-8 seconds for a more dodgeable challenge
-    this.time.addEvent({
-      delay: Phaser.Math.Between(5000, 8000),
-      callback: () => {
-        if (this.gameOver) return;
-        
-        // Random x position across the screen
-        const x = Phaser.Math.Between(100, width - 100);
-        
-        // Spawn VERY high above screen for maximum visibility and dodge time
-        const fallingSquirrel = new Squirrel(this, x, -1000, true); // Test at 1000 pixels high!
-        this.squirrels.push(fallingSquirrel);
-        
-        // Set up collision with player
-        this.physics.add.overlap(
-          this.dog!.getSprite(),
-          fallingSquirrel.getSprite(),
-          () => this.hitSquirrel(fallingSquirrel),
-          undefined,
-          this
-        );
-        
-        // Destroy if falls off screen (cleanup after 12 seconds)
-        this.time.delayedCall(12000, () => {
-          if (fallingSquirrel.getSprite().active) {
-            const index = this.squirrels.indexOf(fallingSquirrel);
-            if (index > -1) {
-              this.squirrels.splice(index, 1);
-            }
-            fallingSquirrel.destroy();
-          }
-        });
-      },
-      loop: true
-    });
+  private createTrees(level: number, levelWidth: number, height: number) {
+    // Tree configuration per level (progressive difficulty)
+    const treeConfigs: Record<number, {count: number, squirrelsPerTree: number, triggerDistance: number}> = {
+      1: { count: 4, squirrelsPerTree: 1, triggerDistance: 400 },
+      2: { count: 6, squirrelsPerTree: 1, triggerDistance: 350 },
+      3: { count: 8, squirrelsPerTree: 1, triggerDistance: 300 },
+      4: { count: 10, squirrelsPerTree: 1, triggerDistance: 250 },
+      5: { count: 15, squirrelsPerTree: 2, triggerDistance: 200 }
+    };
+
+    const config = treeConfigs[level] || treeConfigs[1];
+    const spacing = levelWidth / (config.count + 1);
+
+    for (let i = 0; i < config.count; i++) {
+      const baseX = spacing * (i + 1);
+      const x = baseX + Phaser.Math.Between(-80, 80);
+      const y = height - 64; // On ground level
+      
+      const tree = new Tree(this, x, y, config.squirrelsPerTree);
+      this.trees.push(tree);
+    }
   }
   
   private collectTreat(treat: Treat) {
@@ -522,39 +490,7 @@ export class GameScene extends Phaser.Scene {
     }
   }
   
-  private hitSquirrel(squirrel: Squirrel) {
-    // Don't process if game is already over
-    if (this.gameOver) return;
-    
-    // Check if dog can take damage (applies to ALL breeds)
-    if (this.dog && this.dog.takeDamage()) {
-      // Take damage in UI (ALL breeds take damage from squirrels)
-      const health = this.uiScene?.takeDamage() || 0;
-      
-      // Only distract breeds with distractionChance > 0 (Golden Retriever)
-      // Pug has distractionChance = 0, so won't get distracted
-      const breed = this.dog.getBreed();
-      if (breed.distractionChance > 0) {
-        this.playSound('distract', 0.3);
-        this.dog.forceDistraction();
-      } else {
-        // Pug just takes damage without distraction
-        this.playSound('damage', 0.5);
-      }
-      
-      // Remove squirrel on contact (prevents multiple hits)
-      const index = this.squirrels.indexOf(squirrel);
-      if (index > -1) {
-        this.squirrels.splice(index, 1);
-      }
-      squirrel.destroy();
-      
-      // Check lose condition
-      if (health <= 0 && !this.gameOver) {
-        this.triggerGameOver();
-      }
-    }
-  }
+  // REMOVED: hitSquirrel() - will be replaced by tree-based collision system
   
   private triggerGameOver() {
     this.gameOver = true;
@@ -1221,6 +1157,60 @@ export class GameScene extends Phaser.Scene {
           }
         }
       }
+    }
+    
+    // Check squirrel proximity and handle jumps (tree-based system)
+    if (this.dog && !this.gameOver) {
+      const dogSprite = this.dog.getSprite();
+      const dogBreed = this.dog.getBreed();
+      const canDistract = dogBreed.distractionChance > 0; // Only Golden Retriever
+      
+      // Store dog sprite in registry for squirrels to access
+      this.registry.set('dogSprite', dogSprite);
+      
+      // Check each tree's squirrels for proximity
+      this.trees.forEach(tree => {
+        // Get trigger distance based on level (from createTrees config)
+        const triggerDistances: Record<number, number> = {
+          1: 400, 2: 350, 3: 300, 4: 250, 5: 200
+        };
+        const triggerDistance = triggerDistances[this.currentLevel] || 400;
+        
+        tree.getSquirrels().forEach(squirrel => {
+          // Check proximity - squirrel will handle warning and jump
+          squirrel.checkProximity(dogSprite.x, dogSprite.y, triggerDistance, canDistract);
+          
+          // Check collision with jumping squirrels
+          if (squirrel.getState() === 'jumping') {
+            const distance = Phaser.Math.Distance.Between(
+              dogSprite.x, dogSprite.y,
+              squirrel.getSprite().x, squirrel.getSprite().y
+            );
+            
+            if (distance < 30 && this.dog && this.dog.takeDamage()) {
+              // Hit by squirrel!
+              const health = this.uiScene?.takeDamage() || 0;
+              
+              // Distract if Golden Retriever
+              if (canDistract && this.dog) {
+                this.playSound('distract', 0.3);
+                this.dog.forceDistraction();
+              } else {
+                // Pug just takes damage
+                this.playSound('damage', 0.5);
+              }
+              
+              // Remove squirrel on hit
+              squirrel.destroy();
+              
+              // Check lose condition
+              if (health <= 0 && !this.gameOver) {
+                this.triggerGameOver();
+              }
+            }
+          }
+        });
+      });
     }
     
     // Check if dog fell off the world

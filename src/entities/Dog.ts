@@ -211,14 +211,7 @@ export class Dog {
     // Check if on ground
     const onGround = body.touching.down;
     
-    // Random distraction check (only if breed has distraction chance)
-    if (!this.isDistracted && this.breed.distractionChance > 0) {
-      // Check once per second (roughly 1/60 each frame)
-      const distractionRoll = Math.random();
-      if (distractionRoll < (this.breed.distractionChance / 60)) {
-        this.getDistracted();
-      }
-    }
+    // REMOVED: Random distraction check - now handled by tree-based squirrel system
     
     // Horizontal movement (slower if distracted, auto-chase if chasing squirrel)
     if (this.chasingSquirrel && this.targetSquirrelX !== undefined) {
