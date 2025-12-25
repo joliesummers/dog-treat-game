@@ -190,6 +190,157 @@ export const LEVEL_CONFIGS: Record<number, LevelConfig> = {
     
     theme: 'Backyard Finale',
     description: 'World 1 finale! Reach the dog house to escape!'
+  },
+  
+  // === WORLD 2: PARK ADVENTURE ===
+  6: {
+    levelNumber: 6,
+    name: 'Park Entrance',
+    
+    healthDisplay: 'bar',
+    maxHealth: 12,
+    
+    autoScroll: true,
+    scrollSpeed: 120, // Faster start than World 1
+    scrollStartDelay: 5,
+    
+    dangerZoneEnabled: true,
+    dangerZoneDamagePerSecond: 1,
+    
+    levelWidth: 8000,
+    platformCount: 42,
+    treatCount: 30, // More treats, more points
+    badItemCount: 18,
+    
+    goalPosition: 7800,
+    bronzeScore: 0,
+    silverScore: 1500,
+    goldScore: 2500,
+    silverTime: 150, // 2.5 minutes
+    goldTime: 120, // 2 minutes
+    
+    theme: 'Park Adventure',
+    description: 'Welcome to the park! New obstacles await!'
+  },
+  
+  7: {
+    levelNumber: 7,
+    name: 'Tree Trail',
+    
+    healthDisplay: 'bar',
+    maxHealth: 13,
+    
+    autoScroll: true,
+    scrollSpeed: 140,
+    scrollStartDelay: 5,
+    
+    dangerZoneEnabled: true,
+    dangerZoneDamagePerSecond: 1,
+    
+    levelWidth: 9500,
+    platformCount: 48,
+    treatCount: 35,
+    badItemCount: 20,
+    
+    goalPosition: 9300,
+    bronzeScore: 0,
+    silverScore: 1750,
+    goldScore: 2750,
+    silverTime: 165,
+    goldTime: 135,
+    
+    theme: 'Park Adventure',
+    description: 'Navigate through the tree-lined paths!'
+  },
+  
+  8: {
+    levelNumber: 8,
+    name: 'Sprinkler Zone',
+    
+    healthDisplay: 'bar',
+    maxHealth: 14,
+    
+    autoScroll: true,
+    scrollSpeed: 160,
+    scrollStartDelay: 5,
+    
+    dangerZoneEnabled: true,
+    dangerZoneDamagePerSecond: 2,
+    
+    levelWidth: 11000,
+    platformCount: 52,
+    treatCount: 40,
+    badItemCount: 22,
+    
+    goalPosition: 10800,
+    bronzeScore: 0,
+    silverScore: 2000,
+    goldScore: 3000,
+    silverTime: 180,
+    goldTime: 150,
+    
+    theme: 'Park Adventure',
+    description: 'Time your runs between water sprays!'
+  },
+  
+  9: {
+    levelNumber: 9,
+    name: 'Light Rain',
+    
+    healthDisplay: 'bar',
+    maxHealth: 14,
+    
+    autoScroll: true,
+    scrollSpeed: 180,
+    scrollStartDelay: 5,
+    
+    dangerZoneEnabled: true,
+    dangerZoneDamagePerSecond: 2,
+    
+    levelWidth: 12500,
+    platformCount: 58,
+    treatCount: 45,
+    badItemCount: 24,
+    
+    goalPosition: 12300,
+    bronzeScore: 0,
+    silverScore: 2250,
+    goldScore: 3250,
+    silverTime: 195,
+    goldTime: 165,
+    
+    theme: 'Park Adventure',
+    description: 'Slippery platforms ahead! Watch your step!'
+  },
+  
+  10: {
+    levelNumber: 10,
+    name: 'Storm Finale',
+    
+    healthDisplay: 'bar',
+    maxHealth: 15,
+    
+    autoScroll: true,
+    scrollSpeed: 200, // FASTEST YET!
+    scrollStartDelay: 5,
+    
+    dangerZoneEnabled: true,
+    dangerZoneDamagePerSecond: 3,
+    
+    levelWidth: 14000,
+    platformCount: 64,
+    treatCount: 50,
+    badItemCount: 26,
+    
+    goalPosition: 13800,
+    bronzeScore: 0,
+    silverScore: 2500,
+    goldScore: 3500,
+    silverTime: 210,
+    goldTime: 180,
+    
+    theme: 'Park Adventure',
+    description: 'World 2 finale! Can you survive the storm?'
   }
 };
 
