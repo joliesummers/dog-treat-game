@@ -100,7 +100,11 @@ export class LevelSelectScene extends Phaser.Scene {
   
   private createLevelCard(levelNumber: number, name: string, description: string, x: number, y: number, unlocked: boolean) {
     const cardWidth = 140;
-    const cardHeight = 260;
+    const cardHeight = 300; // Increased for stars + high score
+    
+    // Get high score data
+    const highScoreData = this.getHighScore(levelNumber);
+    const hasPlayed = highScoreData.score > 0;
     
     // Card background
     const card = this.add.rectangle(x, y, cardWidth, cardHeight, unlocked ? 0xFFFFFF : 0x666666, 0.9);
@@ -137,7 +141,7 @@ export class LevelSelectScene extends Phaser.Scene {
     }
     
     // Level number (big)
-    this.add.text(x, y - 90, `${levelNumber}`, {
+    this.add.text(x, y - 120, `${levelNumber}`, {
       fontSize: '56px',
       color: unlocked ? '#4CAF50' : '#999999',
       fontStyle: 'bold',
@@ -145,8 +149,13 @@ export class LevelSelectScene extends Phaser.Scene {
       strokeThickness: 4
     }).setOrigin(0.5);
     
+    // Star rating (if played)
+    if (unlocked && hasPlayed) {
+      this.showStars(highScoreData.stars, x, y - 50);
+    }
+    
     // Level name
-    this.add.text(x, y - 25, name, {
+    this.add.text(x, y - 15, name, {
       fontSize: '14px',
       color: unlocked ? '#000000' : '#666666',
       fontStyle: 'bold',
@@ -155,7 +164,7 @@ export class LevelSelectScene extends Phaser.Scene {
     }).setOrigin(0.5);
     
     // Description
-    this.add.text(x, y + 10, description, {
+    this.add.text(x, y + 20, description, {
       fontSize: '11px',
       color: unlocked ? '#333333' : '#888888',
       align: 'center',
@@ -163,10 +172,28 @@ export class LevelSelectScene extends Phaser.Scene {
       lineSpacing: 2
     }).setOrigin(0.5);
     
+    // High score (if played)
+    if (unlocked && hasPlayed) {
+      this.add.text(x, y + 65, `Best: ${highScoreData.score}`, {
+        fontSize: '12px',
+        color: '#FFD700',
+        fontStyle: 'bold'
+      }).setOrigin(0.5);
+      
+      // Best time
+      const minutes = Math.floor(highScoreData.time / 60);
+      const seconds = Math.floor(highScoreData.time % 60);
+      const timeString = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+      this.add.text(x, y + 82, `⏱️ ${timeString}`, {
+        fontSize: '11px',
+        color: '#666666'
+      }).setOrigin(0.5);
+    }
+    
     // Health system badge
     const levelConfig = LEVEL_CONFIGS[levelNumber];
-    const healthBadge = levelConfig.healthDisplay === 'hearts' ? '❤️❤️❤️' : '📊 Health Bar';
-    this.add.text(x, y + 65, healthBadge, {
+    const healthBadge = levelConfig.healthDisplay === 'hearts' ? '❤️❤️❤️' : '📊 HP';
+    this.add.text(x, y + 105, healthBadge, {
       fontSize: '12px',
       color: unlocked ? '#4CAF50' : '#666666',
       fontStyle: 'bold'
@@ -174,7 +201,7 @@ export class LevelSelectScene extends Phaser.Scene {
     
     // Auto-scroll indicator
     if (levelConfig.autoScroll) {
-      this.add.text(x, y + 88, '⚡ Auto-Scroll', {
+      this.add.text(x, y + 125, '⚡ Auto-Scroll', {
         fontSize: '11px',
         color: unlocked ? '#FF5722' : '#666666',
         fontStyle: 'bold'
@@ -183,12 +210,37 @@ export class LevelSelectScene extends Phaser.Scene {
     
     // Locked overlay
     if (!unlocked) {
-      this.add.text(x, y + 108, '🔒 LOCKED', {
+      this.add.text(x, y + 140, '🔒 LOCKED', {
         fontSize: '14px',
         color: '#999999',
         fontStyle: 'bold'
       }).setOrigin(0.5);
     }
+  }
+  
+  private showStars(count: number, x: number, y: number) {
+    const starSpacing = 35;
+    const startX = x - starSpacing;
+    
+    for (let i = 0; i < 3; i++) {
+      const starX = startX + i * starSpacing;
+      const isFilled = i < count;
+      const starColor = isFilled ? 0xFFD700 : 0x333333;
+      const starSize = isFilled ? 12 : 10;
+      
+      this.add.star(starX, y, 5, starSize * 0.6, starSize, starColor, 1);
+    }
+  }
+  
+  private getHighScore(level: number): { score: number; stars: number; time: number } {
+    const key = `highScore_level_${level}`;
+    const saved = window.localStorage.getItem(key);
+    
+    if (saved) {
+      return JSON.parse(saved);
+    }
+    
+    return { score: 0, stars: 0, time: 999 };
   }
   
   private startLevel(levelNumber: number) {

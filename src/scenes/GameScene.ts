@@ -3,6 +3,7 @@ import { Dog } from '../entities/Dog';
 import { Treat } from '../entities/Treat';
 import { BadItem } from '../entities/BadItem';
 import { Tree } from '../entities/Tree';
+import { GoalHouse } from '../entities/GoalHouse';
 import { UIScene } from './UIScene';
 import { VirtualButton } from '../entities/VirtualButton';
 import { VirtualDPad } from '../entities/VirtualDPad';
@@ -15,6 +16,7 @@ export class GameScene extends Phaser.Scene {
   private treats: Treat[] = [];
   private badItems: BadItem[] = [];
   private trees: Tree[] = [];
+  private goalHouse?: GoalHouse;
   private uiScene?: UIScene;
   private isEating: boolean = false;
   private isPaused: boolean = false;
@@ -167,19 +169,14 @@ export class GameScene extends Phaser.Scene {
     this.createBadItems(this.currentLevel, levelWidth, height);
     this.createTrees(this.currentLevel, levelWidth, height);
     
-    // Calculate target score based on actual points available
-    // First, get total points from all treats that spawned
-    const totalPointsAvailable = this.treats.reduce((sum, treat) => sum + treat.getPointValue(), 0);
+    // Create goal house at end of level
+    const goalX = this.levelConfig.goalPosition;
+    const goalY = height - 64; // On ground level
+    this.goalHouse = new GoalHouse(this, goalX, goalY);
     
-    // Calculate what percentage of treats are needed to win
-    const percentageNeeded = this.levelConfig.treatsNeededToWin / this.levelConfig.treatCount;
-    
-    // Target score is that percentage of total available points (rounded down)
-    const targetScore = Math.floor(totalPointsAvailable * percentageNeeded);
-    
-    // Update UI with target score synchronously
-    this.uiScene?.reset(); // Reset FIRST (clears score to 0)
-    this.uiScene?.setTargetScore(targetScore); // Set target based on needed treats percentage
+    // Update UI - reset and set total treats available
+    this.uiScene?.reset();
+    this.uiScene?.setTotalTreats(this.levelConfig.treatCount);
     
     // Get selected breed from registry
     const selectedBreed = this.registry.get('selectedBreed') as BreedType || 'pug';
@@ -197,6 +194,17 @@ export class GameScene extends Phaser.Scene {
     
     // Set up collision between dog and platforms
     this.physics.add.collider(this.dog.getSprite(), this.platforms);
+    
+    // Set up goal house collision (reach to win!)
+    if (this.goalHouse) {
+      this.physics.add.overlap(
+        this.dog.getSprite(),
+        this.goalHouse.getContainer(),
+        () => this.reachGoal(),
+        undefined,
+        this
+      );
+    }
     
     // Set up treat collection
     this.treats.forEach(treat => {
@@ -456,24 +464,11 @@ export class GameScene extends Phaser.Scene {
       // Play eat sound effect
       this.playSound('eat', 0.4);
       
-      // Update UI with points
-      const currentScore = this.uiScene?.addPoints(points) || 0;
-      const targetScore = this.uiScene?.getTargetScore() || 0;
+      // Update UI with points and treat count
+      this.uiScene?.addPoints(points);
+      this.uiScene?.collectTreat();
       
       this.isEating = false;
-      
-    // Check win condition (reached target score)
-    if (currentScore >= targetScore && !this.gameOver) {
-      this.gameOver = true;
-      this.physics.pause();
-      
-      // Play victory sound
-      this.playSound('victory', 0.6);
-      
-      this.time.delayedCall(500, () => {
-        this.scene.launch('LevelCompleteScene');
-      });
-    }
     });
   }
   
@@ -481,19 +476,74 @@ export class GameScene extends Phaser.Scene {
     // Don't process if game is already over
     if (this.gameOver) return;
     
-    // Check if dog can take damage
+    // Damage the dog
     if (this.dog && this.dog.takeDamage()) {
-      // Play damage sound (puke/splat)
       this.playSound('damage', 0.5);
-      
-      // Take damage in UI
-      const health = this.uiScene?.takeDamage() || 0;
-      
-      // Check lose condition
-      if (health <= 0 && !this.gameOver) {
-        this.triggerGameOver();
-      }
+      this.uiScene?.takeDamage();
     }
+  }
+  
+  private reachGoal() {
+    if (this.gameOver) return;
+    this.gameOver = true;
+    
+    // Show approach effect on goal house
+    this.goalHouse?.showApproachEffect();
+    
+    // Calculate final stats
+    const stats = this.calculateLevelStats();
+    
+    // Store stats in registry for LevelCompleteScene
+    this.registry.set('levelStats', stats);
+    
+    // Play victory sound
+    this.playSound('victory', 0.6);
+    
+    // Play enter animation
+    if (this.dog && this.goalHouse) {
+      this.goalHouse.playEnterAnimation(this.dog).then(() => {
+        // Pause physics after animation
+        this.physics.pause();
+        
+        // Launch level complete screen
+        this.time.delayedCall(500, () => {
+          this.scene.pause('GameScene');
+          this.scene.launch('LevelCompleteScene');
+        });
+      });
+    }
+  }
+  
+  private calculateLevelStats() {
+    const treatsCollected = this.uiScene?.getTreatsCollected() || 0;
+    const totalTreats = this.levelConfig.treatCount;
+    const timeElapsed = (this.time.now - this.sceneStartTime) / 1000; // Convert to seconds
+    const healthRemaining = this.uiScene?.getHealth() || 0;
+    const maxHealth = this.levelConfig.maxHealth;
+    
+    // Calculate score components
+    const treatPoints = treatsCollected * 100; // 100 pts per treat
+    const healthBonus = healthRemaining * 200; // 200 pts per remaining health
+    const perfectBonus = (treatsCollected === totalTreats) ? 1000 : 0; // +1000 for perfect run
+    
+    // Time bonus: Start at 2000, decrease by 10 pts per second
+    const timeBonus = Math.max(0, Math.floor(2000 - (timeElapsed * 10)));
+    
+    const finalScore = treatPoints + healthBonus + perfectBonus + timeBonus;
+    
+    return {
+      score: finalScore,
+      time: timeElapsed,
+      treatsCollected,
+      totalTreats,
+      healthRemaining,
+      maxHealth,
+      perfectRun: treatsCollected === totalTreats,
+      treatPoints,
+      healthBonus,
+      perfectBonus,
+      timeBonus
+    };
   }
   
   // REMOVED: hitSquirrel() - will be replaced by tree-based collision system
