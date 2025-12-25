@@ -460,8 +460,8 @@ export class GameScene extends Phaser.Scene {
         // Random x position across the screen
         const x = Phaser.Math.Between(100, width - 100);
         
-        // Spawn WAY above screen for better visibility and dodge time
-        const fallingSquirrel = new Squirrel(this, x, -500, true); // Start very high!
+        // Spawn VERY high above screen for maximum visibility and dodge time
+        const fallingSquirrel = new Squirrel(this, x, -1000, true); // Test at 1000 pixels high!
         this.squirrels.push(fallingSquirrel);
         
         // Set up collision with player
