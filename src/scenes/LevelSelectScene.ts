@@ -110,12 +110,12 @@ export class LevelSelectScene extends Phaser.Scene {
       repeat: -1
     });
     
-    // Keyboard shortcuts
-    this.input.keyboard?.on('keydown-ONE', () => this.startLevel(1));
-    this.input.keyboard?.on('keydown-TWO', () => this.startLevel(2));
-    this.input.keyboard?.on('keydown-THREE', () => this.startLevel(3));
-    this.input.keyboard?.on('keydown-FOUR', () => this.startLevel(4));
-    this.input.keyboard?.on('keydown-FIVE', () => this.startLevel(5));
+    // Keyboard shortcuts (1-5 keys select relative level within current world)
+    this.input.keyboard?.on('keydown-ONE', () => this.startLevel(this.worldLevels.start));
+    this.input.keyboard?.on('keydown-TWO', () => this.startLevel(this.worldLevels.start + 1));
+    this.input.keyboard?.on('keydown-THREE', () => this.startLevel(this.worldLevels.start + 2));
+    this.input.keyboard?.on('keydown-FOUR', () => this.startLevel(this.worldLevels.start + 3));
+    this.input.keyboard?.on('keydown-FIVE', () => this.startLevel(this.worldLevels.start + 4));
     
     // DEBUG MODE: Press L to unlock all levels for testing
     this.input.keyboard?.on('keydown-L', () => {
@@ -184,8 +184,9 @@ export class LevelSelectScene extends Phaser.Scene {
       });
     }
     
-    // Level number (big)
-    this.add.text(x, y - 120, `${levelNumber}`, {
+    // Level number (big) - show relative to world (1-5 for each world)
+    const relativeLevel = levelNumber - this.worldLevels.start + 1;
+    this.add.text(x, y - 120, `${relativeLevel}`, {
       fontSize: '56px',
       color: unlocked ? '#4CAF50' : '#999999',
       fontStyle: 'bold',

@@ -63,13 +63,28 @@ export class WorldSelectScene extends Phaser.Scene {
   
   init() {
     // Calculate which worlds are unlocked based on level progression
-    const unlockedLevels = parseInt(window.localStorage.getItem('unlockedLevels') || '1', 10);
+    let unlockedLevels = parseInt(window.localStorage.getItem('unlockedLevels') || '1', 10);
     
-    if (unlockedLevels >= 15) {
+    // When a new world is unlocked, automatically unlock its first level
+    if (unlockedLevels === 5) {
+      // Just beat Level 5, unlock World 2's first level (Level 6)
+      unlockedLevels = 6;
+      window.localStorage.setItem('unlockedLevels', '6');
+    } else if (unlockedLevels === 10) {
+      // Just beat Level 10, unlock World 3's first level (Level 11)
+      unlockedLevels = 11;
+      window.localStorage.setItem('unlockedLevels', '11');
+    } else if (unlockedLevels === 15) {
+      // Just beat Level 15, unlock World 4's first level (Level 16)
+      unlockedLevels = 16;
+      window.localStorage.setItem('unlockedLevels', '16');
+    }
+    
+    if (unlockedLevels >= 16) {
       this.unlockedWorlds = 4; // All worlds
-    } else if (unlockedLevels >= 10) {
+    } else if (unlockedLevels >= 11) {
       this.unlockedWorlds = 3; // Worlds 1-3
-    } else if (unlockedLevels >= 5) {
+    } else if (unlockedLevels >= 6) {
       this.unlockedWorlds = 2; // Worlds 1-2
     } else {
       this.unlockedWorlds = 1; // Only World 1
