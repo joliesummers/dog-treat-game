@@ -38,18 +38,14 @@
         justify-content: center;
         align-items: center;
         min-height: 100vh;
-        background: linear-gradient(135deg, #B2EBF2 0%, #80DEEA 100%);
+        background: #4DD0E1;
         font-family: Arial, sans-serif;
       }
       
-      /* Desktop: Scale to fit viewport while maintaining aspect ratio */
+      /* Make game fill the entire screen */
       #game-container {
-        width: min(90vw, 133.33vh); /* Maintain 4:3 aspect ratio (800:600) */
-        height: min(90vh, 75vw);
-        max-width: 1200px;
-        max-height: 900px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-        border-radius: 8px;
+        width: 100vw;
+        height: 100vh;
         overflow: hidden;
       }
       
@@ -59,15 +55,6 @@
           overflow: hidden;
           position: fixed;
           touch-action: none;
-        }
-        
-        #game-container {
-          width: 100vw !important;
-          height: 100vh !important;
-          max-width: none !important;
-          max-height: none !important;
-          box-shadow: none;
-          border-radius: 0;
         }
       }
     </style>
