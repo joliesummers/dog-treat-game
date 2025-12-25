@@ -401,13 +401,19 @@ export class GameScene extends Phaser.Scene {
 
     const config = treeConfigs[level] || treeConfigs[1];
     const spacing = levelWidth / (config.count + 1);
+    
+    // Array of tree sizes for variety
+    const treeSizes: Array<'small' | 'medium' | 'large'> = ['small', 'medium', 'large'];
 
     for (let i = 0; i < config.count; i++) {
       const baseX = spacing * (i + 1);
       const x = baseX + Phaser.Math.Between(-80, 80);
       const y = height - 64; // On ground level
       
-      const tree = new Tree(this, x, y, config.squirrelsPerTree);
+      // Randomly pick a tree size for variety
+      const treeSize = treeSizes[Math.floor(Math.random() * treeSizes.length)];
+      
+      const tree = new Tree(this, x, y, config.squirrelsPerTree, treeSize);
       this.trees.push(tree);
     }
   }
