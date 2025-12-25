@@ -85,7 +85,7 @@ export class Squirrel {
     });
   }
 
-  public checkProximity(dogX: number, dogY: number, triggerDistance: number, canDistract: boolean): boolean {
+  public checkProximity(dogX: number, dogY: number, triggerDistance: number, canDistract: boolean, squirrelIndex: number = 0, isPassed: boolean = false): boolean {
     // Only check if perched and dog is distractable breed
     if (this.state !== 'perched' || !canDistract) {
       return false;
@@ -96,15 +96,32 @@ export class Squirrel {
       dogX, dogY
     );
 
-    if (distance < triggerDistance) {
-      this.showWarning();
+    // First squirrel on tree: Jump when dog approaches
+    // Additional squirrels: Jump when dog passes (is beyond the tree)
+    const shouldJump = squirrelIndex === 0 
+      ? distance < triggerDistance  // First squirrel jumps on approach
+      : isPassed && distance < triggerDistance * 1.5; // Others jump after passing
+
+    if (shouldJump) {
+      this.triggerJump(dogX, dogY);
       return true;
     }
 
     return false;
   }
 
-  private showWarning() {
+  private triggerJump(_dogX: number, _dogY: number) {
+    if (this.state !== 'perched') return;
+
+    // Choose random arc type for variety
+    const arcTypes: Array<'steep' | 'normal' | 'shallow' | 'fast' | 'backwards'> = 
+      ['steep', 'normal', 'shallow', 'fast', 'backwards'];
+    const arcType = arcTypes[Math.floor(Math.random() * arcTypes.length)];
+
+    this.showWarning(arcType);
+  }
+
+  private showWarning(arcType: 'steep' | 'normal' | 'shallow' | 'fast' | 'backwards') {
     this.state = 'warning';
 
     // Stop idle animation
@@ -135,12 +152,12 @@ export class Squirrel {
       // Get dog's CURRENT position for jump target
       const dog = this.scene.registry.get('dogSprite') as Phaser.Physics.Arcade.Sprite;
       if (dog) {
-        this.jumpToward(dog.x, dog.y);
+        this.jumpToward(dog.x, dog.y, arcType);
       }
     });
   }
 
-  private jumpToward(targetX: number, targetY: number) {
+  private jumpToward(targetX: number, targetY: number, arcType: 'steep' | 'normal' | 'shallow' | 'fast' | 'backwards') {
     this.state = 'jumping';
     
     // Enable gravity for the jump
@@ -148,35 +165,48 @@ export class Squirrel {
     body.setAllowGravity(true);
     body.setImmovable(false);
 
-    // Calculate arc path
+    // Arc configurations with varying trajectories
+    const arcConfigs = {
+      steep: { duration: 1800, height: 200, offsetMultiplier: 0.7 },     // High arc, less forward
+      normal: { duration: 1500, height: 150, offsetMultiplier: 1.0 },    // Standard arc
+      shallow: { duration: 1200, height: 100, offsetMultiplier: 1.3 },   // Fast & low, overshoots
+      fast: { duration: 900, height: 120, offsetMultiplier: 1.1 },       // Very fast
+      backwards: { duration: 1500, height: 150, offsetMultiplier: -0.8 } // Jump backwards!
+    };
+
+    const config = arcConfigs[arcType];
+    
+    // Calculate arc path with offset multiplier
     const startX = this.sprite.x;
     const startY = this.sprite.y;
-    const arcHeight = 150; // Jump 150px high
+    const deltaX = targetX - startX;
+    const finalX = startX + (deltaX * config.offsetMultiplier);
+
+    // Rotate squirrel during jump
+    const rotationDirection = finalX > startX ? 360 : -360;
+    this.scene.tweens.add({
+      targets: this.sprite,
+      angle: rotationDirection,
+      duration: config.duration,
+      ease: 'Linear'
+    });
 
     // Create parabolic arc tween
     this.jumpTween = this.scene.tweens.add({
       targets: this.sprite,
-      x: targetX,
+      x: finalX,
       y: targetY,
-      duration: 1500, // 1.5 seconds travel time
+      duration: config.duration,
       ease: 'Sine.easeInOut',
       onUpdate: (tween) => {
         // Parabolic arc calculation
         const progress = tween.progress;
         const parabola = 4 * progress * (1 - progress); // 0 at start/end, 1 at middle
-        this.sprite.y = Phaser.Math.Linear(startY, targetY, progress) - (parabola * arcHeight);
+        this.sprite.y = Phaser.Math.Linear(startY, targetY, progress) - (parabola * config.height);
       },
       onComplete: () => {
         this.land();
       }
-    });
-
-    // Rotate squirrel during jump
-    this.scene.tweens.add({
-      targets: this.sprite,
-      angle: targetX > startX ? 360 : -360,
-      duration: 1500,
-      ease: 'Linear'
     });
   }
 

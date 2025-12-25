@@ -1182,9 +1182,12 @@ export class GameScene extends Phaser.Scene {
         };
         const triggerDistance = triggerDistances[this.currentLevel] || 400;
         
-        tree.getSquirrels().forEach(squirrel => {
+        // Track which trees the dog has passed (for follow-up squirrel attacks)
+        const dogPassedTree = dogSprite.x > tree.getX();
+        
+        tree.getSquirrels().forEach((squirrel, index) => {
           // Check proximity - squirrel will handle warning and jump
-          squirrel.checkProximity(dogSprite.x, dogSprite.y, triggerDistance, canDistract);
+          squirrel.checkProximity(dogSprite.x, dogSprite.y, triggerDistance, canDistract, index, dogPassedTree);
           
           // Check collision with jumping squirrels
           if (squirrel.getState() === 'jumping') {
