@@ -389,9 +389,13 @@ export class Dog {
       this.targetSquirrelX = undefined;
       if (this.distractionIndicator) {
         this.distractionIndicator.destroy();
-        this.distractionIndicator = undefined;
       }
     });
+  }
+  
+  // PUBLIC: Force distraction (called when hitting squirrel - applies to ALL breeds)
+  public forceDistraction() {
+    this.getDistracted();
   }
   
   getSprite(): Phaser.Physics.Arcade.Sprite {

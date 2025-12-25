@@ -220,6 +220,17 @@ export class GameScene extends Phaser.Scene {
       );
     });
     
+    // Set up squirrel collision (NEW: All dogs take damage + get distracted)
+    this.squirrels.forEach(squirrel => {
+      this.physics.add.overlap(
+        this.dog!.getSprite(),
+        squirrel.getSprite(),
+        () => this.hitSquirrel(squirrel),
+        undefined,
+        this
+      );
+    });
+    
     // Add instructions text (mobile-aware)
     const controlsHint = this.isMobile 
       ? 'Use controls below\nDouble tap jump!' 
@@ -382,8 +393,11 @@ export class GameScene extends Phaser.Scene {
     }
     
     // Don't spawn falling bad items on auto-scroll levels (too chaotic)
-    if (!config.autoScroll) {
-      this.startFallingBadItems(levelWidth);
+    // REMOVED: Old falling poo system
+    
+    // NEW: Spawn falling squirrels on Levels 4-5 only (Space Invaders style!)
+    if (this.currentLevel >= 4 && this.currentLevel <= 5) {
+      this.startFallingSquirrels(levelWidth);
     }
   }
   
@@ -432,46 +446,38 @@ export class GameScene extends Phaser.Scene {
     this.registry.set('squirrels', squirrelPositions);
   }
   
-  private startFallingBadItems(width: number) {
-    // Spawn falling bad items every 3-5 seconds
+  private startFallingSquirrels(width: number) {
+    // Spawn falling squirrels less frequently than old bad items (Space Invaders style!)
+    // Every 5-8 seconds for a more dodgeable challenge
     this.time.addEvent({
-      delay: Phaser.Math.Between(3000, 5000),
+      delay: Phaser.Math.Between(5000, 8000),
       callback: () => {
         if (this.gameOver) return;
         
-        // Random x position
+        // Random x position across the screen
         const x = Phaser.Math.Between(100, width - 100);
         
-        // Spawn at top of screen (always poo now)
-        const fallingItem = new BadItem(this, x, -30, 'poo');
-        this.badItems.push(fallingItem);
-        
-        // Enable gravity for falling
-        const body = fallingItem.getSprite().body as Phaser.Physics.Arcade.Body;
-        body.setAllowGravity(true);
-        
-        // Set up collision with platforms (will bounce/stop)
-        if (this.platforms) {
-          this.physics.add.collider(fallingItem.getSprite(), this.platforms);
-        }
+        // Spawn at top of screen with falling physics
+        const fallingSquirrel = new Squirrel(this, x, -30, true); // true = falling mode
+        this.squirrels.push(fallingSquirrel);
         
         // Set up collision with player
         this.physics.add.overlap(
           this.dog!.getSprite(),
-          fallingItem.getSprite(),
-          () => this.hitBadItem(fallingItem),
+          fallingSquirrel.getSprite(),
+          () => this.hitSquirrel(fallingSquirrel),
           undefined,
           this
         );
         
-        // Destroy if falls off screen
-        this.time.delayedCall(10000, () => {
-          if (fallingItem.getSprite().active) {
-            const index = this.badItems.indexOf(fallingItem);
+        // Destroy if falls off screen (cleanup after 12 seconds)
+        this.time.delayedCall(12000, () => {
+          if (fallingSquirrel.getSprite().active) {
+            const index = this.squirrels.indexOf(fallingSquirrel);
             if (index > -1) {
-              this.badItems.splice(index, 1);
+              this.squirrels.splice(index, 1);
             }
-            fallingItem.getSprite().destroy();
+            fallingSquirrel.destroy();
           }
         });
       },
@@ -549,6 +555,35 @@ export class GameScene extends Phaser.Scene {
       
       // Take damage in UI
       const health = this.uiScene?.takeDamage() || 0;
+      
+      // Check lose condition
+      if (health <= 0 && !this.gameOver) {
+        this.triggerGameOver();
+      }
+    }
+  }
+  
+  private hitSquirrel(squirrel: Squirrel) {
+    // Don't process if game is already over
+    if (this.gameOver) return;
+    
+    // Check if dog can take damage (applies to ALL breeds now)
+    if (this.dog && this.dog.takeDamage()) {
+      // Play distraction sound
+      this.playSound('distract', 0.3);
+      
+      // Take damage in UI
+      const health = this.uiScene?.takeDamage() || 0;
+      
+      // Force distraction on ALL dogs (not just Golden)
+      this.dog.forceDistraction();
+      
+      // Remove squirrel on contact (prevents multiple hits)
+      const index = this.squirrels.indexOf(squirrel);
+      if (index > -1) {
+        this.squirrels.splice(index, 1);
+      }
+      squirrel.destroy();
       
       // Check lose condition
       if (health <= 0 && !this.gameOver) {

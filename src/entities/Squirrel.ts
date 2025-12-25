@@ -1,9 +1,11 @@
 import Phaser from 'phaser';
 
 export class Squirrel {
-  private sprite: Phaser.GameObjects.Image;
+  private sprite: Phaser.GameObjects.Image | Phaser.Physics.Arcade.Sprite;
+  private isFalling: boolean;
 
-  constructor(scene: Phaser.Scene, x: number, y: number) {
+  constructor(scene: Phaser.Scene, x: number, y: number, falling: boolean = false) {
+    this.isFalling = falling;
     // Create cute squirrel sprite
     const textureKey = 'squirrel';
     
@@ -48,33 +50,55 @@ export class Squirrel {
       graphics.destroy();
     }
     
-    this.sprite = scene.add.image(x, y, textureKey);
-    
-    // Add EXAGGERATED South Park-style bounce animation!
-    scene.tweens.add({
-      targets: this.sprite,
-      y: y - 15, // Much higher bounce (was 5px)
-      scaleY: 1.15, // Stretch vertically
-      scaleX: 0.95, // Compress horizontally
-      duration: 600, // Faster (was 800ms)
-      yoyo: true,
-      repeat: -1,
-      ease: 'Back.easeInOut' // Overshoot for cartoony effect!
-    });
-    
-    // Add secondary squash/stretch cycle (offset timing for more life)
-    scene.tweens.add({
-      targets: this.sprite,
-      scaleX: 1.1, // Wobble side to side
-      duration: 400,
-      yoyo: true,
-      repeat: -1,
-      ease: 'Sine.easeInOut'
-    });
+    if (this.isFalling) {
+      // Create as physics sprite for falling squirrels (Levels 4-5)
+      this.sprite = scene.physics.add.sprite(x, y, textureKey);
+      (this.sprite as Phaser.Physics.Arcade.Sprite).setVelocityY(200); // Fall downward
+      (this.sprite as Phaser.Physics.Arcade.Sprite).setGravityY(300); // Accelerate as they fall
+      
+      // Add wobble animation while falling
+      scene.tweens.add({
+        targets: this.sprite,
+        angle: { from: -10, to: 10 },
+        duration: 400,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut'
+      });
+    } else {
+      // Static squirrel (Levels 1-3) - hovering in place
+      this.sprite = scene.add.image(x, y, textureKey);
+      
+      // Add EXAGGERATED South Park-style bounce animation!
+      scene.tweens.add({
+        targets: this.sprite,
+        y: y - 15, // Much higher bounce (was 5px)
+        scaleY: 1.15, // Stretch vertically
+        scaleX: 0.95, // Compress horizontally
+        duration: 600, // Faster (was 800ms)
+        yoyo: true,
+        repeat: -1,
+        ease: 'Back.easeInOut' // Overshoot for cartoony effect!
+      });
+      
+      // Add secondary squash/stretch cycle (offset timing for more life)
+      scene.tweens.add({
+        targets: this.sprite,
+        scaleX: 1.1, // Wobble side to side
+        duration: 400,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut'
+      });
+    }
   }
 
-  getSprite(): Phaser.GameObjects.Image {
+  getSprite(): Phaser.GameObjects.Image | Phaser.Physics.Arcade.Sprite {
     return this.sprite;
+  }
+  
+  isFallingSquirrel(): boolean {
+    return this.isFalling;
   }
 
   getX(): number {
