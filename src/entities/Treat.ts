@@ -151,23 +151,27 @@ export class Treat {
   private createTennisBallTexture(scene: Phaser.Scene, textureKey: string, scale: number) {
     const graphics = scene.add.graphics();
     const ballColor = 0xCCFF00; // Bright tennis ball yellow-green
+    const shadowColor = 0xA0CC00; // Darker yellow-green for shadow
     const lineColor = 0xFFFFFF; // White lines
-    const outlineColor = 0x000000; // Black outline
     
     const centerX = 12 * scale;
     const centerY = 12 * scale;
     const radius = 10 * scale;
     
-    // Fill circle
+    // Main ball fill
     graphics.fillStyle(ballColor, 1);
     graphics.fillCircle(centerX, centerY, radius);
     
-    // Black outline
-    graphics.lineStyle(1.5 * scale, outlineColor, 1);
+    // Add subtle shadow on bottom-right (construction paper style)
+    graphics.fillStyle(shadowColor, 0.3);
+    graphics.fillCircle(centerX + radius * 0.3, centerY + radius * 0.3, radius * 0.6);
+    
+    // Softer outline (darker yellow-green, not black)
+    graphics.lineStyle(2 * scale, shadowColor, 0.8);
     graphics.strokeCircle(centerX, centerY, radius);
     
-    // Curved white lines (tennis ball pattern)
-    graphics.lineStyle(2 * scale, lineColor, 1);
+    // Curved white lines (tennis ball pattern) - thicker and more visible
+    graphics.lineStyle(3 * scale, lineColor, 1);
     graphics.beginPath();
     graphics.arc(centerX, centerY - radius * 0.3, radius * 0.8, Math.PI * 0.2, Math.PI * 0.8, false);
     graphics.strokePath();
@@ -176,45 +180,55 @@ export class Treat {
     graphics.arc(centerX, centerY + radius * 0.3, radius * 0.8, Math.PI * 1.2, Math.PI * 1.8, false);
     graphics.strokePath();
     
+    // Add highlight spot (construction paper shine)
+    graphics.fillStyle(0xFFFFFF, 0.4);
+    graphics.fillCircle(centerX - radius * 0.3, centerY - radius * 0.3, radius * 0.3);
+    
     graphics.generateTexture(textureKey, 24 * scale, 24 * scale);
     graphics.destroy();
   }
   
   private createFrisbeeTexture(scene: Phaser.Scene, textureKey: string, scale: number) {
     const graphics = scene.add.graphics();
-    const frisbeeColor = 0xFF6B35; // Bright orange/red
-    const innerColor = 0xFF4500; // Darker orange
-    const outlineColor = 0x000000; // Black outline
+    const frisbeeColor = 0xFF1744; // Bright red/pink
+    const rimColor = 0xD81B60; // Darker pink for rim
+    const highlightColor = 0xFF5177; // Lighter pink for highlight
     
     const centerX = 16 * scale;
     const centerY = 8 * scale;
     const outerRadiusX = 14 * scale;
     const outerRadiusY = 6 * scale;
-    const innerRadiusX = 8 * scale;
-    const innerRadiusY = 4 * scale;
+    const rimRadiusX = 12 * scale;
+    const rimRadiusY = 5 * scale;
+    const centerRadiusX = 3 * scale;
+    const centerRadiusY = 2 * scale;
     
-    // Outer ellipse (frisbee body)
+    // Main frisbee disc
     graphics.fillStyle(frisbeeColor, 1);
     graphics.fillEllipse(centerX, centerY, outerRadiusX, outerRadiusY);
     
-    // Inner ellipse (grip area)
-    graphics.fillStyle(innerColor, 1);
-    graphics.fillEllipse(centerX, centerY, innerRadiusX, innerRadiusY);
-    
-    // Black outline
-    graphics.lineStyle(1.5 * scale, outlineColor, 1);
+    // Darker rim/edge (shows depth)
+    graphics.lineStyle(3 * scale, rimColor, 1);
     graphics.strokeEllipse(centerX, centerY, outerRadiusX, outerRadiusY);
-    graphics.strokeEllipse(centerX, centerY, innerRadiusX, innerRadiusY);
     
-    // Add radial lines for detail
-    for (let i = 0; i < 4; i++) {
-      const angle = (Math.PI * 2 * i) / 4;
-      const x1 = centerX + Math.cos(angle) * innerRadiusX;
-      const y1 = centerY + Math.sin(angle) * innerRadiusY;
-      const x2 = centerX + Math.cos(angle) * outerRadiusX * 0.9;
-      const y2 = centerY + Math.sin(angle) * outerRadiusY * 0.9;
-      graphics.lineBetween(x1, y1, x2, y2);
-    }
+    // Inner concentric rings (typical frisbee detail)
+    graphics.lineStyle(1.5 * scale, rimColor, 0.5);
+    graphics.strokeEllipse(centerX, centerY, rimRadiusX, rimRadiusY);
+    graphics.strokeEllipse(centerX, centerY, rimRadiusX * 0.7, rimRadiusY * 0.7);
+    
+    // Center grip circle
+    graphics.fillStyle(rimColor, 1);
+    graphics.fillEllipse(centerX, centerY, centerRadiusX, centerRadiusY);
+    
+    // Top highlight (construction paper shine)
+    graphics.fillStyle(highlightColor, 0.6);
+    graphics.fillEllipse(centerX - outerRadiusX * 0.3, centerY - outerRadiusY * 0.3, 
+                         outerRadiusX * 0.4, outerRadiusY * 0.4);
+    
+    // Bottom shadow (construction paper depth)
+    graphics.fillStyle(rimColor, 0.3);
+    graphics.fillEllipse(centerX + outerRadiusX * 0.2, centerY + outerRadiusY * 0.4, 
+                         outerRadiusX * 0.5, outerRadiusY * 0.3);
     
     graphics.generateTexture(textureKey, 32 * scale, 16 * scale);
     graphics.destroy();
