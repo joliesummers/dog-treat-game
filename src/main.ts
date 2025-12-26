@@ -9,11 +9,13 @@ import { GameScene } from './scenes/GameScene';
 import { UIScene } from './scenes/UIScene';
 import { LevelCompleteScene } from './scenes/LevelCompleteScene';
 import { GameOverScene } from './scenes/GameOverScene';
+import { NameEntryScene } from './scenes/NameEntryScene';
+import { HighScoresScene } from './scenes/HighScoresScene';
 
 // Add scenes to game config
 const config: Phaser.Types.Core.GameConfig = {
   ...GameConfig,
-  scene: [PreloadScene, MenuScene, WorldSelectScene, LevelSelectScene, BreedSelectScene, GameScene, UIScene, LevelCompleteScene, GameOverScene]
+  scene: [PreloadScene, MenuScene, WorldSelectScene, LevelSelectScene, BreedSelectScene, GameScene, UIScene, LevelCompleteScene, GameOverScene, NameEntryScene, HighScoresScene]
 };
 
 // Initialize game when DOM is loaded

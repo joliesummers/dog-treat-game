@@ -89,8 +89,30 @@ export class MenuScene extends Phaser.Scene {
       this.scene.start('WorldSelectScene');
     });
     
+    // High Scores button
+    const highScoresButton = this.add.text(width / 2, height / 2 + 160, '🏆 HIGH SCORES', {
+      fontSize: '24px',
+      color: '#ffffff',
+      backgroundColor: '#FF9800',
+      padding: { x: 30, y: 12 },
+      fontStyle: 'bold'
+    }).setOrigin(0.5)
+      .setInteractive({ useHandCursor: true });
+    
+    highScoresButton.on('pointerover', () => {
+      highScoresButton.setScale(1.1);
+    });
+    
+    highScoresButton.on('pointerout', () => {
+      highScoresButton.setScale(1.0);
+    });
+    
+    highScoresButton.on('pointerdown', () => {
+      this.scene.start('HighScoresScene');
+    });
+    
     // Keyboard control
-    const startText = this.add.text(width / 2, height / 2 + 150, 'Tap or Press SPACE to Start', {
+    const startText = this.add.text(width / 2, height / 2 + 230, 'Tap or Press SPACE to Start', {
       fontSize: '18px',
       color: '#ffffff'
     }).setOrigin(0.5);

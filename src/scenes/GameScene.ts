@@ -665,6 +665,10 @@ export class GameScene extends Phaser.Scene {
     this.gameOver = true;
     this.physics.pause();
     
+    // Calculate stats even on game over (for high score tracking)
+    const stats = this.calculateLevelStats();
+    this.registry.set('levelStats', stats);
+    
     // Play game over sound
     this.playSound('gameover', 0.5);
     

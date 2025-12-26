@@ -1,4 +1,20 @@
 import Phaser from 'phaser';
+import { HighScoreManager } from '../managers/HighScoreManager';
+import { getCurrentLevelConfig } from '../types/LevelConfig';
+
+interface LevelStats {
+  score: number;
+  time: number;
+  treatsCollected: number;
+  totalTreats: number;
+  healthRemaining: number;
+  maxHealth: number;
+  perfectRun: boolean;
+  treatPoints: number;
+  healthBonus: number;
+  perfectBonus: number;
+  timeBonus: number;
+}
 
 export class GameOverScene extends Phaser.Scene {
   constructor() {
@@ -8,6 +24,33 @@ export class GameOverScene extends Phaser.Scene {
   create() {
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
+    
+    // Get current level and stats (if available)
+    const currentLevel = this.registry.get('selectedLevel') as number || 1;
+    const stats = this.registry.get('levelStats') as LevelStats | undefined;
+    const config = getCurrentLevelConfig(currentLevel);
+    
+    // Check if player achieved a high score despite game over
+    if (stats) {
+      const isLevelHighScore = HighScoreManager.isHighScore(currentLevel, stats.score);
+      const isGlobalHighScore = HighScoreManager.isGlobalHighScore(stats.score);
+      
+      if (isLevelHighScore || isGlobalHighScore) {
+        // Calculate stars (will be 0 or 1 since they didn't complete)
+        const stars = this.calculateStars(stats, config);
+        
+        this.scene.pause('GameOverScene');
+        this.scene.launch('NameEntryScene', {
+          stats,
+          level: currentLevel,
+          stars,
+          isLevelHighScore,
+          isGlobalHighScore,
+          fromGameOver: true
+        });
+        return; // Don't show the rest yet
+      }
+    }
     
     // Semi-transparent background (make it interactive for clicks)
     const background = this.add.rectangle(0, 0, width, height, 0x000000, 0.8)
@@ -58,6 +101,12 @@ export class GameOverScene extends Phaser.Scene {
     
     // Alternative: listen for ANY key press
     this.input.keyboard?.once('keydown', restart);
+  }
+  
+  private calculateStars(_stats: LevelStats, _config: any): number {
+    // For game over, player gets 0 stars (didn't complete)
+    // But we still want to track their score in case it's high
+    return 0;
   }
 }
 

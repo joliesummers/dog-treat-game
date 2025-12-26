@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { getCurrentLevelConfig } from '../types/LevelConfig';
+import { HighScoreManager } from '../managers/HighScoreManager';
 
 interface LevelStats {
   score: number;
@@ -32,7 +33,25 @@ export class LevelCompleteScene extends Phaser.Scene {
     // Calculate star rating
     const stars = this.calculateStars(stats, config);
     
-    // Get/update high score
+    // Check if this is a high score (level or global)
+    const isLevelHighScore = HighScoreManager.isHighScore(currentLevel, stats.score);
+    const isGlobalHighScore = HighScoreManager.isGlobalHighScore(stats.score);
+    
+    // If it's a high score, go to name entry scene first
+    if (isLevelHighScore || isGlobalHighScore) {
+      this.scene.pause('LevelCompleteScene');
+      this.scene.launch('NameEntryScene', {
+        stats,
+        level: currentLevel,
+        stars,
+        isLevelHighScore,
+        isGlobalHighScore,
+        fromGameOver: false
+      });
+      return; // Don't show the rest yet, wait for name entry to complete
+    }
+    
+    // Get/update high score (legacy for non-leaderboard tracking)
     const highScoreData = this.getHighScore(currentLevel);
     const isNewRecord = stats.score > highScoreData.score;
     if (isNewRecord) {
@@ -145,7 +164,46 @@ export class LevelCompleteScene extends Phaser.Scene {
     currentY += 40;
     
     // === HIGH SCORE ===
-    if (isNewRecord) {
+    // Check if we have high score result from name entry
+    const highScoreResult = this.registry.get('highScoreResult') as { 
+      levelRank: number | null; 
+      globalRank: number | null; 
+      playerName: string;
+    } | undefined;
+    
+    if (highScoreResult) {
+      // Show rank achievements
+      if (highScoreResult.globalRank) {
+        const globalText = this.add.text(width / 2, currentY, `🌍 Global Rank: #${highScoreResult.globalRank}!`, {
+          fontSize: '24px',
+          color: '#FFD700',
+          fontStyle: 'bold'
+        }).setOrigin(0.5);
+        
+        this.tweens.add({
+          targets: globalText,
+          scaleX: 1.1,
+          scaleY: 1.1,
+          duration: 500,
+          yoyo: true,
+          repeat: -1,
+          ease: 'Sine.easeInOut'
+        });
+        currentY += 30;
+      }
+      
+      if (highScoreResult.levelRank) {
+        this.add.text(width / 2, currentY, `⭐ Level ${currentLevel} Rank: #${highScoreResult.levelRank}!`, {
+          fontSize: '20px',
+          color: '#4CAF50',
+          fontStyle: 'bold'
+        }).setOrigin(0.5);
+        currentY += 30;
+      }
+      
+      // Clear the result so it doesn't show again
+      this.registry.remove('highScoreResult');
+    } else if (isNewRecord) {
       this.add.text(width / 2, currentY, '🎉 NEW RECORD! 🎉', {
         fontSize: '24px',
         color: '#FF69B4',
