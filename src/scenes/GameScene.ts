@@ -4,6 +4,10 @@ import { Treat } from '../entities/Treat';
 import { BadItem } from '../entities/BadItem';
 import { Tree } from '../entities/Tree';
 import { GoalHouse } from '../entities/GoalHouse';
+import { Duck } from '../entities/Duck';
+import { TreeObstacle } from '../entities/TreeObstacle';
+import { Sprinkler } from '../entities/Sprinkler';
+import { RainSystem, type RainIntensity } from '../entities/RainSystem';
 import { UIScene } from './UIScene';
 import { VirtualButton } from '../entities/VirtualButton';
 import { VirtualDPad } from '../entities/VirtualDPad';
@@ -15,8 +19,15 @@ export class GameScene extends Phaser.Scene {
   private platforms?: Phaser.Physics.Arcade.StaticGroup;
   private treats: Treat[] = [];
   private badItems: BadItem[] = [];
-  private trees: Tree[] = [];
+  private trees: Tree[] = []; // Squirrel trees (World 1)
   private goalHouse?: GoalHouse;
+  
+  // World 2 obstacles
+  private ducks: Duck[] = [];
+  private treeObstacles: TreeObstacle[] = [];
+  private sprinklers: Sprinkler[] = [];
+  private rainSystem?: RainSystem;
+  
   private uiScene?: UIScene;
   private isEating: boolean = false;
   private isPaused: boolean = false;
@@ -221,7 +232,13 @@ export class GameScene extends Phaser.Scene {
     // Create treats, bad items, and trees based on level config
     this.createTreats(this.currentLevel, levelWidth, height, worldNumber);
     this.createBadItems(this.currentLevel, levelWidth, height);
-    this.createTrees(this.currentLevel, levelWidth, height);
+    
+    // World-specific obstacles
+    if (worldNumber === 1) {
+      this.createTrees(this.currentLevel, levelWidth, height); // Squirrel trees
+    } else if (worldNumber === 2) {
+      this.createWorld2Obstacles(this.currentLevel, levelWidth, height); // Ducks, trees, sprinklers, rain
+    }
     
     // Create goal house at end of level (world-specific)
     const goalX = this.levelConfig.goalPosition;
@@ -259,6 +276,38 @@ export class GameScene extends Phaser.Scene {
         this
       );
     }
+    
+    // World 2 obstacle collisions
+    this.ducks.forEach(duck => {
+      if (this.dog) {
+        this.physics.add.overlap(
+          this.dog.getSprite(),
+          duck.getSprite(),
+          () => this.hitDuck(duck),
+          undefined,
+          this
+        );
+      }
+    });
+    
+    this.treeObstacles.forEach(tree => {
+      if (this.dog) {
+        this.physics.add.collider(this.dog.getSprite(), tree.getSprite());
+      }
+    });
+    
+    this.sprinklers.forEach(sprinkler => {
+      const damageZone = sprinkler.getDamageZone();
+      if (this.dog && damageZone) {
+        this.physics.add.overlap(
+          this.dog.getSprite(),
+          damageZone,
+          () => this.hitSprinkler(sprinkler),
+          () => sprinkler.isCurrentlyActive(), // Only damage when active
+          this
+        );
+      }
+    });
     
     // Set up treat collection
     this.treats.forEach(treat => {
@@ -1299,6 +1348,25 @@ export class GameScene extends Phaser.Scene {
     // Update player (with virtual input if available)
     this.dog?.update(virtualInput);
     
+    // Apply rain slipperiness to dog movement (World 2)
+    if (this.rainSystem && this.dog) {
+      const slipperiness = this.rainSystem.getSlipperinessFactor();
+      const dogSprite = this.dog.getSprite();
+      const body = dogSprite.body as Phaser.Physics.Arcade.Body;
+      
+      // Reduce acceleration on slippery surfaces
+      if (body.velocity.x !== 0) {
+        body.setDragX(100 * slipperiness); // Less drag = more slide
+      }
+    }
+    
+    // Update World 2 obstacles
+    this.ducks.forEach(duck => duck.update(delta));
+    this.sprinklers.forEach(sprinkler => sprinkler.update(delta));
+    if (this.rainSystem) {
+      this.rainSystem.update(delta);
+    }
+    
     // Constrain dog to not go off left edge of camera (auto-scroll levels)
     if (this.scrollSpeed > 0 && this.dog) {
       const dogSprite = this.dog.getSprite();
@@ -1387,6 +1455,49 @@ export class GameScene extends Phaser.Scene {
   }
   
   // ============================================================================
+  // WORLD 2 OBSTACLE HIT HANDLERS
+  // ============================================================================
+  
+  private hitDuck(duck: Duck) {
+    if (duck.isDying() || !this.dog || !this.dog.takeDamage()) return;
+    
+    const health = this.uiScene?.takeDamage() || 0;
+    this.playSound('damage', 0.5);
+    duck.destroy();
+    
+    // Remove from array
+    const index = this.ducks.indexOf(duck);
+    if (index > -1) {
+      this.ducks.splice(index, 1);
+    }
+    
+    // Check lose condition
+    if (health <= 0 && !this.gameOver) {
+      this.triggerGameOver();
+    }
+  }
+  
+  private hitSprinkler(sprinkler: Sprinkler) {
+    if (!this.dog || !sprinkler.isCurrentlyActive()) return;
+    
+    // Only damage once per spray cycle
+    if (!this.dog.takeDamage()) return;
+    
+    const health = this.uiScene?.takeDamage() || 0;
+    this.playSound('damage', 0.4);
+    
+    // Slow down dog temporarily (water pushes back)
+    const dogSprite = this.dog.getSprite();
+    const body = dogSprite.body as Phaser.Physics.Arcade.Body;
+    body.setVelocityX(body.velocity.x * 0.5); // Push back
+    
+    // Check lose condition
+    if (health <= 0 && !this.gameOver) {
+      this.triggerGameOver();
+    }
+  }
+  
+  // ============================================================================
   // WORLD-SPECIFIC HELPER METHODS
   // ============================================================================
   
@@ -1441,6 +1552,88 @@ export class GameScene extends Phaser.Scene {
       tree.fillStyle(0x2E7D32, 0.2);
       tree.fillEllipse(treeX, height - 100, 60, 80);
       tree.setScrollFactor(0.6);
+    }
+  }
+  
+  // ============================================================================
+  // WORLD 2 OBSTACLE CREATION METHODS
+  // ============================================================================
+  
+  private createWorld2Obstacles(level: number, levelWidth: number, height: number) {
+    // Progressive difficulty:
+    // Level 6: Ducks only
+    // Level 7: Ducks + Trees
+    // Level 8: Ducks + Trees + Sprinklers
+    // Level 9: All obstacles + Light Rain
+    // Level 10: All obstacles + Heavy Rain
+    
+    if (level >= 6) {
+      this.createDucks(level, levelWidth, height);
+    }
+    
+    if (level >= 7) {
+      this.createTreeObstacles(level, levelWidth, height);
+    }
+    
+    if (level >= 8) {
+      this.createSprinklers(level, levelWidth, height);
+    }
+    
+    if (level >= 9) {
+      const rainIntensity: RainIntensity = level === 10 ? 'heavy' : 'light';
+      this.rainSystem = new RainSystem(this, rainIntensity);
+    }
+  }
+  
+  private createDucks(level: number, levelWidth: number, height: number) {
+    // Duck count increases with level
+    const duckCount = level === 6 ? 4 : level === 7 ? 5 : level === 8 ? 6 : level === 9 ? 7 : 8;
+    const spacing = levelWidth / (duckCount + 1);
+    
+    for (let i = 0; i < duckCount; i++) {
+      const x = spacing * (i + 1) + Phaser.Math.Between(-100, 100);
+      const y = height - Phaser.Math.Between(90, 140); // On ground or low platforms
+      const patrolDistance = Phaser.Math.Between(150, 300);
+      
+      const duck = new Duck(this, x, y, patrolDistance);
+      this.ducks.push(duck);
+    }
+  }
+  
+  private createTreeObstacles(level: number, levelWidth: number, height: number) {
+    // Tree count and variety increases with level
+    const treeCount = level === 7 ? 6 : level === 8 ? 8 : level === 9 ? 10 : 12;
+    const spacing = levelWidth / (treeCount + 1);
+    
+    for (let i = 0; i < treeCount; i++) {
+      const x = spacing * (i + 1) + Phaser.Math.Between(-80, 80);
+      const y = height - 64; // Ground level
+      
+      // Mix of tree heights
+      const heightRoll = Math.random();
+      const treeHeight: 'short' | 'medium' | 'tall' = 
+        heightRoll < 0.3 ? 'short' : heightRoll < 0.7 ? 'medium' : 'tall';
+      
+      const tree = new TreeObstacle(this, x, y, treeHeight);
+      this.treeObstacles.push(tree);
+    }
+  }
+  
+  private createSprinklers(level: number, levelWidth: number, height: number) {
+    // Sprinkler count increases with level
+    const sprinklerCount = level === 8 ? 3 : level === 9 ? 4 : 5;
+    const spacing = levelWidth / (sprinklerCount + 1);
+    
+    for (let i = 0; i < sprinklerCount; i++) {
+      const x = spacing * (i + 1) + Phaser.Math.Between(-100, 100);
+      const y = height - 64; // Ground level
+      
+      // Vary timing so they're not all synchronized
+      const onDuration = Phaser.Math.Between(1500, 2500);
+      const offDuration = Phaser.Math.Between(2000, 3500);
+      
+      const sprinkler = new Sprinkler(this, x, y, onDuration, offDuration);
+      this.sprinklers.push(sprinkler);
     }
   }
 }
