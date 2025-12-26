@@ -9,24 +9,26 @@ export class GoalHouse {
   private x: number;
   private y: number;
   private isActivated: boolean = false;
+  private worldNumber: number;
 
-  constructor(scene: Phaser.Scene, x: number, y: number) {
+  constructor(scene: Phaser.Scene, x: number, y: number, worldNumber: number = 1) {
     this.scene = scene;
     this.x = x;
     this.y = y;
+    this.worldNumber = worldNumber;
 
-    // Create container for dog house + effects
+    // Create container for goal + effects
     this.container = scene.add.container(x, y);
     this.container.setDepth(50); // Above platforms, below dog
 
-    // Draw the dog house (South Park construction paper style)
+    // Draw the goal object (world-specific)
     this.sprite = scene.add.graphics();
-    this.drawDogHouse();
+    this.drawGoalObject();
     this.container.add(this.sprite);
 
     // Add glow circle (hidden initially)
     this.glowCircle = scene.add.circle(0, -30, 80, 0xFFD700, 0);
-    this.glowCircle.setDepth(49); // Behind house
+    this.glowCircle.setDepth(49); // Behind goal
     this.container.add(this.glowCircle);
 
     // Create idle animation (gentle breathing)
@@ -36,9 +38,125 @@ export class GoalHouse {
     this.setupPhysics();
   }
 
-  private drawDogHouse() {
+  private drawGoalObject() {
     const g = this.sprite;
+    
+    switch (this.worldNumber) {
+      case 2:
+        // Park: Ornate Park Gate
+        this.drawParkGate(g);
+        break;
+      case 3:
+        // Beach: Beach Umbrella
+        this.drawBeachUmbrella(g);
+        break;
+      case 4:
+        // City: Front Door
+        this.drawFrontDoor(g);
+        break;
+      case 1:
+      default:
+        // Backyard: Dog House
+        this.drawDogHouse(g);
+        break;
+    }
+  }
+  
+  private drawParkGate(g: Phaser.GameObjects.Graphics) {
+    // === ORNATE PARK GATE (South Park construction paper style) ===
+    
+    // Left pillar
+    g.fillStyle(0x757575, 1); // Gray stone
+    g.fillRect(-70, -90, 20, 130);
+    
+    // Stone texture on left pillar
+    g.fillStyle(0x616161, 0.3);
+    for (let i = 0; i < 6; i++) {
+      g.fillRect(-68, -85 + i * 20, 16, 2);
+    }
+    
+    // Right pillar
+    g.fillStyle(0x757575, 1);
+    g.fillRect(50, -90, 20, 130);
+    
+    // Stone texture on right pillar
+    g.fillStyle(0x616161, 0.3);
+    for (let i = 0; i < 6; i++) {
+      g.fillRect(52, -85 + i * 20, 16, 2);
+    }
+    
+    // Pillar caps (decorative tops)
+    g.fillStyle(0x616161, 1);
+    g.fillRect(-75, -92, 30, 5);
+    g.fillRect(45, -92, 30, 5);
+    
+    // Top archway (simplified curved arch)
+    g.fillStyle(0x4CAF50, 1); // Green arch
+    g.beginPath();
+    g.moveTo(-50, -70);
+    g.lineTo(-40, -90);
+    g.lineTo(-10, -105);
+    g.lineTo(20, -90);
+    g.lineTo(30, -70);
+    g.lineTo(30, -60);
+    g.lineTo(-50, -60);
+    g.closePath();
+    g.fillPath();
+    
+    // Iron gate bars (vertical)
+    g.lineStyle(3, 0x424242, 1);
+    for (let i = -40; i <= 20; i += 15) {
+      g.lineBetween(i, -60, i, 40);
+    }
+    
+    // Horizontal crossbars
+    g.lineStyle(4, 0x424242, 1);
+    g.lineBetween(-50, -20, 30, -20);
+    g.lineBetween(-50, 10, 30, 10);
+    
+    // Decorative spikes on top
+    g.fillStyle(0x424242, 1);
+    for (let i = -40; i <= 20; i += 15) {
+      g.beginPath();
+      g.moveTo(i - 3, -60);
+      g.lineTo(i, -75);
+      g.lineTo(i + 3, -60);
+      g.closePath();
+      g.fillPath();
+    }
+    
+    // Welcome sign
+    g.fillStyle(0x8BC34A, 1); // Green sign
+    g.fillRect(-30, -50, 40, 20);
+    g.lineStyle(2, 0x558B2F, 1);
+    g.strokeRect(-30, -50, 40, 20);
+    
+    // "PARK" text placeholder (simple rectangles)
+    g.fillStyle(0xFFFFFF, 1);
+    g.fillRect(-24, -45, 3, 10); // P
+    g.fillRect(-18, -45, 3, 10); // A
+    g.fillRect(-12, -45, 3, 10); // R
+    g.fillRect(-6, -45, 3, 10);  // K
+    
+    // Ground bushes
+    g.fillStyle(0x4CAF50, 0.6);
+    g.fillEllipse(-80, 35, 25, 15);
+    g.fillEllipse(60, 35, 25, 15);
+  }
+  
+  private drawBeachUmbrella(g: Phaser.GameObjects.Graphics) {
+    // Beach umbrella - placeholder for World 3
+    // TODO: Full implementation for World 3
+    this.drawDogHouse(g);
+  }
+  
+  private drawFrontDoor(g: Phaser.GameObjects.Graphics) {
+    // City front door - placeholder for World 4
+    // TODO: Full implementation for World 4
+    this.drawDogHouse(g);
+  }
 
+  private drawDogHouse(g: Phaser.GameObjects.Graphics) {
     // === ROOF (Triangle) ===
     g.fillStyle(0xA0522D, 1); // Sienna brown
     g.beginPath();

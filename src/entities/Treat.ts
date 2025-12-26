@@ -5,10 +5,12 @@ export class Treat {
   private scene: Phaser.Scene;
   private size: number; // 1, 2, or 3
   private pointValue: number;
+  private treatType: 'bone' | 'tennis-ball' | 'frisbee';
   
-  constructor(scene: Phaser.Scene, x: number, y: number, size: number = 2) {
+  constructor(scene: Phaser.Scene, x: number, y: number, size: number = 2, treatType: 'bone' | 'tennis-ball' | 'frisbee' = 'bone') {
     this.scene = scene;
     this.size = Math.max(1, Math.min(3, size)); // Clamp between 1-3
+    this.treatType = treatType;
     
     // Point values based on size (simple 1-2-3 scale)
     const pointValues = {
@@ -18,14 +20,55 @@ export class Treat {
     };
     this.pointValue = pointValues[this.size as keyof typeof pointValues];
     
-    // Create bone-shaped treat graphic with size-appropriate dimensions
+    // Create treat graphic based on type and size
     const scale = this.size; // 1, 2, or 3
-    const textureKey = `treat-size-${this.size}`;
+    const textureKey = `treat-${treatType}-${this.size}`;
     
     // Only generate texture once
     if (!scene.textures.exists(textureKey)) {
-      const graphics = scene.add.graphics();
-      const boneColor = 0xFFE4B5; // Moccasin color for bone
+      switch (treatType) {
+        case 'tennis-ball':
+          this.createTennisBallTexture(scene, textureKey, scale);
+          break;
+        case 'frisbee':
+          this.createFrisbeeTexture(scene, textureKey, scale);
+          break;
+        case 'bone':
+        default:
+          this.createBoneTexture(scene, textureKey, scale);
+          break;
+      }
+    }
+    
+    // Create sprite
+    this.sprite = scene.physics.add.sprite(x, y, textureKey);
+    this.sprite.setCollideWorldBounds(true);
+    
+    // Add floating animation - BOUNCIER with Elastic easing!
+    scene.tweens.add({
+      targets: this.sprite,
+      y: y - 15, // Float higher
+      duration: 1200,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Elastic.easeInOut' // Elastic bounce!
+    });
+    
+    // Add sparkle effect with Back easing
+    scene.tweens.add({
+      targets: this.sprite,
+      alpha: 0.7,
+      scale: 1.1,
+      duration: 600,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Back.easeInOut' // Overshoot for cartoony effect
+    });
+  }
+  
+  private createBoneTexture(scene: Phaser.Scene, textureKey: string, scale: number) {
+    const graphics = scene.add.graphics();
+    const boneColor = 0xFFE4B5; // Moccasin color for bone
       const outlineColor = 0x000000; // BLACK OUTLINE for Angry Birds style!
       
       // Draw cute bone shape with ONLY exterior outline!
@@ -103,32 +146,78 @@ export class Treat {
       
       graphics.generateTexture(textureKey, 32 * scale, 16 * scale);
       graphics.destroy();
+  }
+  
+  private createTennisBallTexture(scene: Phaser.Scene, textureKey: string, scale: number) {
+    const graphics = scene.add.graphics();
+    const ballColor = 0xCCFF00; // Bright tennis ball yellow-green
+    const lineColor = 0xFFFFFF; // White lines
+    const outlineColor = 0x000000; // Black outline
+    
+    const centerX = 12 * scale;
+    const centerY = 12 * scale;
+    const radius = 10 * scale;
+    
+    // Fill circle
+    graphics.fillStyle(ballColor, 1);
+    graphics.fillCircle(centerX, centerY, radius);
+    
+    // Black outline
+    graphics.lineStyle(1.5 * scale, outlineColor, 1);
+    graphics.strokeCircle(centerX, centerY, radius);
+    
+    // Curved white lines (tennis ball pattern)
+    graphics.lineStyle(2 * scale, lineColor, 1);
+    graphics.beginPath();
+    graphics.arc(centerX, centerY - radius * 0.3, radius * 0.8, Math.PI * 0.2, Math.PI * 0.8, false);
+    graphics.strokePath();
+    
+    graphics.beginPath();
+    graphics.arc(centerX, centerY + radius * 0.3, radius * 0.8, Math.PI * 1.2, Math.PI * 1.8, false);
+    graphics.strokePath();
+    
+    graphics.generateTexture(textureKey, 24 * scale, 24 * scale);
+    graphics.destroy();
+  }
+  
+  private createFrisbeeTexture(scene: Phaser.Scene, textureKey: string, scale: number) {
+    const graphics = scene.add.graphics();
+    const frisbeeColor = 0xFF6B35; // Bright orange/red
+    const innerColor = 0xFF4500; // Darker orange
+    const outlineColor = 0x000000; // Black outline
+    
+    const centerX = 16 * scale;
+    const centerY = 8 * scale;
+    const outerRadiusX = 14 * scale;
+    const outerRadiusY = 6 * scale;
+    const innerRadiusX = 8 * scale;
+    const innerRadiusY = 4 * scale;
+    
+    // Outer ellipse (frisbee body)
+    graphics.fillStyle(frisbeeColor, 1);
+    graphics.fillEllipse(centerX, centerY, outerRadiusX, outerRadiusY);
+    
+    // Inner ellipse (grip area)
+    graphics.fillStyle(innerColor, 1);
+    graphics.fillEllipse(centerX, centerY, innerRadiusX, innerRadiusY);
+    
+    // Black outline
+    graphics.lineStyle(1.5 * scale, outlineColor, 1);
+    graphics.strokeEllipse(centerX, centerY, outerRadiusX, outerRadiusY);
+    graphics.strokeEllipse(centerX, centerY, innerRadiusX, innerRadiusY);
+    
+    // Add radial lines for detail
+    for (let i = 0; i < 4; i++) {
+      const angle = (Math.PI * 2 * i) / 4;
+      const x1 = centerX + Math.cos(angle) * innerRadiusX;
+      const y1 = centerY + Math.sin(angle) * innerRadiusY;
+      const x2 = centerX + Math.cos(angle) * outerRadiusX * 0.9;
+      const y2 = centerY + Math.sin(angle) * outerRadiusY * 0.9;
+      graphics.lineBetween(x1, y1, x2, y2);
     }
     
-    // Create sprite
-    this.sprite = scene.physics.add.sprite(x, y, textureKey);
-    this.sprite.setCollideWorldBounds(true);
-    
-    // Add floating animation - BOUNCIER with Elastic easing!
-    scene.tweens.add({
-      targets: this.sprite,
-      y: y - 15, // Float higher
-      duration: 1200,
-      yoyo: true,
-      repeat: -1,
-      ease: 'Elastic.easeInOut' // Elastic bounce!
-    });
-    
-    // Add sparkle effect with Back easing
-    scene.tweens.add({
-      targets: this.sprite,
-      alpha: 0.7,
-      scale: 1.1,
-      duration: 600,
-      yoyo: true,
-      repeat: -1,
-      ease: 'Back.easeInOut' // Overshoot for cartoony effect
-    });
+    graphics.generateTexture(textureKey, 32 * scale, 16 * scale);
+    graphics.destroy();
   }
   
   collect() {
@@ -230,6 +319,10 @@ export class Treat {
   
   getSize(): number {
     return this.size;
+  }
+  
+  getTreatType(): string {
+    return this.treatType;
   }
 }
 

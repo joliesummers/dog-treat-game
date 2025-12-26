@@ -91,67 +91,122 @@ export class GameScene extends Phaser.Scene {
     // Set world bounds to extended level size
     this.physics.world.setBounds(0, 0, levelWidth, height);
     
-    // Add sky gradient background - Angry Birds style! (extended for full level)
-    const sky = this.add.graphics();
-    sky.fillGradientStyle(0x4DD0E1, 0x4DD0E1, 0xB2EBF2, 0xB2EBF2, 1); // Bright cyan to light turquoise
-    sky.fillRect(0, 0, levelWidth, height);
-    sky.setScrollFactor(0.5); // Parallax effect for sky
+    // Determine which world we're in based on level number
+    const worldNumber = this.getWorldNumber(this.currentLevel);
+    
+    // Add sky gradient background - world-specific!
+    this.createWorldBackground(worldNumber, levelWidth, height);
     
     // Create platform textures if they don't exist
     this.createPlatformTextures();
     
-    // Create ground platform
+    // Create ground platform (world-specific)
     this.platforms = this.physics.add.staticGroup();
     
-    // Main ground (grass with texture) - extended for full level
+    // Main ground - world-specific styling
     const ground = this.add.rectangle(levelWidth / 2, height - 32, levelWidth, 64);
-    ground.setFillStyle(0x8BC34A); // Vibrant Android green
-    ground.setStrokeStyle(3, 0x558B2F); // Darker saturated green outline
-    this.platforms.add(ground);
     
-    // Add grass texture details on top
-    const grassGraphics = this.add.graphics();
-    grassGraphics.fillStyle(0x689F38, 0.7); // Darker vibrant green for grass blades
-    for (let i = 0; i < levelWidth; i += 8) {
-      const variation = Phaser.Math.Between(-4, 4);
-      grassGraphics.fillRect(i, height - 64 + variation, 4, 8);
+    if (worldNumber === 2) {
+      // Park: Gray concrete path
+      ground.setFillStyle(0x9E9E9E); // Gray
+      ground.setStrokeStyle(3, 0x616161); // Darker gray outline
+      
+      // Add concrete texture details on top
+      const concreteGraphics = this.add.graphics();
+      concreteGraphics.fillStyle(0x757575, 0.5); // Darker gray for speckles
+      for (let i = 0; i < levelWidth; i += 16) {
+        const variation = Phaser.Math.Between(-2, 2);
+        concreteGraphics.fillRect(i + variation, height - 64 + Phaser.Math.Between(0, 16), 8, 4);
+      }
+      
+      // Add sidewalk cracks
+      concreteGraphics.lineStyle(2, 0x616161, 0.6);
+      for (let i = 0; i < levelWidth; i += 200) {
+        concreteGraphics.lineBetween(i, height - 64, i + 50, height - 32);
+      }
+      
+    } else {
+      // World 1 (Backyard): Grass
+      ground.setFillStyle(0x8BC34A); // Vibrant Android green
+      ground.setStrokeStyle(3, 0x558B2F); // Darker saturated green outline
+      
+      // Add grass texture details on top
+      const grassGraphics = this.add.graphics();
+      grassGraphics.fillStyle(0x689F38, 0.7); // Darker vibrant green for grass blades
+      for (let i = 0; i < levelWidth; i += 8) {
+        const variation = Phaser.Math.Between(-4, 4);
+        grassGraphics.fillRect(i, height - 64 + variation, 4, 8);
+      }
+      
+      // Add dirt layer below grass with texture
+      const dirt = this.add.rectangle(levelWidth / 2, height - 8, levelWidth, 16);
+      dirt.setFillStyle(0x8B4513); // Saddle brown
+      dirt.setStrokeStyle(1, 0x654321);
     }
     
-    // Add dirt layer below grass with texture
-    const dirt = this.add.rectangle(levelWidth / 2, height - 8, levelWidth, 16);
-    dirt.setFillStyle(0x8B4513); // Saddle brown
-    dirt.setStrokeStyle(1, 0x654321);
+    this.platforms.add(ground);
     
     // Get platform layout based on current level
     const platformData = this.getPlatformLayout(this.currentLevel, height);
     
     platformData.forEach(p => {
-      // Create wood texture platform with grain
-      const textureKey = `wood-platform-${p.w}x${p.h}`;
+      // Determine texture style based on world
+      const materialType = worldNumber === 2 ? 'stone' : 'wood';
+      const textureKey = `${materialType}-platform-${p.w}x${p.h}`;
       
       if (!this.textures.exists(textureKey)) {
         const graphics = this.add.graphics();
         
-        // Base wood color
-        graphics.fillStyle(p.color, 1);
-        graphics.fillRect(0, 0, p.w, p.h);
-        
-        // Add wood grain lines (horizontal streaks)
-        graphics.lineStyle(1, p.color === 0xD2691E ? 0xA0522D : 0x8B4513, 0.4);
-        for (let i = 0; i < 8; i++) {
-          const y = Phaser.Math.Between(2, p.h - 2);
-          const startX = Phaser.Math.Between(0, p.w * 0.1);
-          const endX = Phaser.Math.Between(p.w * 0.8, p.w);
-          graphics.lineBetween(startX, y, endX, y);
+        if (worldNumber === 2) {
+          // Park: Stone/concrete platforms
+          graphics.fillStyle(0x9E9E9E, 1); // Gray concrete
+          graphics.fillRect(0, 0, p.w, p.h);
+          
+          // Add stone texture speckles
+          for (let i = 0; i < 15; i++) {
+            const x = Phaser.Math.Between(0, p.w);
+            const y = Phaser.Math.Between(0, p.h);
+            const size = Phaser.Math.Between(2, 4);
+            graphics.fillStyle(0x757575, 0.6);
+            graphics.fillRect(x, y, size, size);
+          }
+          
+          // Add cracks
+          graphics.lineStyle(1, 0x616161, 0.4);
+          for (let i = 0; i < 3; i++) {
+            const startX = Phaser.Math.Between(0, p.w * 0.3);
+            const startY = Phaser.Math.Between(0, p.h);
+            const endX = Phaser.Math.Between(p.w * 0.7, p.w);
+            const endY = Phaser.Math.Between(0, p.h);
+            graphics.lineBetween(startX, startY, endX, endY);
+          }
+          
+          // Darker top edge
+          graphics.lineStyle(2, 0x616161, 0.6);
+          graphics.lineBetween(0, 0, p.w, 0);
+          
+        } else {
+          // World 1: Wood platforms
+          graphics.fillStyle(p.color, 1);
+          graphics.fillRect(0, 0, p.w, p.h);
+          
+          // Add wood grain lines (horizontal streaks)
+          graphics.lineStyle(1, p.color === 0xD2691E ? 0xA0522D : 0x8B4513, 0.4);
+          for (let i = 0; i < 8; i++) {
+            const y = Phaser.Math.Between(2, p.h - 2);
+            const startX = Phaser.Math.Between(0, p.w * 0.1);
+            const endX = Phaser.Math.Between(p.w * 0.8, p.w);
+            graphics.lineBetween(startX, y, endX, y);
+          }
+          
+          // Add darker top edge (shadow/depth)
+          graphics.lineStyle(2, 0x654321, 0.5);
+          graphics.lineBetween(0, 0, p.w, 0);
+          
+          // Add lighter bottom edge (highlight)
+          graphics.lineStyle(1, p.color === 0xD2691E ? 0xF4A460 : 0xDEB887, 0.6);
+          graphics.lineBetween(0, p.h - 1, p.w, p.h - 1);
         }
-        
-        // Add darker top edge (shadow/depth)
-        graphics.lineStyle(2, 0x654321, 0.5);
-        graphics.lineBetween(0, 0, p.w, 0);
-        
-        // Add lighter bottom edge (highlight)
-        graphics.lineStyle(1, p.color === 0xD2691E ? 0xF4A460 : 0xDEB887, 0.6);
-        graphics.lineBetween(0, p.h - 1, p.w, p.h - 1);
         
         graphics.generateTexture(textureKey, p.w, p.h);
         graphics.destroy();
@@ -164,14 +219,14 @@ export class GameScene extends Phaser.Scene {
     });
     
     // Create treats, bad items, and trees based on level config
-    this.createTreats(this.currentLevel, levelWidth, height);
+    this.createTreats(this.currentLevel, levelWidth, height, worldNumber);
     this.createBadItems(this.currentLevel, levelWidth, height);
     this.createTrees(this.currentLevel, levelWidth, height);
     
-    // Create goal house at end of level
+    // Create goal house at end of level (world-specific)
     const goalX = this.levelConfig.goalPosition;
     const goalY = height - 64; // On ground level
-    this.goalHouse = new GoalHouse(this, goalX, goalY);
+    this.goalHouse = new GoalHouse(this, goalX, goalY, worldNumber);
     
     // Update UI - reset and set total treats available
     this.uiScene?.reset();
@@ -327,7 +382,7 @@ export class GameScene extends Phaser.Scene {
     }
   }
   
-  private createTreats(level: number, levelWidth: number, height: number) {
+  private createTreats(level: number, levelWidth: number, height: number, worldNumber: number = 1) {
     const config = getCurrentLevelConfig(level);
     const treatCount = config.treatCount;
     const spacing = levelWidth / (treatCount + 1);
@@ -352,7 +407,15 @@ export class GameScene extends Phaser.Scene {
       const sizeRoll = Math.random();
       const size = sizeRoll < 0.6 ? 1 : sizeRoll < 0.9 ? 2 : 3;
       
-      const treat = new Treat(this, x, y, size);
+      // Determine treat type based on world
+      let treatType: 'bone' | 'tennis-ball' | 'frisbee' = 'bone';
+      if (worldNumber === 2) {
+        // Park: 60% tennis balls, 40% frisbees
+        treatType = Math.random() < 0.6 ? 'tennis-ball' : 'frisbee';
+      }
+      // Worlds 3 and 4 will have their own treats later
+      
+      const treat = new Treat(this, x, y, size, treatType);
       this.treats.push(treat);
     }
   }
@@ -945,7 +1008,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private createPlatformTextures() {
-    // Create wood grain texture pattern (simple horizontal lines)
+    // Create wood grain texture pattern (for World 1 - Backyard)
     if (!this.textures.exists('wood-texture')) {
       const graphics = this.add.graphics();
       graphics.fillStyle(0xD2691E, 1);
@@ -956,6 +1019,27 @@ export class GameScene extends Phaser.Scene {
         graphics.lineBetween(0, i, 32, i);
       }
       graphics.generateTexture('wood-texture', 32, 32);
+      graphics.destroy();
+    }
+    
+    // Create stone/concrete texture (for World 2 - Park)
+    if (!this.textures.exists('stone-texture')) {
+      const graphics = this.add.graphics();
+      graphics.fillStyle(0x9E9E9E, 1); // Gray concrete
+      graphics.fillRect(0, 0, 32, 32);
+      // Add texture speckles for stone effect
+      for (let i = 0; i < 20; i++) {
+        const x = Phaser.Math.Between(0, 32);
+        const y = Phaser.Math.Between(0, 32);
+        const size = Phaser.Math.Between(2, 4);
+        graphics.fillStyle(0x757575, 0.6); // Darker gray
+        graphics.fillRect(x, y, size, size);
+      }
+      // Add cracks
+      graphics.lineStyle(1, 0x616161, 0.4);
+      graphics.lineBetween(5, 10, 20, 12);
+      graphics.lineBetween(18, 25, 28, 20);
+      graphics.generateTexture('stone-texture', 32, 32);
       graphics.destroy();
     }
   }
@@ -1299,6 +1383,64 @@ export class GameScene extends Phaser.Scene {
         this.uiScene?.takeDamage();
         this.triggerGameOver();
       }
+    }
+  }
+  
+  // ============================================================================
+  // WORLD-SPECIFIC HELPER METHODS
+  // ============================================================================
+  
+  private getWorldNumber(level: number): number {
+    if (level >= 16) return 4; // City Streets
+    if (level >= 11) return 3; // Beach Boardwalk
+    if (level >= 6) return 2;  // Park Adventure
+    return 1; // Backyard Escape
+  }
+  
+  private createWorldBackground(world: number, width: number, height: number) {
+    const sky = this.add.graphics();
+    
+    switch (world) {
+      case 1: // Backyard - Cyan
+        sky.fillGradientStyle(0x4DD0E1, 0x4DD0E1, 0xB2EBF2, 0xB2EBF2, 1);
+        break;
+      case 2: // Park - Blue/Green
+        sky.fillGradientStyle(0x64B5F6, 0x64B5F6, 0x81C784, 0x81C784, 1);
+        break;
+      case 3: // Beach - Orange/Blue
+        sky.fillGradientStyle(0xFFB74D, 0xFFB74D, 0x42A5F5, 0x42A5F5, 1);
+        break;
+      case 4: // City - Gray
+        sky.fillGradientStyle(0x90A4AE, 0x90A4AE, 0x607D8B, 0x607D8B, 1);
+        break;
+    }
+    
+    sky.fillRect(0, 0, width, height);
+    sky.setScrollFactor(0.5);
+    
+    // Add world-specific background elements
+    if (world === 2) {
+      this.createParkBackgroundElements(width, height);
+    }
+  }
+  
+  private createParkBackgroundElements(width: number, height: number) {
+    // Park benches, lamp posts, tree silhouettes
+    for (let i = 0; i < width; i += 400) {
+      // Lamp post
+      const lampX = i + 200;
+      const lamp = this.add.graphics();
+      lamp.fillStyle(0x424242, 0.3);
+      lamp.fillRect(lampX, height - 150, 8, 80);
+      lamp.fillCircle(lampX + 4, height - 150, 15);
+      lamp.setScrollFactor(0.7); // Parallax
+      
+      // Tree silhouette
+      const treeX = i + 100;
+      const tree = this.add.graphics();
+      tree.fillStyle(0x2E7D32, 0.2);
+      tree.fillEllipse(treeX, height - 100, 60, 80);
+      tree.setScrollFactor(0.6);
     }
   }
 }
